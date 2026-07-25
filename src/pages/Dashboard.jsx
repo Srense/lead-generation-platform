@@ -48,8 +48,7 @@ export default function Dashboard() {
             name: formData.name,
             email: formData.email,
             phone: formData.phone,
-            city: formData.city,
-            inquiry_type: 'sales'
+            city: formData.city
         });
         setIsSubmitting(false);
         if (saved) {
