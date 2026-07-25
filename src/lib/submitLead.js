@@ -14,15 +14,14 @@ export const submitLead = async (leadData) => {
       }]);
       dbSuccess = !error;
     } else {
-      // 1. Save data into the Supabase 'leads' table natively (upsert to handle returning leads safely)
-      const { error } = await supabase.from('leads').upsert([{
+      // 1. Save data into the Supabase 'leads' table natively
+      const { error } = await supabase.from('leads').insert([{
         name: leadData.name,
         email: leadData.email,
         phone: leadData.phone,
         city: leadData.city
-      }], { onConflict: 'email' });
-      // Error 23505 is Unique Violation, but upsert handles it. Just in case fallback is triggered.
-      dbSuccess = !error || error.code === '23505';
+      }]);
+      dbSuccess = !error;
     }
 
     // 2. Safely trigger the Edge Function for Email Dispatch
