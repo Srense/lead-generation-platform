@@ -28,6 +28,10 @@ export default function AdminLayout() {
                         <span className="material-symbols-outlined text-lg">group</span>
                         Lead Responses
                     </Link>
+                    <Link to="/admin/contacts" className={navItemClass('/admin/contacts')}>
+                        <span className="material-symbols-outlined text-lg">contact_support</span>
+                        Contact Inquiries
+                    </Link>
                     <div className="text-xs font-label-caps text-on-surface-variant/50 px-4 mb-2 mt-6">Configuration</div>
                     <Link to="/admin/video" className={navItemClass('/admin/video')}>
                         <span className="material-symbols-outlined text-lg">videocam</span>

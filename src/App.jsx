@@ -8,6 +8,7 @@ import AdminLayout from './layouts/AdminLayout';
 import { AdminProvider } from './context/AdminContext';
 
 import LeadsViewer from './pages/admin/LeadsViewer';
+import ContactsViewer from './pages/admin/ContactsViewer';
 import VideoManager from './pages/admin/VideoManager';
 import UrgencyController from './pages/admin/UrgencyController';
 
@@ -25,6 +26,7 @@ function App() {
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="leads" element={<LeadsViewer />} />
+            <Route path="contacts" element={<ContactsViewer />} />
             <Route path="video" element={<VideoManager />} />
             <Route path="urgency" element={<UrgencyController />} />
           </Route>
