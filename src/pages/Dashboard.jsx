@@ -7,6 +7,8 @@ import { submitLead } from '../lib/submitLead';
 export default function Dashboard() {
     const [minutes, setMinutes] = useState(14);
     const [seconds, setSeconds] = useState(59);
+    const [bannerText, setBannerText] = useState('🎁 This training is completely FREE for a limited time. Previously ₹299, but today you can access it at absolutely no cost.');
+    const [isUrgentVisible, setIsUrgentVisible] = useState(true);
 
     const [formData, setFormData] = useState({ name: '', phone: '', email: '', city: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -14,13 +16,27 @@ export default function Dashboard() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchVideo = async () => {
+        const fetchRemoteAssets = async () => {
             const { supabase } = await import('../lib/supabase');
             if (!supabase) return;
-            const { data } = await supabase.from('config').select('value').eq('key', 'video_url').single();
-            if (data && data.value) setVideoAsset(data.value);
+
+            // Fetch video
+            const { data: videoData } = await supabase.from('config').select('value').eq('key', 'video_url').single();
+            if (videoData && videoData.value) setVideoAsset(videoData.value);
+
+            // Fetch urgency
+            const { data: urgencyData } = await supabase.from('config').select('value').eq('key', 'urgency_config').single();
+            if (urgencyData && urgencyData.value) {
+                try {
+                    const parsed = JSON.parse(urgencyData.value);
+                    setMinutes(parsed.minutes);
+                    setSeconds(parsed.seconds);
+                    setBannerText(parsed.text);
+                    setIsUrgentVisible(parsed.visible);
+                } catch (e) { }
+            }
         };
-        fetchVideo();
+        fetchRemoteAssets();
     }, []);
 
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -99,17 +115,19 @@ export default function Dashboard() {
                         <div>
                             <h2 className="font-headline-lg-mobile md:font-headline-lg text-slate-text mb-6">Ready to Take the Next Step?</h2>
                             <p className="font-body-base text-on-surface-variant mb-8">If this training gave you a new perspective, fill out the form below. Our team will review your details and guide you through.</p>
-                            <div className="bg-primary/10 border border-primary/30 rounded-lg p-6 mb-8 relative overflow-hidden">
-                                <div className="absolute top-0 left-0 w-1 h-full bg-primary"></div>
-                                <p className="font-body-base text-on-surface mb-4">
-                                    🎁 This training is completely FREE for a limited time. Previously ₹299, but today you can access it at absolutely no cost.
-                                </p>
-                                <div className="flex items-center gap-4 text-primary font-display-xl-mobile font-bold">
-                                    <div><span id="mins">{minutes.toString().padStart(2, '0')}</span><span className="text-sm font-normal ml-1">m</span></div>
-                                    <span className="opacity-50">:</span>
-                                    <div><span id="secs">{seconds.toString().padStart(2, '0')}</span><span className="text-sm font-normal ml-1">s</span></div>
+                            {isUrgentVisible && (
+                                <div className="bg-primary/10 border border-primary/30 rounded-lg p-6 mb-8 relative overflow-hidden">
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+                                    <p className="font-body-base text-on-surface mb-4 whitespace-pre-wrap">
+                                        {bannerText}
+                                    </p>
+                                    <div className="flex items-center gap-4 text-primary font-display-xl-mobile font-bold">
+                                        <div><span id="mins">{minutes.toString().padStart(2, '0')}</span><span className="text-sm font-normal ml-1">m</span></div>
+                                        <span className="opacity-50">:</span>
+                                        <div><span id="secs">{seconds.toString().padStart(2, '0')}</span><span className="text-sm font-normal ml-1">s</span></div>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
 
                         <div className="glass-card rounded-xl p-8 ambient-shadow relative">

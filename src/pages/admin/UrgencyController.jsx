@@ -1,15 +1,48 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '../../lib/supabase';
 
 export default function UrgencyController() {
     const [countdownMinutes, setCountdownMinutes] = useState(14);
     const [countdownSeconds, setCountdownSeconds] = useState(59);
     const [bannerText, setBannerText] = useState('🎁 This training is completely FREE for a limited time. Previously ₹299, but today you can access it at absolutely no cost.');
     const [urgentVisibility, setUrgentVisibility] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const saveSettings = (e) => {
+    useEffect(() => {
+        const fetchConfig = async () => {
+            if (!supabase) return;
+            const { data } = await supabase.from('config').select('value').eq('key', 'urgency_config').single();
+            if (data && data.value) {
+                try {
+                    const parsed = JSON.parse(data.value);
+                    setCountdownMinutes(parsed.minutes);
+                    setCountdownSeconds(parsed.seconds);
+                    setBannerText(parsed.text);
+                    setUrgentVisibility(parsed.visible);
+                } catch (e) { }
+            }
+            setIsLoading(false);
+        };
+        fetchConfig();
+    }, []);
+
+    const saveSettings = async (e) => {
         e.preventDefault();
-        // Simulate updating global settings
-        alert('Urgency Engine Parameters Synced! Conversion rates typically improve by 15% with optimized countdown ranges.');
+        const payload = JSON.stringify({
+            minutes: parseInt(countdownMinutes),
+            seconds: parseInt(countdownSeconds),
+            text: bannerText,
+            visible: urgentVisibility
+        });
+
+        if (supabase) {
+            const { error } = await supabase.from('config').upsert({ key: 'urgency_config', value: payload });
+            if (error) {
+                alert('Error saving configuration: ' + error.message);
+                return;
+            }
+        }
+        alert('Urgency Engine Parameters Synced! Landing page will immediately inherit these settings.');
     };
 
     return (
