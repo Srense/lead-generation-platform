@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .glass-card {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(16px);
+    border: 1px solid theme('colors.glass-border');
+  }
+
+  .ambient-shadow {
+    box-shadow: 0 20px 50px rgba(107, 216, 203, 0.15);
+  }
+}
