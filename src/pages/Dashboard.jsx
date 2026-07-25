@@ -10,7 +10,18 @@ export default function Dashboard() {
 
     const [formData, setFormData] = useState({ name: '', phone: '', email: '', city: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [videoAsset, setVideoAsset] = useState(null);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchVideo = async () => {
+            const { supabase } = await import('../lib/supabase');
+            if (!supabase) return;
+            const { data } = await supabase.from('config').select('value').eq('key', 'video_url').single();
+            if (data && data.value) setVideoAsset(data.value);
+        };
+        fetchVideo();
+    }, []);
 
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -67,13 +78,19 @@ export default function Dashboard() {
                 </section>
 
                 <section className="py-20 px-margin-mobile md:px-gutter max-w-container-max mx-auto" id="training">
-                    <div className="relative w-full aspect-video rounded-xl overflow-hidden glass-card ambient-shadow flex items-center justify-center group cursor-pointer">
+                    <div className="relative w-full aspect-video rounded-xl overflow-hidden glass-card ambient-shadow flex items-center justify-center group cursor-pointer border border-glass-border">
                         <div className="absolute inset-0 z-0">
-                            <img className="w-full h-full object-cover opacity-60 mix-blend-overlay" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpqbbDm_XhvRdXIWcfOR5axXjqhSEYYNj6YQ-TGgqF57fvnC5mQfK2ICeygyPmIyA0DvnsJOxuFuXjl28bI9i8k2oBUF6-2q_Jj0VwWBPVqVSFgNMecsa-Ta3kmnBi0ppQ4EPO5Y9T91AxJ9j3TOTJMG_kgLmeik_bDrXbxPw_o7bAvXI37k5LjynpslUP9SYsZBi19UPRNQ0rbQK9rJ-ORVILPUitwg62DATQ8fUM0L3-yEfDA4-PmiKABimKO5K7vQSMhIUEvNHZ" />
+                            {videoAsset ? (
+                                <video src={videoAsset} controls className="w-full h-full object-cover rounded-xl" poster="https://lh3.googleusercontent.com/aida-public/AB6AXuBpqbbDm_XhvRdXIWcfOR5axXjqhSEYYNj6YQ-TGgqF57fvnC5mQfK2ICeygyPmIyA0DvnsJOxuFuXjl28bI9i8k2oBUF6-2q_Jj0VwWBPVqVSFgNMecsa-Ta3kmnBi0ppQ4EPO5Y9T91AxJ9j3TOTJMG_kgLmeik_bDrXbxPw_o7bAvXI37k5LjynpslUP9SYsZBi19UPRNQ0rbQK9rJ-ORVILPUitwg62DATQ8fUM0L3-yEfDA4-PmiKABimKO5K7vQSMhIUEvNHZ" />
+                            ) : (
+                                <img className="w-full h-full object-cover opacity-60 mix-blend-overlay" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpqbbDm_XhvRdXIWcfOR5axXjqhSEYYNj6YQ-TGgqF57fvnC5mQfK2ICeygyPmIyA0DvnsJOxuFuXjl28bI9i8k2oBUF6-2q_Jj0VwWBPVqVSFgNMecsa-Ta3kmnBi0ppQ4EPO5Y9T91AxJ9j3TOTJMG_kgLmeik_bDrXbxPw_o7bAvXI37k5LjynpslUP9SYsZBi19UPRNQ0rbQK9rJ-ORVILPUitwg62DATQ8fUM0L3-yEfDA4-PmiKABimKO5K7vQSMhIUEvNHZ" />
+                            )}
                         </div>
-                        <div className="relative z-10 bg-primary/20 p-6 rounded-full border border-primary/50 backdrop-blur-md group-hover:bg-primary/40 group-hover:scale-110 transition-all shadow-[0_0_30px_rgba(107,216,203,0.3)]">
-                            <span className="material-symbols-outlined text-primary text-6xl" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
-                        </div>
+                        {!videoAsset && (
+                            <div className="relative z-10 bg-primary/20 p-6 rounded-full border border-primary/50 backdrop-blur-md group-hover:bg-primary/40 group-hover:scale-110 transition-all shadow-[0_0_30px_rgba(107,216,203,0.3)]">
+                                <span className="material-symbols-outlined text-primary text-6xl" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
+                            </div>
+                        )}
                     </div>
                 </section>
 

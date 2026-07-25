@@ -1,9 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '../../lib/supabase';
 
 export default function VideoManager() {
-    const [videoUrl, setVideoUrl] = useState('https://storage.googleapis.com/hshq-demo/hq_training_video.mp4');
+    const [videoUrl, setVideoUrl] = useState('');
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        // Fetch the initial URL from Supabase
+        const fetchConfig = async () => {
+            if (!supabase) return;
+            const { data } = await supabase.from('config').select('value').eq('key', 'video_url').single();
+            if (data) setVideoUrl(data.value);
+            setIsLoading(false);
+        };
+        fetchConfig();
+    }, []);
 
     const simulateUpload = (e) => {
         e.preventDefault();
@@ -25,8 +38,16 @@ export default function VideoManager() {
         }, 400);
     };
 
-    const saveUrl = (e) => {
+    const saveUrl = async (e) => {
         e.preventDefault();
+
+        if (supabase) {
+            const { error } = await supabase.from('config').upsert({ key: 'video_url', value: videoUrl });
+            if (error) {
+                alert('Error saving configuration: ' + error.message);
+                return;
+            }
+        }
         alert('System Configuration Updated. The new streaming URL will be served via Edge Nodes immediately.');
     };
 
@@ -76,11 +97,12 @@ export default function VideoManager() {
                             <input
                                 value={videoUrl}
                                 onChange={(e) => setVideoUrl(e.target.value)}
+                                placeholder={isLoading ? "Loading securely..." : "https://..."}
                                 className="w-full bg-background border border-glass-border rounded-lg py-3 pl-10 pr-4 text-sm text-slate-light focus:border-primary focus:ring-1 focus:outline-none transition-colors"
                             />
                         </div>
 
-                        <button type="submit" className="flex items-center gap-2 justify-center w-full bg-primary/20 text-primary border border-primary/40 py-3 rounded-lg font-bold hover:bg-primary hover:text-background transition-colors text-sm">
+                        <button disabled={isLoading} type="submit" className="flex items-center gap-2 justify-center w-full bg-primary/20 text-primary border border-primary/40 py-3 rounded-lg font-bold hover:bg-primary hover:text-background transition-colors text-sm disabled:opacity-50">
                             <span className="material-symbols-outlined text-[18px]">save</span>
                             Commit Changes
                         </button>
