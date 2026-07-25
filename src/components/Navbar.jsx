@@ -11,7 +11,7 @@ export default function Navbar() {
     return (
         <header className="bg-surface/80 dark:bg-surface/80 backdrop-blur-xl fixed top-0 w-full border-b border-glass-border shadow-sm z-50 transition-all duration-300">
             <div className="flex justify-between items-center px-margin-mobile md:px-gutter py-4 max-w-container-max mx-auto">
-                <Link to="/" className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg font-bold text-primary hover:scale-105 transition-transform duration-200 active:scale-95">HarshBhati</Link>
+                <Link to="/" className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg font-bold text-primary hover:scale-105 transition-transform duration-200 active:scale-95">HarshBahti</Link>
                 <nav className="hidden md:flex space-x-8 items-center">
                     <NavLink to="/" end className={navLinkClasses}>Training</NavLink>
                     <NavLink to="/benefits" className={navLinkClasses}>Benefits</NavLink>
