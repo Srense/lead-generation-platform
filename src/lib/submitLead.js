@@ -12,7 +12,11 @@ export const submitLead = async (leadData) => {
     if (dbSuccess) {
       try {
         await supabase.functions.invoke('send-email', {
-          body: { name: leadData.name, email: leadData.email }
+          body: {
+            name: leadData.name,
+            email: leadData.email,
+            type: leadData.inquiry_type ? 'contact' : 'training'
+          }
         });
         console.log('Resend email pushed to queue successfully.');
       } catch (funcError) {
