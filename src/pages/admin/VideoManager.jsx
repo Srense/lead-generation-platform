@@ -18,24 +18,43 @@ export default function VideoManager() {
         fetchConfig();
     }, []);
 
-    const simulateUpload = (e) => {
+    const handleUpload = async (e) => {
         e.preventDefault();
-        if (!e.target.files.length) return;
+        const file = e.target.files[0];
+        if (!file) return;
         setIsUploading(true);
-        setUploadProgress(0);
+        setUploadProgress(20);
 
-        // Simulate complex secure upload
-        const interval = setInterval(() => {
-            setUploadProgress(prev => {
-                if (prev >= 100) {
-                    clearInterval(interval);
-                    setIsUploading(false);
-                    setVideoUrl(`https://secure-repo.hq/uploads/${e.target.files[0].name.replace(/\s+/g, '_')}`);
-                    return 100;
-                }
-                return prev + 15;
-            });
-        }, 400);
+        if (supabase) {
+            try {
+                const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+
+                // Upload to Supabase Storage Bucket
+                const { data, error } = await supabase.storage
+                    .from('videos')
+                    .upload(fileName, file, { cacheControl: '3600', upsert: false });
+
+                if (error) throw error;
+
+                setUploadProgress(100);
+
+                // Get the public viewing URL
+                const { data: urlData } = supabase.storage.from('videos').getPublicUrl(fileName);
+                const finalUrl = urlData.publicUrl;
+
+                // Update the UI state and permanently save it to Database Configuration
+                setVideoUrl(finalUrl);
+                await supabase.from('config').upsert({ key: 'video_url', value: finalUrl });
+
+                alert('Upload Complete! Video deployed to Edge nodes and landing page dynamically updated.');
+            } catch (err) {
+                console.error("Storage Error:", err);
+                alert('Upload Failed. Did you run the SQL script to create the bucket? Error: ' + err.message);
+            }
+        }
+
+        setIsUploading(false);
+        setTimeout(() => setUploadProgress(0), 1000);
     };
 
     const saveUrl = async (e) => {
@@ -67,7 +86,7 @@ export default function VideoManager() {
                     <p className="text-xs text-on-surface-variant mb-6">Upload raw MP4/WebM files to the encrypted bucket. Transcoding is handled autonomously.</p>
 
                     <div className="border border-dashed border-primary/40 bg-surface-container/30 hover:bg-surface-container/50 transition-colors rounded-xl p-8 text-center cursor-pointer relative overflow-hidden group">
-                        <input type="file" accept="video/mp4,video/webm" className="absolute inset-0 opacity-0 cursor-pointer z-10" onChange={simulateUpload} disabled={isUploading} />
+                        <input type="file" accept="video/mp4,video/webm" className="absolute inset-0 opacity-0 cursor-pointer z-10" onChange={handleUpload} disabled={isUploading} />
 
                         {!isUploading ? (
                             <>
