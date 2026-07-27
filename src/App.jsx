@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Success from './pages/Success';
 import Benefits from './pages/Benefits';
@@ -12,25 +12,34 @@ import ContactsViewer from './pages/admin/ContactsViewer';
 import VideoManager from './pages/admin/VideoManager';
 import UrgencyController from './pages/admin/UrgencyController';
 
+function AnimatedRoutes() {
+  const location = useLocation();
+  return (
+    <div key={location.pathname} className="animate-fade-in">
+      <Routes location={location}>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/success" element={<Success />} />
+        <Route path="/benefits" element={<Benefits />} />
+        <Route path="/contact" element={<ContactUs />} />
+
+        {/* Secure Admin Routes */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="leads" element={<LeadsViewer />} />
+          <Route path="contacts" element={<ContactsViewer />} />
+          <Route path="video" element={<VideoManager />} />
+          <Route path="urgency" element={<UrgencyController />} />
+        </Route>
+      </Routes>
+    </div>
+  );
+}
+
 function App() {
   return (
     <AdminProvider>
       <Router>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/success" element={<Success />} />
-          <Route path="/benefits" element={<Benefits />} />
-          <Route path="/contact" element={<ContactUs />} />
-
-          {/* Secure Admin Routes */}
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route path="leads" element={<LeadsViewer />} />
-            <Route path="contacts" element={<ContactsViewer />} />
-            <Route path="video" element={<VideoManager />} />
-            <Route path="urgency" element={<UrgencyController />} />
-          </Route>
-        </Routes>
+        <AnimatedRoutes />
       </Router>
     </AdminProvider>
   );
