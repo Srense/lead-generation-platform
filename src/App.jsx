@@ -5,7 +5,9 @@ import Benefits from './pages/Benefits';
 import ContactUs from './pages/ContactUs';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminLayout from './layouts/AdminLayout';
-import { AdminProvider } from './context/AdminContext';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import CookiePolicy from './pages/CookiePolicy';
 
 import LeadsViewer from './pages/admin/LeadsViewer';
 import ContactsViewer from './pages/admin/ContactsViewer';
@@ -21,6 +23,9 @@ function AnimatedRoutes() {
         <Route path="/success" element={<Success />} />
         <Route path="/benefits" element={<Benefits />} />
         <Route path="/contact" element={<ContactUs />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/cookie-policy" element={<CookiePolicy />} />
 
         {/* Secure Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
