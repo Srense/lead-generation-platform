@@ -51,7 +51,7 @@ serve(async (req) => {
                 Authorization: `Bearer ${RESEND_API_KEY}`,
             },
             body: JSON.stringify({
-                from: 'HarshBahti Training <onboarding@resend.dev>', // Update this with your verified Resend domain
+                from: 'HarshBahti Training <support@harshbahti.in>', // Using verified custom domain
                 to: [email],
                 subject: subject,
                 html: htmlContent,
