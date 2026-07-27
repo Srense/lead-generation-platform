@@ -8,6 +8,7 @@ export default function AdminLogin() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const { login } = useAdmin();
     const navigate = useNavigate();
@@ -60,11 +61,18 @@ export default function AdminLogin() {
                         <div className="relative">
                             <span className="absolute left-3 top-3 text-on-surface-variant material-symbols-outlined text-lg">lock</span>
                             <input
-                                type="password"
-                                className="w-full bg-background border border-glass-border rounded-lg py-3 pl-10 pr-4 text-slate-light focus:border-primary focus:ring-1 focus:outline-none transition-colors"
+                                type={showPassword ? "text" : "password"}
+                                className="w-full bg-background border border-glass-border rounded-lg py-3 pl-10 pr-12 text-slate-light focus:border-primary focus:ring-1 focus:outline-none transition-colors"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-3 text-on-surface-variant hover:text-primary transition-colors material-symbols-outlined text-lg"
+                            >
+                                {showPassword ? 'visibility_off' : 'visibility'}
+                            </button>
                         </div>
                     </div>
                     <button disabled={isSubmitting} type="submit" className="w-full bg-primary text-[#0F172A] py-3 flex items-center justify-center gap-2 rounded-lg font-bold hover:scale-[1.02] transition-transform shadow-[0_4px_14px_0_rgba(107,216,203,0.2)] disabled:opacity-70">
