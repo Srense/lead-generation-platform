@@ -41,7 +41,32 @@ function AnimatedRoutes() {
   );
 }
 
+import { useState, useEffect } from 'react';
+import Loader from './components/Loader';
+
 function App() {
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsInitializing(false);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen flex items-center justify-center relative bg-[#0A0F20]">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-[1]">
+          <div className="absolute top-[40%] -right-[20%] w-[60vw] h-[60vw] rounded-full bg-indigo-500/10 blur-[140px] mix-blend-screen animate-pulse"></div>
+        </div>
+        <div className="relative z-10 scale-125">
+          <Loader size="lg" text="INITIALIZING" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <AdminProvider>
       <Router>
