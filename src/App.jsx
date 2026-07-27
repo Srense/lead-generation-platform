@@ -5,6 +5,7 @@ import Benefits from './pages/Benefits';
 import ContactUs from './pages/ContactUs';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminLayout from './layouts/AdminLayout';
+import { AdminProvider } from './context/AdminContext';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import CookiePolicy from './pages/CookiePolicy';
