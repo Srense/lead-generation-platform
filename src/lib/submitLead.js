@@ -2,6 +2,7 @@ import { supabase } from './supabase';
 
 export const submitLead = async (leadData) => {
   let dbSuccess = false;
+  let isDuplicate = false;
 
   if (supabase) {
     if (leadData.inquiry_type) {
@@ -13,6 +14,7 @@ export const submitLead = async (leadData) => {
         message: leadData.message
       }]);
       dbSuccess = !error;
+      if (error && error.code === '23505') isDuplicate = true;
     } else {
       // 1. Save data into the Supabase 'leads' table natively
       const { error } = await supabase.from('leads').insert([{
@@ -22,6 +24,7 @@ export const submitLead = async (leadData) => {
         city: leadData.city
       }]);
       dbSuccess = !error;
+      if (error && error.code === '23505') isDuplicate = true;
     }
 
     // 2. Safely trigger the Edge Function for Email Dispatch
@@ -46,5 +49,5 @@ export const submitLead = async (leadData) => {
     dbSuccess = true;
   }
 
-  return dbSuccess;
+  return { success: dbSuccess, isDuplicate };
 };

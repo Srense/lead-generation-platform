@@ -12,6 +12,7 @@ export default function Dashboard() {
 
     const [formData, setFormData] = useState({ name: '', phone: '', email: '', city: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState(null);
     const [videoAsset, setVideoAsset] = useState(null);
     const navigate = useNavigate();
 
@@ -44,17 +45,20 @@ export default function Dashboard() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-        const saved = await submitLead({
+        setSubmitStatus(null);
+        const result = await submitLead({
             name: formData.name,
             email: formData.email,
             phone: formData.phone,
             city: formData.city
         });
         setIsSubmitting(false);
-        if (saved) {
+        if (result.success) {
             navigate('/success');
+        } else if (result.isDuplicate) {
+            setSubmitStatus('duplicate');
         } else {
-            alert('Error saving details, please try again.');
+            setSubmitStatus('error');
         }
     };
 
@@ -130,6 +134,16 @@ export default function Dashboard() {
                         </div>
 
                         <div className="glass-card rounded-xl p-8 ambient-shadow relative">
+                            {submitStatus === 'duplicate' && (
+                                <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-4 rounded-lg text-sm mb-6 animate-in slide-in-from-top-2">
+                                    You have already registered using this email! Check your inbox for details.
+                                </div>
+                            )}
+                            {submitStatus === 'error' && (
+                                <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-4 rounded-lg text-sm mb-6 animate-in slide-in-from-top-2">
+                                    Error saving details. Please try again.
+                                </div>
+                            )}
                             <form className="space-y-4" onSubmit={handleSubmit}>
                                 <div>
                                     <label className="block text-xs font-label-caps text-on-surface-variant mb-1">Full Name</label>
