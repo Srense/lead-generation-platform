@@ -16,29 +16,19 @@ export default function Success() {
                     <p className="font-body-base text-body-base text-on-surface-variant mb-10 max-w-2xl">
                         Thank you for applying. Your request for exclusive access is currently being processed by our team. We review each application carefully to ensure the highest quality community.
                     </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-xl text-left mb-10">
+                    <div className="flex flex-col gap-6 w-full max-w-xl text-left mb-10 mx-auto">
                         <div className="bg-surface-container rounded-lg p-6 border border-glass-border">
                             <div className="flex items-center gap-3 mb-3">
                                 <span className="material-symbols-outlined text-primary">mail</span>
-                                <h3 className="font-label-caps text-label-caps text-on-surface">Step 1: Check Your Email</h3>
+                                <h3 className="font-label-caps text-label-caps text-on-surface">Check Your Inbox</h3>
                             </div>
-                            <p className="font-body-sm text-body-sm text-on-surface-variant">We've sent a confirmation email. Please allow up to 24 hours for final approval and onboarding instructions.</p>
-                        </div>
-                        <div className="bg-surface-container rounded-lg p-6 border border-glass-border">
-                            <div className="flex items-center gap-3 mb-3">
-                                <span className="material-symbols-outlined text-primary">forum</span>
-                                <h3 className="font-label-caps text-label-caps text-on-surface">Step 2: Join Telegram</h3>
-                            </div>
-                            <p className="font-body-sm text-body-sm text-on-surface-variant">While you wait, join our public Telegram channel for daily insights and community updates.</p>
+                            <p className="font-body-sm text-body-sm text-on-surface-variant">We've securely received your information. Please check your email inbox for the verified training link and next steps.</p>
                         </div>
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-                        <button className="bg-primary text-on-primary-container font-label-caps text-label-caps py-4 px-8 rounded-DEFAULT hover:scale-105 transition-transform duration-200">
-                            Join Telegram Group
-                        </button>
-                        <button className="bg-transparent border border-primary text-primary font-label-caps text-label-caps py-4 px-8 rounded-DEFAULT hover:bg-primary/10 transition-colors duration-200">
+                    <div className="flex w-full justify-center">
+                        <Link to="/" className="bg-primary text-[#0F172A] font-bold py-4 px-12 rounded-lg hover:scale-[1.02] flex items-center justify-center gap-2 transition-transform shadow-[0_4px_14px_0_rgba(107,216,203,0.39)]">
                             Return to Homepage
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </main>
