@@ -8,6 +8,7 @@ export const submitLead = async (leadData) => {
     if (leadData.inquiry_type) {
       // Submit to a dedicated 'contacts' table instead of leads
       const { error } = await supabase.from('contacts').insert([{
+        id: crypto.randomUUID(),
         name: leadData.name,
         email: leadData.email,
         inquiry_type: leadData.inquiry_type,
@@ -16,8 +17,9 @@ export const submitLead = async (leadData) => {
       dbSuccess = !error;
       if (error && error.code === '23505') isDuplicate = true;
     } else {
-      // 1. Save data into the Supabase 'leads' table natively
+      // 1. Save data into the Supabase 'leads' table natively with explicit UUID to bypass auth limitations
       const { error } = await supabase.from('leads').insert([{
+        id: crypto.randomUUID(),
         name: leadData.name,
         email: leadData.email,
         phone: leadData.phone,
