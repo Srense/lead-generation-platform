@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import Loader from './components/Loader';
 import Dashboard from './pages/Dashboard';
 import Success from './pages/Success';
 import Benefits from './pages/Benefits';
@@ -40,9 +42,6 @@ function AnimatedRoutes() {
     </div>
   );
 }
-
-import { useState, useEffect } from 'react';
-import Loader from './components/Loader';
 
 function App() {
   const [isInitializing, setIsInitializing] = useState(true);
