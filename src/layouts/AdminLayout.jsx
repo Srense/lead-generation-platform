@@ -7,7 +7,7 @@ export default function AdminLayout() {
     const location = useLocation();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    if (isLoading) return <div className="min-h-screen bg-[#0F172A] flex items-center justify-center text-primary">Loading secure workspace...</div>;
+    if (isLoading) return <div className="min-h-screen bg-transparent flex items-center justify-center text-primary">Loading secure workspace...</div>;
     if (!isAuthenticated) return <Navigate to="/admin/login" replace />;
 
     const isCurrent = (path) => location.pathname === path;
@@ -15,7 +15,7 @@ export default function AdminLayout() {
     const navItemClass = (path) => `flex items-center gap-3 px-4 py-3 rounded-lg font-label-caps text-sm transition-colors ${isCurrent(path) ? 'bg-primary/10 text-primary border border-primary/20' : 'text-on-surface-variant hover:bg-surface-container hover:text-slate-light'}`;
 
     return (
-        <div className="min-h-screen bg-background text-on-background flex flex-col md:flex-row antialiased">
+        <div className="min-h-screen bg-transparent text-on-background flex flex-col md:flex-row antialiased">
             {/* Sidebar Navigation */}
             <aside className={`w-64 bg-surface-container-lowest border-r border-glass-border flex-shrink-0 flex-col h-screen sticky top-0 z-50 transition-transform duration-300 md:flex ${isMobileMenuOpen ? 'fixed inset-y-0 left-0 flex shadow-2xl' : 'hidden'}`}>
                 <div className="p-6 border-b border-glass-border flex items-center justify-between">
@@ -72,7 +72,7 @@ export default function AdminLayout() {
                     </button>
                 </header>
 
-                <div className="flex-grow overflow-y-auto p-4 md:p-8 bg-[#0F172A] relative">
+                <div className="flex-grow overflow-y-auto p-4 md:p-8 bg-transparent relative">
                     <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')] opacity-20 mix-blend-overlay pointer-events-none"></div>
                     <div className="relative z-10 max-w-6xl mx-auto">
                         <Outlet />

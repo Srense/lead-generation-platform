@@ -3,7 +3,7 @@ import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 export default function Success() {
     return (
-        <div className="bg-background text-on-background min-h-screen flex flex-col font-body-base">
+        <div className="bg-transparent text-on-background min-h-screen flex flex-col font-body-base">
             {/* TopNavBar */}
             <Navbar />
             {/* Main Content */}

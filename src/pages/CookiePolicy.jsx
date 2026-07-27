@@ -3,7 +3,7 @@ import Footer from '../components/Footer';
 
 export default function CookiePolicy() {
     return (
-        <div className="bg-background min-h-screen text-on-surface font-body-base pt-32 flex flex-col">
+        <div className="bg-transparent min-h-screen text-on-surface font-body-base pt-32 flex flex-col">
             <Navbar />
             <main className="flex-1 max-w-4xl mx-auto px-margin-mobile md:px-gutter pb-24">
                 <h1 className="font-display-lg text-display-lg text-primary mb-8 animate-in slide-in-from-bottom-4">Cookie Policy</h1>

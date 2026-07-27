@@ -3,7 +3,7 @@ import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 export default function Benefits() {
     return (
-        <div className="bg-background text-on-background min-h-screen flex flex-col">
+        <div className="bg-transparent text-on-background min-h-screen flex flex-col">
             {/* TopNavBar */}
             <Navbar />
             {/* Main Content */}

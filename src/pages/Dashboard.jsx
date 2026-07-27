@@ -80,7 +80,7 @@ export default function Dashboard() {
     }, [minutes]);
 
     return (
-        <div className="bg-background text-on-surface font-body-base antialiased selection:bg-primary-container selection:text-on-primary-container pt-20">
+        <div className="bg-transparent text-on-surface font-body-base antialiased selection:bg-primary-container selection:text-on-primary-container pt-20">
             <Navbar />
             <main>
                 <section className="relative pt-section-gap-mobile md:pt-section-gap pb-24 px-margin-mobile md:px-gutter max-w-container-max mx-auto text-center">
@@ -149,28 +149,28 @@ export default function Dashboard() {
                                     <label className="block text-xs font-label-caps text-on-surface-variant mb-1">Full Name</label>
                                     <div className="relative">
                                         <span className="absolute left-3 top-3 text-on-surface-variant material-symbols-outlined">person</span>
-                                        <input required name="name" onChange={handleChange} className="w-full bg-background border border-glass-border rounded-lg py-3 pl-10 pr-4 text-on-surface focus:border-primary focus:ring-1 focus:outline-none transition-colors" placeholder="John Doe" type="text" />
+                                        <input required name="name" onChange={handleChange} className="w-full bg-transparent border border-glass-border rounded-lg py-3 pl-10 pr-4 text-on-surface focus:border-primary focus:ring-1 focus:outline-none transition-colors" placeholder="John Doe" type="text" />
                                     </div>
                                 </div>
                                 <div>
                                     <label className="block text-xs font-label-caps text-on-surface-variant mb-1">Mobile Number</label>
                                     <div className="relative">
                                         <span className="absolute left-3 top-3 text-on-surface-variant material-symbols-outlined">phone_iphone</span>
-                                        <input required name="phone" onChange={handleChange} className="w-full bg-background border border-glass-border rounded-lg py-3 pl-10 pr-4 text-on-surface focus:border-primary focus:ring-1 focus:outline-none transition-colors" placeholder="+91 98765 43210" type="tel" />
+                                        <input required name="phone" onChange={handleChange} className="w-full bg-transparent border border-glass-border rounded-lg py-3 pl-10 pr-4 text-on-surface focus:border-primary focus:ring-1 focus:outline-none transition-colors" placeholder="+91 98765 43210" type="tel" />
                                     </div>
                                 </div>
                                 <div>
                                     <label className="block text-xs font-label-caps text-on-surface-variant mb-1">Email Address</label>
                                     <div className="relative">
                                         <span className="absolute left-3 top-3 text-on-surface-variant material-symbols-outlined">mail</span>
-                                        <input required name="email" onChange={handleChange} className="w-full bg-background border border-glass-border rounded-lg py-3 pl-10 pr-4 text-on-surface focus:border-primary focus:ring-1 focus:outline-none transition-colors" placeholder="john@example.com" type="email" />
+                                        <input required name="email" onChange={handleChange} className="w-full bg-transparent border border-glass-border rounded-lg py-3 pl-10 pr-4 text-on-surface focus:border-primary focus:ring-1 focus:outline-none transition-colors" placeholder="john@example.com" type="email" />
                                     </div>
                                 </div>
                                 <div>
                                     <label className="block text-xs font-label-caps text-on-surface-variant mb-1">City</label>
                                     <div className="relative">
                                         <span className="absolute left-3 top-3 text-on-surface-variant material-symbols-outlined">location_city</span>
-                                        <input required name="city" onChange={handleChange} className="w-full bg-background border border-glass-border rounded-lg py-3 pl-10 pr-4 text-on-surface focus:border-primary focus:ring-1 focus:outline-none transition-colors" placeholder="Mumbai" type="text" />
+                                        <input required name="city" onChange={handleChange} className="w-full bg-transparent border border-glass-border rounded-lg py-3 pl-10 pr-4 text-on-surface focus:border-primary focus:ring-1 focus:outline-none transition-colors" placeholder="Mumbai" type="text" />
                                     </div>
                                 </div>
                                 <button disabled={isSubmitting} className="w-full bg-primary text-on-primary py-4 rounded-lg font-bold mt-4 hover:scale-[1.02] transition-transform duration-200 disabled:opacity-50" type="submit">
