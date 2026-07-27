@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useAdmin } from '../context/AdminContext';
 import { Navigate, Outlet, Link, useLocation } from 'react-router-dom';
+import Loader from '../components/Loader';
 
 export default function AdminLayout() {
     const { isAuthenticated, isLoading, logout } = useAdmin();
     const location = useLocation();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    if (isLoading) return <div className="min-h-screen bg-transparent flex items-center justify-center text-primary">Loading secure workspace...</div>;
+    if (isLoading) return <div className="min-h-screen flex items-center justify-center relative z-50"><Loader size="lg" text="SECURING HQ..." /></div>;
     if (!isAuthenticated) return <Navigate to="/admin/login" replace />;
 
     const isCurrent = (path) => location.pathname === path;

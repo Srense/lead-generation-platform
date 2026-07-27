@@ -3,6 +3,7 @@ import Footer from '../components/Footer';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { submitLead } from '../lib/submitLead';
+import Loader from '../components/Loader';
 
 export default function Dashboard() {
     const [minutes, setMinutes] = useState(14);
@@ -173,8 +174,8 @@ export default function Dashboard() {
                                         <input required name="city" onChange={handleChange} className="w-full bg-transparent border border-glass-border rounded-lg py-3 pl-10 pr-4 text-on-surface focus:border-primary focus:ring-1 focus:outline-none transition-colors" placeholder="Mumbai" type="text" />
                                     </div>
                                 </div>
-                                <button disabled={isSubmitting} className="w-full bg-primary text-on-primary py-4 rounded-lg font-bold mt-4 hover:scale-[1.02] transition-transform duration-200 disabled:opacity-50" type="submit">
-                                    {isSubmitting ? 'Securing Spot...' : 'Get Free Access Now'}
+                                <button disabled={isSubmitting} className="w-full bg-primary text-on-primary py-4 flex items-center justify-center gap-2 rounded-lg font-bold mt-4 hover:scale-[1.02] transition-transform duration-200 disabled:opacity-50" type="submit">
+                                    {isSubmitting ? <Loader size="sm" /> : 'Get Free Access Now'}
                                 </button>
                             </form>
                         </div>
