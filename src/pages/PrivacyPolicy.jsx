@@ -19,7 +19,7 @@ export default function PrivacyPolicy() {
                     <p>We may share the information we collect about you as described in this Statement or as described at the time of collection or sharing, including as follows: With third party service providers; in response to a request for information by a competent authority if we believe disclosure is in accordance with, or is otherwise required by, any applicable law, regulation, or legal process.</p>
 
                     <h2 className="text-xl font-bold text-slate-light mt-6">4. Contact Us</h2>
-                    <p>If you have any questions about this Privacy Statement, please contact us at support@harshbahti.in.</p>
+                    <p>If you have any questions about this Privacy Statement, please contact us at harshbahti90@gmail.com.</p>
                 </div>
             </main>
             <Footer />
