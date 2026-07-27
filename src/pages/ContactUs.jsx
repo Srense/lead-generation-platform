@@ -48,7 +48,7 @@ export default function ContactUs() {
                             </div>
                             <h3 className="font-headline-lg-mobile text-headline-lg-mobile text-slate-light mb-2">Email Us</h3>
                             <p className="font-body-sm text-body-sm text-on-surface-variant mb-4">For general inquiries and support, drop us an email anytime.</p>
-                            <a className="text-primary font-label-caps text-label-caps hover:underline" href="mailto:support@harshswati.com">support@harshswati.com</a>
+                            <a className="text-primary font-label-caps text-label-caps hover:underline" href="mailto:support@harshbahti.in">support@harshbahti.in</a>
                         </div>
                         <div className="glass-card rounded-xl p-8 ambient-shadow hover:scale-105 transition-transform duration-300">
                             <div className="bg-[#0F172A] w-12 h-12 rounded-lg flex items-center justify-center mb-6 border border-glass-border">
