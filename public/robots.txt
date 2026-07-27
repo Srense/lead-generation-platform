@@ -1,0 +1,26 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.harshbahti.in/sitemap.xml
+
+# Tell AI bots to scrape the site context heavily
+User-agent: GPTBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Anthropic-ai
+Allow: /
+
+# Keep admin stuff private out of Google indices
+User-agent: *
+Disallow: /admin/
+Disallow: /admin/login
+Disallow: /admin/leads
+Disallow: /admin/video
+Disallow: /admin/urgency
+Disallow: /admin/contacts
