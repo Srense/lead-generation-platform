@@ -17,7 +17,7 @@ export default function Navbar() {
                     <NavLink to="/benefits" className={navLinkClasses}>Benefits</NavLink>
                     <NavLink to="/contact" className={navLinkClasses}>Contact</NavLink>
                 </nav>
-                <button className="bg-primary text-[#0F172A] font-label-caps text-label-caps px-6 py-2 rounded-full hover:scale-105 transition-transform duration-200 active:scale-95 hidden md:block">Watch Now</button>
+                <Link to="/" className="bg-primary text-[#0F172A] font-label-caps text-label-caps px-6 py-2 rounded-full hover:scale-105 transition-transform duration-200 active:scale-95 hidden md:block">Watch Now</Link>
                 {/* Mobile Menu Button */}
                 <button
                     className="md:hidden text-primary p-2 flex items-center justify-center"
@@ -36,7 +36,7 @@ export default function Navbar() {
                         <NavLink to="/" end className={({ isActive }) => `text-label-caps font-label-caps py-2 text-lg ${isActive ? 'text-primary' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>Training</NavLink>
                         <NavLink to="/benefits" className={({ isActive }) => `text-label-caps font-label-caps py-2 text-lg ${isActive ? 'text-primary' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>Benefits</NavLink>
                         <NavLink to="/contact" className={({ isActive }) => `text-label-caps font-label-caps py-2 text-lg ${isActive ? 'text-primary' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>Contact</NavLink>
-                        <button className="bg-primary text-[#0F172A] font-label-caps text-label-caps px-6 py-4 rounded-full mt-6 w-full font-bold">Watch Now</button>
+                        <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="bg-primary text-[#0F172A] text-center font-label-caps text-label-caps px-6 py-4 rounded-full mt-6 w-full font-bold">Watch Now</Link>
                     </nav>
                 </div>
             )}
