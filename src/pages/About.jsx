@@ -38,7 +38,7 @@ export default function About() {
                             This platform is managed directly by <strong>Harsh Bahti</strong>. For updates, professional collaborations, or networking, connect via the official Harsh Bahti LinkedIn Profile. For direct training inquiries or support, reach out via our verified channel at harshbahti90@gmail.com.
                         </p>
                         <div className="flex flex-col gap-4 mt-auto">
-                            <a href="https://linkedin.com/in/harsh-bahti" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-primary hover:bg-glass-border p-3 rounded-xl transition-colors group">
+                            <a href="https://www.linkedin.com/in/harsh-bahti-0333583aa" target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 text-primary hover:bg-glass-border p-3 rounded-xl transition-colors group">
                                 <span className="material-symbols-outlined bg-[#0F172A] w-12 h-12 rounded-lg flex items-center justify-center border border-glass-border group-hover:border-primary transition-colors text-2xl">language</span>
                                 <span className="font-label-caps text-label-caps font-bold">Harsh Bahti LinkedIn Profile</span>
                             </a>
