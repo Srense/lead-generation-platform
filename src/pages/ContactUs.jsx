@@ -62,9 +62,8 @@ export default function ContactUs() {
                             <h3 className="font-headline-lg-mobile text-headline-lg-mobile text-slate-light mb-2">Visit HQ</h3>
                             <p className="font-body-sm text-body-sm text-on-surface-variant mb-4">If you're in the area, feel free to schedule a visit to our main office.</p>
                             <address className="text-slate-light font-body-sm text-body-sm not-italic">
-                                123 Digital Avenue<br />
-                                Tech District, Suite 400<br />
-                                San Francisco, CA 94105
+                                Chandigarh<br />
+                                Mohali
                             </address>
                         </div>
                     </div>
