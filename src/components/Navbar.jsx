@@ -17,6 +17,7 @@ export default function Navbar() {
                 <nav className="hidden md:flex space-x-8 items-center">
                     <NavLink to="/" end className={navLinkClasses}>Training</NavLink>
                     <NavLink to="/benefits" className={navLinkClasses}>Benefits</NavLink>
+                    <NavLink to="/about" className={navLinkClasses}>About</NavLink>
                     <NavLink to="/contact" className={navLinkClasses}>Contact</NavLink>
                 </nav>
                 <a href="/#training" className="bg-primary text-[#0F172A] font-label-caps text-label-caps px-6 py-2 rounded-full hover:scale-105 transition-transform duration-200 active:scale-95 hidden md:block">Watch Now</a>
@@ -38,6 +39,7 @@ export default function Navbar() {
                     <nav className="flex flex-col px-margin-mobile py-6 space-y-4">
                         <NavLink to="/" end className={({ isActive }) => `text-label-caps font-label-caps py-2 text-lg ${isActive ? 'text-primary' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>Training</NavLink>
                         <NavLink to="/benefits" className={({ isActive }) => `text-label-caps font-label-caps py-2 text-lg ${isActive ? 'text-primary' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>Benefits</NavLink>
+                        <NavLink to="/about" className={({ isActive }) => `text-label-caps font-label-caps py-2 text-lg ${isActive ? 'text-primary' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>About</NavLink>
                         <NavLink to="/contact" className={({ isActive }) => `text-label-caps font-label-caps py-2 text-lg ${isActive ? 'text-primary' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>Contact</NavLink>
                         <a href="/#training" onClick={() => setIsMobileMenuOpen(false)} className="bg-primary hover:text-[#0F172A] text-[#0F172A] text-center font-label-caps text-label-caps px-6 py-4 rounded-full mt-6 w-full font-bold">Watch Now</a>
                     </nav>

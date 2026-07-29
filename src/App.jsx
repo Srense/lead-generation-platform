@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Success from './pages/Success';
 import Benefits from './pages/Benefits';
 import ContactUs from './pages/ContactUs';
+import About from './pages/About';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminLayout from './layouts/AdminLayout';
 import { AdminProvider } from './context/AdminContext';
@@ -25,6 +26,7 @@ function AnimatedRoutes() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/success" element={<Success />} />
         <Route path="/benefits" element={<Benefits />} />
+        <Route path="/about" element={<About />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms-of-service" element={<TermsOfService />} />
