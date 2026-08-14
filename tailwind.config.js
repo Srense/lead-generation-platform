@@ -73,6 +73,7 @@ export default {
                 "float": "float 6s ease-in-out infinite",
                 "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
                 "blob": "blob 15s infinite alternate",
+                "wormhole": "wormhole 8s linear infinite",
             },
             "keyframes": {
                 fadeUp: {
@@ -88,6 +89,10 @@ export default {
                     "33%": { transform: "translate(30px, -50px) scale(1.1)", opacity: "1" },
                     "66%": { transform: "translate(-20px, 20px) scale(0.9)", opacity: "0.7" },
                     "100%": { transform: "translate(0px, 0px) scale(1)", opacity: "0.8" }
+                },
+                wormhole: {
+                    "0%": { backgroundPosition: "0% 100%" },
+                    "100%": { backgroundPosition: "0% -100%" }
                 }
             }
         }

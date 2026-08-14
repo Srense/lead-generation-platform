@@ -80,6 +80,15 @@ function App() {
           <div className="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-primary/20 blur-[100px] animate-blob"></div>
           <div className="absolute top-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-secondary/15 blur-[120px] animate-blob" style={{ animationDelay: '2s' }}></div>
           <div className="absolute -bottom-[20%] left-[20%] w-[70vw] h-[70vw] rounded-full bg-tertiary/10 blur-[130px] animate-blob" style={{ animationDelay: '5s' }}></div>
+
+          {/* Funnel Wormhole Light Effect */}
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[150vw] max-w-[1600px] h-[70vh] pointer-events-none mix-blend-screen opacity-40 animate-wormhole"
+               style={{
+                 clipPath: 'polygon(45% 100%, 55% 100%, 100% 0, 0 0)',
+                 background: 'linear-gradient(to top, transparent 0%, rgba(16, 185, 129, 0.3) 20%, rgba(3, 40, 20, 0.1) 50%, rgba(16, 185, 129, 0.5) 80%, transparent 100%)',
+                 backgroundSize: '100% 200%'
+               }}>
+          </div>
         </div>
 
         {/* Core Router */}
