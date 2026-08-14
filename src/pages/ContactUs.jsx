@@ -71,7 +71,7 @@ export default function ContactUs() {
                     
                     <div className="md:col-span-7 floral-glass-heavy rounded-3xl p-8 md:p-12 ambient-shadow relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[80px] rounded-full"></div>
-                        <h2 className="font-display text-3xl text-on-surface mb-8 font-bold relative z-10">Send a Message</h2>
+                        <h2 className="font-display text-3xl text-on-surface mb-8 font-bold relative z-10 text-gradient-shimmer">Send a Message</h2>
                         
                         <div className="relative z-10">
                             {submitStatus === 'success' && (

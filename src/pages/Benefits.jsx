@@ -59,7 +59,7 @@ export default function Benefits() {
                         <div className="absolute -top-[50%] -right-[20%] w-[100%] h-[100%] bg-primary/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
                         <div className="absolute -bottom-[50%] -left-[20%] w-[100%] h-[100%] bg-secondary/10 blur-[120px] rounded-full pointer-events-none z-0"></div>
                         <div className="relative z-10">
-                            <h2 className="font-display text-3xl md:text-4xl text-on-surface mb-6 font-bold tracking-tight">Ready to Transform Your Skills?</h2>
+                            <h2 className="font-display text-3xl md:text-4xl mb-6 font-bold tracking-tight text-gradient-shimmer">Ready to Transform Your Skills?</h2>
                             <p className="font-sans text-lg text-on-surface-variant max-w-2xl mx-auto mb-10 leading-relaxed">Join thousands of others who have elevated their careers and businesses through our comprehensive digital training program.</p>
                             <a href="/#contact" className="inline-block bg-primary text-black px-10 py-4 rounded-xl font-sans font-bold uppercase tracking-wider hover:bg-primary-container transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.4)] hover:shadow-[0_0_40px_rgba(16,185,129,0.6)] hover:-translate-y-1">
                                 Get Started Today

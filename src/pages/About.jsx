@@ -7,7 +7,7 @@ export default function About() {
             <Navbar />
             <main className="flex-grow pt-32 pb-24 px-margin-mobile md:px-gutter max-w-container-max mx-auto w-full">
                 <div className="mb-16 md:mb-24 text-center max-w-4xl mx-auto">
-                    <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-on-surface mb-6 font-bold tracking-tight">About HarshBahti & The 15-Minute Internet Mastery Training</h1>
+                    <h1 className="font-display text-4xl md:text-5xl lg:text-6xl mb-6 font-bold tracking-tight text-gradient-shimmer">About HarshBahti & The 15-Minute Internet Mastery Training</h1>
                     <p className="font-sans text-lg text-on-surface-variant mx-auto leading-relaxed max-w-3xl">
                         Welcome to the official hub of HarshBahti. This platform is designed to provide actionable digital skill training for students, creators, and aspiring professionals looking to leverage the modern internet. Based near Chandigarh University, this training program breaks down complex digital marketing strategies, online visibility systems, and web optimization into simple, manageable steps.
                     </p>

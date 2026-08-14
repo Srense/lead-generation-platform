@@ -124,7 +124,7 @@ export default function Dashboard() {
                 <section className="py-24 px-margin-mobile md:px-gutter relative" id="contact">
                     <div className="max-w-container-max mx-auto grid md:grid-cols-2 gap-16 items-start">
                         <div className="md:sticky md:top-32">
-                            <h2 className="font-display text-4xl md:text-5xl font-bold text-on-surface mb-6">Start Your Application</h2>
+                            <h2 className="font-display text-4xl md:text-5xl font-bold mb-6 text-gradient-shimmer">Start Your Application</h2>
                             <p className="font-sans text-lg text-on-surface-variant mb-8 leading-relaxed max-w-md">Join the platform to access premium insights. Fill out the application and a specialist will contact you.</p>
                             
                             {isUrgentVisible && (
