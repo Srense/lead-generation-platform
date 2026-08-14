@@ -8,42 +8,42 @@ export default {
     theme: {
         extend: {
             "colors": {
-                // Floral elegant palette
-                "background": "#FAFAFA", // Very soft, clean white
-                "on-background": "#2C2C2C",
+                // iOS Liquid Glass Palette
+                "background": "#F4F7FC", // Very soft, cool white-blue
+                "on-background": "#1A233A",
                 
                 "surface": "#FFFFFF",
-                "on-surface": "#2C2C2C",
-                "surface-variant": "#F2F0ED",
-                "on-surface-variant": "#595959",
+                "on-surface": "#1A233A",
+                "surface-variant": "#EBF0F8",
+                "on-surface-variant": "#4A5568",
                 
-                // Primary: Soft Rose / Peony
-                "primary": "#D98C8C",
+                // Primary: Vibrant Ocean Blue / Indigo
+                "primary": "#2563EB", // Bright Blue
                 "on-primary": "#FFFFFF",
-                "primary-container": "#FAD4D4",
-                "on-primary-container": "#4A1C1C",
+                "primary-container": "#DBEAFE",
+                "on-primary-container": "#1E3A8A",
 
-                // Secondary: Sage / Leaf Green
-                "secondary": "#A3B899",
+                // Secondary: Luminous Cyan / Teal
+                "secondary": "#06B6D4", // Cyan
                 "on-secondary": "#FFFFFF",
-                "secondary-container": "#DCE8D6",
-                "on-secondary-container": "#2A3822",
+                "secondary-container": "#CFFAFE",
+                "on-secondary-container": "#164E63",
 
-                // Tertiary: Warm Sand / Gold
-                "tertiary": "#D4B483",
+                // Tertiary: Deep Violet / Purple
+                "tertiary": "#8B5CF6", // Violet
                 "on-tertiary": "#FFFFFF",
-                "tertiary-container": "#F5E6CD",
-                "on-tertiary-container": "#3D2E14",
+                "tertiary-container": "#EDE9FE",
+                "on-tertiary-container": "#4C1D95",
 
-                "error": "#B85C5C",
+                "error": "#EF4444",
                 "on-error": "#FFFFFF",
                 
-                "outline": "#D1CFC9",
-                "outline-variant": "#E8E6E1",
+                "outline": "#CBD5E1",
+                "outline-variant": "#E2E8F0",
                 
-                "glass-surface": "rgba(255, 255, 255, 0.6)",
-                "glass-border": "rgba(255, 255, 255, 0.8)",
-                "glass-shadow": "rgba(0, 0, 0, 0.03)"
+                "glass-surface": "rgba(255, 255, 255, 0.4)",
+                "glass-border": "rgba(255, 255, 255, 0.7)",
+                "glass-shadow": "rgba(37, 99, 235, 0.05)"
             },
             "borderRadius": {
                 "DEFAULT": "0.5rem",

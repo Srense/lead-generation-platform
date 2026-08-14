@@ -23,9 +23,11 @@ html {
 }
 
 @layer components {
-  /* Apple-style iOS Translucent Glass */
+  /* Apple-style iOS Translucent Glass with Sparkle Noise */
   .floral-glass {
-    background: rgba(255, 255, 255, 0.35); /* Very translucent */
+    background: 
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E"),
+      rgba(255, 255, 255, 0.35); /* Very translucent */
     backdrop-filter: blur(40px) saturate(200%);
     -webkit-backdrop-filter: blur(40px) saturate(200%);
     border: 1px solid rgba(255, 255, 255, 0.4);
@@ -35,7 +37,9 @@ html {
   }
 
   .floral-glass-heavy {
-    background: rgba(255, 255, 255, 0.55);
+    background: 
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.1'/%3E%3C/svg%3E"),
+      rgba(255, 255, 255, 0.55);
     backdrop-filter: blur(50px) saturate(200%);
     -webkit-backdrop-filter: blur(50px) saturate(200%);
     border: 1px solid rgba(255, 255, 255, 0.5);
@@ -45,7 +49,7 @@ html {
   }
 
   .ambient-shadow {
-    box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.1), 0 0 30px rgba(255, 255, 255, 0.5) inset;
+    box-shadow: 0 20px 50px -10px rgba(37, 99, 235, 0.15), 0 0 30px rgba(255, 255, 255, 0.5) inset;
   }
 }
 
