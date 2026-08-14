@@ -38,83 +38,94 @@ export default function ContactUs() {
     };
 
     return (
-        <div className="antialiased min-h-screen flex flex-col bg-transparent text-on-background">
+        <div className="antialiased min-h-screen flex flex-col bg-transparent text-on-background font-sans">
             <Navbar />
-            <main className="flex-grow pt-32 pb-section-gap-mobile md:pb-section-gap px-margin-mobile md:px-gutter max-w-container-max mx-auto w-full">
+            <main className="flex-grow pt-32 pb-24 px-margin-mobile md:px-gutter max-w-container-max mx-auto w-full">
                 <div className="mb-16 md:mb-24 text-center">
-                    <h1 className="font-display-xl-mobile md:font-display-xl text-display-xl-mobile md:text-display-xl text-slate-light mb-6">Get in Touch</h1>
-                    <p className="font-body-base text-body-base text-on-surface-variant max-w-2xl mx-auto">Whether you're looking for support, have an inquiry, or want to discuss a potential partnership, our team is ready to assist you. Reach out today.</p>
+                    <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-on-surface mb-6 font-bold tracking-tight">Get in Touch</h1>
+                    <p className="font-sans text-lg text-on-surface-variant max-w-2xl mx-auto leading-relaxed">Whether you're looking for support, have an inquiry, or want to discuss a potential partnership, our team is ready to assist you. Reach out today.</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-start">
-                    <div className="md:col-span-5 grid grid-cols-1 gap-6">
-                        <div className="glass-card rounded-xl p-8 ambient-shadow hover:scale-105 transition-transform duration-300">
-                            <div className="bg-transparent w-12 h-12 rounded-lg flex items-center justify-center mb-6 border border-glass-border">
-                                <span className="material-symbols-outlined text-primary">mail</span>
+                    <div className="md:col-span-5 grid grid-cols-1 gap-8">
+                        <div className="floral-glass rounded-2xl p-8 md:p-10 ambient-shadow hover:-translate-y-2 transition-transform duration-300">
+                            <div className="bg-primary/10 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 text-primary shadow-sm">
+                                <span className="material-symbols-outlined text-2xl">mail</span>
                             </div>
-                            <h3 className="font-headline-lg-mobile text-headline-lg-mobile text-slate-light mb-2">Email Us</h3>
-                            <p className="font-body-sm text-body-sm text-on-surface-variant mb-4">For general inquiries and support, drop us an email anytime.</p>
-                            <a className="text-primary font-label-caps text-label-caps hover:underline" href="mailto:harshbahti90@gmail.com">harshbahti90@gmail.com</a>
+                            <h3 className="font-display text-2xl text-on-surface mb-3 font-semibold">Email Us</h3>
+                            <p className="font-sans text-base text-on-surface-variant mb-6 leading-relaxed">For general inquiries and support, drop us an email anytime.</p>
+                            <a className="inline-block text-primary font-sans font-semibold text-lg hover:text-primary-container transition-colors" href="mailto:harshbahti90@gmail.com">harshbahti90@gmail.com</a>
                         </div>
-                        <div className="glass-card rounded-xl p-8 ambient-shadow hover:scale-105 transition-transform duration-300">
-                            <div className="bg-transparent w-12 h-12 rounded-lg flex items-center justify-center mb-6 border border-glass-border">
-                                <span className="material-symbols-outlined text-primary">location_on</span>
+                        <div className="floral-glass rounded-2xl p-8 md:p-10 ambient-shadow hover:-translate-y-2 transition-transform duration-300">
+                            <div className="bg-secondary/10 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 text-secondary shadow-sm">
+                                <span className="material-symbols-outlined text-2xl">location_on</span>
                             </div>
-                            <h3 className="font-headline-lg-mobile text-headline-lg-mobile text-slate-light mb-2">Visit HQ</h3>
-                            <p className="font-body-sm text-body-sm text-on-surface-variant mb-4">If you're in the area, feel free to schedule a visit to our main office.</p>
-                            <address className="text-slate-light font-body-sm text-body-sm not-italic">
+                            <h3 className="font-display text-2xl text-on-surface mb-3 font-semibold">Visit HQ</h3>
+                            <p className="font-sans text-base text-on-surface-variant mb-6 leading-relaxed">If you're in the area, feel free to schedule a visit to our main office.</p>
+                            <address className="text-on-surface font-sans text-base not-italic leading-loose">
                                 Chandigarh<br />
                                 Mohali
                             </address>
                         </div>
                     </div>
-                    <div className="md:col-span-7 glass-card rounded-xl p-8 md:p-12 ambient-shadow relative">
-                        <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-slate-light mb-8">Send a Message</h2>
-                        {submitStatus === 'success' && (
-                            <div className="mb-6 p-4 rounded-lg border border-primary/30 bg-primary/10 text-primary font-bold animate-in fade-in slide-in-from-top-4">
-                                Message received successfully! We'll be in touch soon.
-                            </div>
-                        )}
-                        {submitStatus === 'duplicate' && (
-                            <div className="mb-6 p-4 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 font-bold animate-in fade-in slide-in-from-top-4">
-                                You have recently submitted an inquiry with this email. We'll reply shortly!
-                            </div>
-                        )}
-                        {submitStatus === 'error' && (
-                            <div className="mb-6 p-4 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 font-bold animate-in fade-in slide-in-from-top-4">
-                                An unknown error occurred. Please try again.
-                            </div>
-                        )}
-                        <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="flex flex-col gap-2">
-                                    <label className="font-label-caps text-label-caps text-on-surface-variant">First Name</label>
-                                    <input required name="firstName" value={formData.firstName} onChange={handleChange} className="bg-transparent border border-slate-light/20 rounded-lg px-4 py-3 text-slate-light focus:border-primary focus:ring-1 focus:outline-none transition-shadow text-sm" placeholder="Jane" type="text" />
+                    
+                    <div className="md:col-span-7 floral-glass-heavy rounded-3xl p-8 md:p-12 ambient-shadow relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[80px] rounded-full"></div>
+                        <h2 className="font-display text-3xl text-on-surface mb-8 font-bold relative z-10">Send a Message</h2>
+                        
+                        <div className="relative z-10">
+                            {submitStatus === 'success' && (
+                                <div className="mb-8 p-5 rounded-xl border border-secondary/30 bg-secondary/10 text-secondary font-medium animate-in fade-in slide-in-from-top-4 flex items-center gap-3">
+                                    <span className="material-symbols-outlined">check_circle</span>
+                                    Message received successfully! We'll be in touch soon.
+                                </div>
+                            )}
+                            {submitStatus === 'duplicate' && (
+                                <div className="mb-8 p-5 rounded-xl border border-error/30 bg-error/10 text-error font-medium animate-in fade-in slide-in-from-top-4 flex items-center gap-3">
+                                    <span className="material-symbols-outlined">info</span>
+                                    You have recently submitted an inquiry with this email. We'll reply shortly!
+                                </div>
+                            )}
+                            {submitStatus === 'error' && (
+                                <div className="mb-8 p-5 rounded-xl border border-error/30 bg-error/10 text-error font-medium animate-in fade-in slide-in-from-top-4 flex items-center gap-3">
+                                    <span className="material-symbols-outlined">error</span>
+                                    An unknown error occurred. Please try again.
+                                </div>
+                            )}
+                            <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="flex flex-col gap-2">
+                                        <label className="font-sans font-medium text-sm text-on-surface-variant ml-1">First Name</label>
+                                        <input required name="firstName" value={formData.firstName} onChange={handleChange} className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3.5 px-4 text-on-surface text-base focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10 outline-none transition-all" placeholder="Jane" type="text" />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="font-sans font-medium text-sm text-on-surface-variant ml-1">Last Name</label>
+                                        <input required name="lastName" value={formData.lastName} onChange={handleChange} className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3.5 px-4 text-on-surface text-base focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10 outline-none transition-all" placeholder="Doe" type="text" />
+                                    </div>
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <label className="font-label-caps text-label-caps text-on-surface-variant">Last Name</label>
-                                    <input required name="lastName" value={formData.lastName} onChange={handleChange} className="bg-transparent border border-slate-light/20 rounded-lg px-4 py-3 text-slate-light focus:border-primary focus:ring-1 focus:outline-none transition-shadow text-sm" placeholder="Doe" type="text" />
+                                    <label className="font-sans font-medium text-sm text-on-surface-variant ml-1">Email Address</label>
+                                    <input required name="email" value={formData.email} onChange={handleChange} className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3.5 px-4 text-on-surface text-base focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10 outline-none transition-all" placeholder="jane.doe@example.com" type="email" />
                                 </div>
-                            </div>
-                            <div className="flex flex-col gap-2">
-                                <label className="font-label-caps text-label-caps text-on-surface-variant">Email Address</label>
-                                <input required name="email" value={formData.email} onChange={handleChange} className="bg-transparent border border-slate-light/20 rounded-lg px-4 py-3 text-slate-light focus:border-primary focus:ring-1 focus:outline-none transition-shadow text-sm" placeholder="jane.doe@example.com" type="email" />
-                            </div>
-                            <div className="flex flex-col gap-2">
-                                <label className="font-label-caps text-label-caps text-on-surface-variant">Inquiry Type</label>
-                                <select name="inquiryType" value={formData.inquiryType} onChange={handleChange} className="bg-transparent border border-slate-light/20 rounded-lg px-4 py-3 text-slate-light focus:border-primary focus:ring-1 focus:outline-none transition-shadow text-sm appearance-none">
-                                    <option value="support">General Support</option>
-                                    <option value="sales">Sales &amp; Partnerships</option>
-                                    <option value="press">Press &amp; Media</option>
-                                </select>
-                            </div>
-                            <div className="flex flex-col gap-2">
-                                <label className="font-label-caps text-label-caps text-on-surface-variant">Message</label>
-                                <textarea required name="message" value={formData.message} onChange={handleChange} className="bg-transparent border border-slate-light/20 rounded-lg px-4 py-3 text-slate-light focus:border-primary focus:ring-1 focus:outline-none transition-shadow text-sm resize-none" placeholder="How can we help you today?" rows="5"></textarea>
-                            </div>
-                            <button disabled={isSubmitting} type="submit" className="mt-4 bg-primary text-[#0F172A] font-bold py-4 px-8 rounded-lg hover:scale-[1.02] transition-transform shadow-[0_4px_14px_0_rgba(107,216,203,0.39)] disabled:opacity-50">
-                                {isSubmitting ? 'Sending...' : 'Submit Inquiry'}
-                            </button>
-                        </form>
+                                <div className="flex flex-col gap-2">
+                                    <label className="font-sans font-medium text-sm text-on-surface-variant ml-1">Inquiry Type</label>
+                                    <div className="relative">
+                                        <select name="inquiryType" value={formData.inquiryType} onChange={handleChange} className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3.5 pl-4 pr-10 text-on-surface text-base focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10 outline-none transition-all appearance-none cursor-pointer">
+                                            <option value="support">General Support</option>
+                                            <option value="sales">Sales &amp; Partnerships</option>
+                                            <option value="press">Press &amp; Media</option>
+                                        </select>
+                                        <span className="material-symbols-outlined absolute right-4 top-3.5 text-on-surface-variant pointer-events-none">expand_more</span>
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <label className="font-sans font-medium text-sm text-on-surface-variant ml-1">Message</label>
+                                    <textarea required name="message" value={formData.message} onChange={handleChange} className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3.5 px-4 text-on-surface text-base focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10 outline-none transition-all resize-none" placeholder="How can we help you today?" rows="5"></textarea>
+                                </div>
+                                <button disabled={isSubmitting} type="submit" className="mt-6 bg-primary text-white font-sans font-medium py-4 px-8 rounded-xl hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none">
+                                    {isSubmitting ? 'Sending...' : 'Submit Inquiry'}
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </main>

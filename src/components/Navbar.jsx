@@ -5,26 +5,27 @@ export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const navLinkClasses = ({ isActive }) =>
-        `font-label-caps text-label-caps transition-colors hover:scale-105 duration-200 active:scale-95 ${isActive ? "text-primary border-b-2 border-primary pb-1" : "text-on-surface-variant hover:text-primary"}`;
+        `font-sans text-sm tracking-wide transition-colors duration-200 ${isActive ? "text-primary font-semibold" : "text-on-surface-variant hover:text-primary"}`;
 
     return (
-        <header className="bg-surface/80 dark:bg-surface/80 backdrop-blur-xl fixed top-0 w-full border-b border-glass-border shadow-sm z-50 transition-all duration-300">
+        <header className="floral-glass fixed top-0 w-full z-50 transition-all duration-300">
             <div className="flex justify-between items-center px-margin-mobile md:px-gutter py-4 max-w-container-max mx-auto">
-                <Link to="/" className="flex items-center gap-3 hover:scale-105 transition-transform duration-200 active:scale-95">
-                    <img src="/logo.png" alt="HB Brand Logo" className="h-10 md:h-12 rounded-xl border border-glass-border/30 shadow-[0_0_15px_rgba(107,216,203,0.3)]" />
-                    <span className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg font-bold text-primary hidden md:block">HarshBahti</span>
+                <Link to="/" className="flex items-center gap-3 transition-transform duration-200">
+                    <span className="font-display text-xl md:text-2xl font-bold text-on-surface tracking-tight">HarshBahti</span>
                 </Link>
-                <nav className="hidden md:flex space-x-8 items-center">
+                
+                <nav className="hidden md:flex space-x-10 items-center">
                     <NavLink to="/" end className={navLinkClasses}>Training</NavLink>
                     <NavLink to="/benefits" className={navLinkClasses}>Benefits</NavLink>
                     <NavLink to="/about" className={navLinkClasses}>About</NavLink>
                     <NavLink to="/contact" className={navLinkClasses}>Contact</NavLink>
                 </nav>
-                <a href="/#training" className="bg-primary text-[#0F172A] font-label-caps text-label-caps px-6 py-2 rounded-full hover:scale-105 transition-transform duration-200 active:scale-95 hidden md:block">Watch Now</a>
+                
+                <a href="/#training" className="bg-primary text-white font-sans text-sm px-6 py-2.5 rounded-full hover:bg-primary-container hover:text-on-primary-container transition-colors duration-300 hidden md:block">Watch Now</a>
 
                 {/* Mobile Menu Button */}
                 <button
-                    className="md:hidden text-primary p-2 flex items-center justify-center"
+                    className="md:hidden text-on-surface p-2 flex items-center justify-center"
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 >
                     <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>
@@ -35,13 +36,13 @@ export default function Navbar() {
 
             {/* Mobile Menu Dropdown */}
             {isMobileMenuOpen && (
-                <div className="md:hidden bg-surface-container border-b border-glass-border shadow-lg animate-in slide-in-from-top-4 duration-200">
+                <div className="md:hidden floral-glass-heavy border-t border-glass-border shadow-lg animate-in slide-in-from-top-4 duration-200">
                     <nav className="flex flex-col px-margin-mobile py-6 space-y-4">
-                        <NavLink to="/" end className={({ isActive }) => `text-label-caps font-label-caps py-2 text-lg ${isActive ? 'text-primary' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>Training</NavLink>
-                        <NavLink to="/benefits" className={({ isActive }) => `text-label-caps font-label-caps py-2 text-lg ${isActive ? 'text-primary' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>Benefits</NavLink>
-                        <NavLink to="/about" className={({ isActive }) => `text-label-caps font-label-caps py-2 text-lg ${isActive ? 'text-primary' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>About</NavLink>
-                        <NavLink to="/contact" className={({ isActive }) => `text-label-caps font-label-caps py-2 text-lg ${isActive ? 'text-primary' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>Contact</NavLink>
-                        <a href="/#training" onClick={() => setIsMobileMenuOpen(false)} className="bg-primary hover:text-[#0F172A] text-[#0F172A] text-center font-label-caps text-label-caps px-6 py-4 rounded-full mt-6 w-full font-bold">Watch Now</a>
+                        <NavLink to="/" end className={({ isActive }) => `font-sans py-2 text-lg ${isActive ? 'text-primary font-semibold' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>Training</NavLink>
+                        <NavLink to="/benefits" className={({ isActive }) => `font-sans py-2 text-lg ${isActive ? 'text-primary font-semibold' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>Benefits</NavLink>
+                        <NavLink to="/about" className={({ isActive }) => `font-sans py-2 text-lg ${isActive ? 'text-primary font-semibold' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>About</NavLink>
+                        <NavLink to="/contact" className={({ isActive }) => `font-sans py-2 text-lg ${isActive ? 'text-primary font-semibold' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>Contact</NavLink>
+                        <a href="/#training" onClick={() => setIsMobileMenuOpen(false)} className="bg-primary hover:bg-primary-container hover:text-on-primary-container text-white text-center font-sans px-6 py-4 rounded-full mt-6 w-full font-medium transition-colors">Watch Now</a>
                     </nav>
                 </div>
             )}

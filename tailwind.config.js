@@ -8,88 +8,80 @@ export default {
     theme: {
         extend: {
             "colors": {
-                "surface-container-low": "#0d1c2d",
-                "on-secondary-fixed-variant": "#3f465c",
-                "on-tertiary-fixed-variant": "#773215",
-                "surface-container-highest": "#273647",
-                "outline": "#879391",
-                "secondary-fixed": "#dae2fd",
-                "tertiary-container": "#d27956",
-                "on-tertiary-fixed": "#370e00",
-                "navy-surface": "#1E293B",
-                "surface-dim": "#051424",
-                "surface-variant": "#273647",
-                "on-surface-variant": "#bcc9c6",
-                "secondary-container": "#3f465c",
-                "on-tertiary-container": "#4f1700",
-                "on-background": "#d4e4fa",
-                "outline-variant": "#3d4947",
-                "on-primary": "#003732",
-                "background": "#051424",
-                "inverse-surface": "#d4e4fa",
-                "on-error": "#690005",
-                "on-secondary-fixed": "#131b2e",
-                "error": "#ffb4ab",
-                "primary-fixed-dim": "#6bd8cb",
-                "on-primary-container": "#00302b",
-                "inverse-primary": "#006a61",
-                "primary": "#6bd8cb",
-                "slate-text": "#E2E8F0",
-                "primary-fixed": "#89f5e7",
-                "on-surface": "#d4e4fa",
-                "on-primary-fixed": "#00201d",
-                "surface-bright": "#2c3a4c",
-                "slate-light": "#F8FAFC",
-                "glass-border": "rgba(255, 255, 255, 0.1)",
-                "tertiary-fixed-dim": "#ffb59a",
-                "on-tertiary": "#591c02",
-                "surface-container": "#122131",
-                "on-error-container": "#ffdad6",
-                "error-container": "#93000a",
-                "on-secondary": "#283044",
-                "surface-container-high": "#1c2b3c",
-                "secondary-fixed-dim": "#bec6e0",
-                "on-secondary-container": "#adb4ce",
-                "primary-container": "#29a195",
-                "surface-container-lowest": "#010f1f",
-                "surface-tint": "#6bd8cb",
-                "surface": "#051424",
-                "secondary": "#bec6e0",
-                "on-primary-fixed-variant": "#005049",
-                "tertiary-fixed": "#ffdbce",
-                "tertiary": "#ffb59a",
-                "inverse-on-surface": "#233143"
+                // Floral elegant palette
+                "background": "#FAFAFA", // Very soft, clean white
+                "on-background": "#2C2C2C",
+                
+                "surface": "#FFFFFF",
+                "on-surface": "#2C2C2C",
+                "surface-variant": "#F2F0ED",
+                "on-surface-variant": "#595959",
+                
+                // Primary: Soft Rose / Peony
+                "primary": "#D98C8C",
+                "on-primary": "#FFFFFF",
+                "primary-container": "#FAD4D4",
+                "on-primary-container": "#4A1C1C",
+
+                // Secondary: Sage / Leaf Green
+                "secondary": "#A3B899",
+                "on-secondary": "#FFFFFF",
+                "secondary-container": "#DCE8D6",
+                "on-secondary-container": "#2A3822",
+
+                // Tertiary: Warm Sand / Gold
+                "tertiary": "#D4B483",
+                "on-tertiary": "#FFFFFF",
+                "tertiary-container": "#F5E6CD",
+                "on-tertiary-container": "#3D2E14",
+
+                "error": "#B85C5C",
+                "on-error": "#FFFFFF",
+                
+                "outline": "#D1CFC9",
+                "outline-variant": "#E8E6E1",
+                
+                "glass-surface": "rgba(255, 255, 255, 0.6)",
+                "glass-border": "rgba(255, 255, 255, 0.8)",
+                "glass-shadow": "rgba(0, 0, 0, 0.03)"
             },
             "borderRadius": {
-                "DEFAULT": "0.25rem",
-                "lg": "0.5rem",
-                "xl": "0.75rem",
+                "DEFAULT": "0.5rem",
+                "lg": "0.75rem",
+                "xl": "1rem",
+                "2xl": "1.5rem",
                 "full": "9999px"
             },
             "spacing": {
-                "margin-mobile": "20px",
-                "container-max": "1280px",
-                "section-gap": "120px",
-                "gutter": "24px",
+                "margin-mobile": "24px",
+                "container-max": "1200px",
+                "section-gap": "96px",
+                "gutter": "32px",
                 "section-gap-mobile": "64px"
             },
             "fontFamily": {
-                "label-caps": ["Inter"],
-                "body-base": ["Inter"],
-                "headline-lg-mobile": ["Inter"],
-                "headline-lg": ["Inter"],
-                "display-xl-mobile": ["Inter"],
-                "display-xl": ["Inter"],
-                "body-sm": ["Inter"]
+                // Moving to a more elegant serif/sans mix or keeping Inter clean but styling lighter
+                "sans": ["Inter", "sans-serif"],
+                "display": ["Inter", "sans-serif"],
             },
-            "fontSize": {
-                "label-caps": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600" }],
-                "body-base": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
-                "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
-                "headline-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
-                "display-xl-mobile": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
-                "display-xl": ["64px", { "lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
-                "body-sm": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+            "boxShadow": {
+                "glass": "0 8px 32px 0 rgba(0, 0, 0, 0.04)",
+                "glass-hover": "0 12px 40px 0 rgba(0, 0, 0, 0.08)",
+            },
+            "animation": {
+                "fade-up": "fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+                "float": "float 6s ease-in-out infinite",
+                "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+            },
+            "keyframes": {
+                fadeUp: {
+                    "0%": { opacity: "0", transform: "translateY(20px)" },
+                    "100%": { opacity: "1", transform: "translateY(0)" }
+                },
+                float: {
+                    "0%, 100%": { transform: "translateY(0)" },
+                    "50%": { transform: "translateY(-10px)" }
+                }
             }
         }
     },

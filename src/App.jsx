@@ -21,7 +21,7 @@ import UrgencyController from './pages/admin/UrgencyController';
 function AnimatedRoutes() {
   const location = useLocation();
   return (
-    <div key={location.pathname} className="animate-fade-in">
+    <div key={location.pathname} className="animate-fade-in w-full flex-grow flex flex-col">
       <Routes location={location}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/success" element={<Success />} />
@@ -57,12 +57,12 @@ function App() {
 
   if (isInitializing) {
     return (
-      <div className="min-h-screen flex items-center justify-center relative bg-[#0A0F20]">
+      <div className="min-h-screen flex items-center justify-center relative bg-background">
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-[1]">
-          <div className="absolute top-[40%] -right-[20%] w-[60vw] h-[60vw] rounded-full bg-indigo-500/10 blur-[140px] mix-blend-screen animate-pulse"></div>
+          <div className="absolute top-[30%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-primary-container/40 blur-[120px] mix-blend-multiply animate-float"></div>
         </div>
-        <div className="relative z-10 scale-125">
-          <Loader size="lg" text="INITIALIZING" />
+        <div className="relative z-10">
+          <Loader size="lg" text="Crafting Experience" />
         </div>
       </div>
     );
@@ -71,15 +71,15 @@ function App() {
   return (
     <AdminProvider>
       <Router>
-        {/* Global Liquid Plasma Mesh */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none z-[1] bg-[#0A0F20]">
-          <div className="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-primary/10 blur-[130px] animate-pulse"></div>
-          <div className="absolute top-[40%] -right-[20%] w-[60vw] h-[60vw] rounded-full bg-indigo-500/10 blur-[140px] mix-blend-screen" style={{ animation: 'pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate' }}></div>
-          <div className="absolute -bottom-[20%] left-[20%] w-[40vw] h-[40vw] rounded-full bg-sky-500/10 blur-[120px] mix-blend-screen" style={{ animation: 'pulse 12s cubic-bezier(0.4, 0, 0.6, 1) infinite alternate-reverse' }}></div>
+        {/* Elegant Organic Background Meshes */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none z-[0] bg-background">
+          <div className="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-primary-container/30 blur-[120px] animate-float" style={{ animationDuration: '10s' }}></div>
+          <div className="absolute top-[40%] -right-[10%] w-[50vw] h-[60vw] rounded-[100%] bg-secondary-container/40 blur-[130px] mix-blend-multiply animate-float" style={{ animationDuration: '12s', animationDelay: '2s' }}></div>
+          <div className="absolute -bottom-[20%] left-[20%] w-[60vw] h-[40vw] rounded-full bg-tertiary-container/30 blur-[120px] mix-blend-multiply animate-float" style={{ animationDuration: '15s', animationDelay: '4s' }}></div>
         </div>
 
         {/* Core Router */}
-        <div className="relative z-10 w-full h-full flex flex-col min-h-screen">
+        <div className="relative z-10 w-full flex flex-col min-h-screen">
           <AnimatedRoutes />
         </div>
       </Router>

@@ -1,26 +1,19 @@
 export default function Loader({ size = "md", text = "" }) {
     const sizeClasses = {
-        sm: "h-6 w-6",
-        md: "h-12 w-12",
-        lg: "h-20 w-20"
+        sm: "h-2 w-2",
+        md: "h-3 w-3",
+        lg: "h-4 w-4"
     };
 
     return (
-        <div className="flex flex-col items-center justify-center gap-4 animate-in fade-in zoom-in duration-500">
-            <div className="relative flex items-center justify-center">
-                {/* Glowing Plasma Ring behind the logo */}
-                <div className="absolute inset-0 bg-primary/30 blur-xl rounded-full animate-ping opacity-50" style={{ animationDuration: '2s' }}></div>
-
-                {/* Core Branding Logo pulsing */}
-                <img
-                    src="/favicon.png"
-                    alt="Loading..."
-                    className={`${sizeClasses[size] || sizeClasses.md} object-contain mix-blend-screen drop-shadow-[0_0_15px_rgba(107,216,203,0.5)]`}
-                    style={{ animation: 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}
-                />
+        <div className="flex flex-col items-center justify-center gap-4 animate-in fade-in duration-500">
+            <div className="flex items-center gap-2">
+                <div className={`${sizeClasses[size] || sizeClasses.md} rounded-full bg-primary/80 shadow-[0_0_10px_rgba(217,140,140,0.4)] animate-pulse-slow`} style={{ animationDelay: '0ms' }}></div>
+                <div className={`${sizeClasses[size] || sizeClasses.md} rounded-full bg-primary/80 shadow-[0_0_10px_rgba(217,140,140,0.4)] animate-pulse-slow`} style={{ animationDelay: '300ms' }}></div>
+                <div className={`${sizeClasses[size] || sizeClasses.md} rounded-full bg-primary/80 shadow-[0_0_10px_rgba(217,140,140,0.4)] animate-pulse-slow`} style={{ animationDelay: '600ms' }}></div>
             </div>
             {text && (
-                <div className="font-label-caps text-label-caps text-primary animate-pulse tracking-widest opacity-80">
+                <div className="font-sans text-xs uppercase tracking-[0.2em] text-on-surface-variant animate-pulse-slow opacity-80 mt-2">
                     {text}
                 </div>
             )}

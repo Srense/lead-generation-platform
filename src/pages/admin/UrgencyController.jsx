@@ -46,35 +46,39 @@ export default function UrgencyController() {
     };
 
     return (
-        <div className="w-full">
-            <div className="mb-8 p-6 glass-card rounded-xl border border-glass-border ambient-shadow">
-                <h2 className="text-xl font-bold text-slate-light flex items-center gap-2 mb-2">
-                    <span className="material-symbols-outlined text-primary">local_fire_department</span>
-                    Urgency Engine Output
-                </h2>
-                <p className="text-on-surface-variant text-sm">Manually calibrate psychological conversion triggers including countdowns, copy variations, and banner visibility constraints globally.</p>
+        <div className="w-full font-sans">
+            <div className="mb-8 p-8 floral-glass rounded-2xl ambient-shadow flex justify-between items-center">
+                <div>
+                    <h2 className="text-2xl font-display font-semibold text-on-surface flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm border border-outline-variant/50">
+                            <span className="material-symbols-outlined text-xl">local_fire_department</span>
+                        </div>
+                        Urgency Engine Output
+                    </h2>
+                    <p className="text-on-surface-variant text-sm font-sans pl-13">Manually calibrate psychological conversion triggers including countdowns, copy variations, and banner visibility constraints globally.</p>
+                </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-8">
-                <div className="glass-card rounded-xl border border-glass-border p-6 h-fit order-2 md:order-1">
+                <div className="floral-glass rounded-2xl p-8 h-fit order-2 md:order-1 ambient-shadow">
                     <form onSubmit={saveSettings} className="space-y-6">
 
-                        <div className="flex items-center justify-between border-b border-glass-border pb-6">
+                        <div className="flex items-center justify-between border-b border-outline-variant/60 pb-6">
                             <div>
-                                <div className="font-bold text-sm text-slate-light">Engine Status</div>
-                                <div className="text-xs text-on-surface-variant">Toggle global visibility of the urgency widget</div>
+                                <div className="font-semibold text-on-surface text-base">Engine Status</div>
+                                <div className="text-sm text-on-surface-variant">Toggle global visibility of the urgency widget</div>
                             </div>
                             <button
                                 type="button"
                                 onClick={() => setUrgentVisibility(!urgentVisibility)}
-                                className={`w-14 h-8 rounded-full transition-colors relative flex items-center ${urgentVisibility ? 'bg-primary' : 'bg-surface-container'}`}
+                                className={`w-14 h-8 rounded-full transition-colors relative flex items-center shadow-inner ${urgentVisibility ? 'bg-primary' : 'bg-surface-variant/60'}`}
                             >
-                                <div className={`w-6 h-6 bg-white rounded-full absolute transition-transform ${urgentVisibility ? 'translate-x-7' : 'translate-x-1'}`}></div>
+                                <div className={`w-6 h-6 bg-white rounded-full absolute transition-transform shadow-sm ${urgentVisibility ? 'translate-x-7' : 'translate-x-1'}`}></div>
                             </button>
                         </div>
 
                         <div className={!urgentVisibility ? 'opacity-50 pointer-events-none transition-opacity' : 'transition-opacity'}>
-                            <label className="block text-xs font-label-caps text-on-surface-variant mb-2 mt-6">Seed Time (MM:SS)</label>
+                            <label className="block text-sm font-semibold text-on-surface-variant mb-2 mt-6">Seed Time (MM:SS)</label>
                             <div className="flex items-center gap-4 mb-6">
                                 <input
                                     type="number"
@@ -82,7 +86,7 @@ export default function UrgencyController() {
                                     max="60"
                                     value={countdownMinutes}
                                     onChange={(e) => setCountdownMinutes(e.target.value)}
-                                    className="w-full bg-background border border-glass-border rounded-lg py-3 px-4 text-sm text-slate-light focus:border-primary focus:ring-1 focus:outline-none transition-colors"
+                                    className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3 px-4 text-on-surface focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10 outline-none transition-all"
                                 />
                                 <span className="text-xl font-bold text-on-surface-variant">:</span>
                                 <input
@@ -91,18 +95,18 @@ export default function UrgencyController() {
                                     max="59"
                                     value={countdownSeconds}
                                     onChange={(e) => setCountdownSeconds(e.target.value)}
-                                    className="w-full bg-background border border-glass-border rounded-lg py-3 px-4 text-sm text-slate-light focus:border-primary focus:ring-1 focus:outline-none transition-colors"
+                                    className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3 px-4 text-on-surface focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10 outline-none transition-all"
                                 />
                             </div>
 
-                            <label className="block text-xs font-label-caps text-on-surface-variant mb-2">Promotional Overlay Text</label>
+                            <label className="block text-sm font-semibold text-on-surface-variant mb-2">Promotional Overlay Text</label>
                             <textarea
                                 value={bannerText}
                                 onChange={(e) => setBannerText(e.target.value)}
-                                className="w-full bg-background border border-glass-border rounded-lg py-3 px-4 text-sm text-slate-light h-24 resize-none mb-6 focus:border-primary focus:ring-1 focus:outline-none transition-colors"
+                                className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3 px-4 text-on-surface h-24 resize-none mb-6 focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10 outline-none transition-all"
                             ></textarea>
 
-                            <button type="submit" className="w-full bg-primary text-[#0F172A] py-3 rounded-lg font-bold hover:scale-[1.02] transition-transform shadow-[0_4px_14px_0_rgba(107,216,203,0.2)]">
+                            <button type="submit" className="w-full bg-primary text-white py-4 rounded-xl font-sans font-medium hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300">
                                 Flush Cache & Deploy
                             </button>
                         </div>
@@ -110,27 +114,28 @@ export default function UrgencyController() {
                 </div>
 
                 {/* Live Preview Panel */}
-                <div className="glass-card rounded-xl border border-glass-border p-6 h-fit bg-gradient-to-br from-surface-container-lowest to-surface/80 order-1 md:order-2">
-                    <h3 className="font-label-caps text-xs text-on-surface-variant mb-6 flex items-center gap-2">
-                        <span className="material-symbols-outlined text-[16px] text-green-400">visibility</span>
+                <div className="floral-glass-heavy rounded-2xl p-8 h-fit order-1 md:order-2 ambient-shadow">
+                    <h3 className="font-semibold text-sm text-on-surface-variant mb-6 flex items-center gap-2 uppercase tracking-wider">
+                        <span className="material-symbols-outlined text-[18px] text-primary">visibility</span>
                         Live Frontend Preview
                     </h3>
 
                     {urgentVisibility ? (
-                        <div className="bg-primary/10 border border-primary/30 rounded-lg p-6 relative overflow-hidden z-0">
-                            <div className="absolute top-0 left-0 w-1 h-full bg-primary z-10"></div>
-                            <p className="font-body-sm text-sm text-on-surface mb-6 relative z-10 break-words mix-blend-plus-lighter">
+                        <div className="bg-primary/5 border border-primary/20 rounded-xl p-8 relative overflow-hidden z-0 shadow-sm">
+                            <div className="absolute top-0 left-0 w-1.5 h-full bg-primary z-10 rounded-l-xl"></div>
+                            <p className="font-sans text-base text-on-surface mb-6 relative z-10 break-words leading-relaxed">
                                 {bannerText}
                             </p>
-                            <div className="flex items-center gap-4 text-primary font-display-xl-mobile text-2xl font-bold relative z-10 drop-shadow-[0_0_10px_rgba(107,216,203,0.5)]">
-                                <div><span>{String(countdownMinutes).padStart(2, '0')}</span><span className="text-sm font-normal ml-1">m</span></div>
+                            <div className="flex items-center gap-4 text-primary font-display text-4xl font-bold relative z-10">
+                                <div className="bg-white/60 px-4 py-2 rounded-lg border border-primary/10 shadow-sm"><span>{String(countdownMinutes).padStart(2, '0')}</span><span className="text-lg font-normal ml-1">m</span></div>
                                 <span className="opacity-50">:</span>
-                                <div><span>{String(countdownSeconds).padStart(2, '0')}</span><span className="text-sm font-normal ml-1">s</span></div>
+                                <div className="bg-white/60 px-4 py-2 rounded-lg border border-primary/10 shadow-sm"><span>{String(countdownSeconds).padStart(2, '0')}</span><span className="text-lg font-normal ml-1">s</span></div>
                             </div>
                         </div>
                     ) : (
-                        <div className="border border-dashed border-glass-border rounded-lg p-12 flex items-center justify-center text-on-surface-variant text-sm font-label-caps opacity-50">
-                            Widget Hidden
+                        <div className="border border-dashed border-outline-variant/80 bg-surface-variant/20 rounded-xl p-12 flex flex-col items-center justify-center text-on-surface-variant gap-4">
+                            <span className="material-symbols-outlined text-4xl opacity-50">visibility_off</span>
+                            <span className="text-sm font-semibold uppercase tracking-wider">Widget Hidden</span>
                         </div>
                     )}
                 </div>
