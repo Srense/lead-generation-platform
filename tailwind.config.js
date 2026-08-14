@@ -8,42 +8,42 @@ export default {
     theme: {
         extend: {
             "colors": {
-                // iOS Liquid Glass Palette
-                "background": "#F4F7FC", // Very soft, cool white-blue
-                "on-background": "#1A233A",
+                // Premium Dark Fintech Palette
+                "background": "#09090B", // Zinc-950 (Almost black)
+                "on-background": "#F8FAFC",
                 
-                "surface": "#FFFFFF",
-                "on-surface": "#1A233A",
-                "surface-variant": "#EBF0F8",
-                "on-surface-variant": "#4A5568",
+                "surface": "#18181B", // Zinc-900
+                "on-surface": "#F8FAFC",
+                "surface-variant": "#27272A", // Zinc-800
+                "on-surface-variant": "#A1A1AA", // Zinc-400
                 
-                // Primary: Vibrant Ocean Blue / Indigo
-                "primary": "#2563EB", // Bright Blue
-                "on-primary": "#FFFFFF",
-                "primary-container": "#DBEAFE",
-                "on-primary-container": "#1E3A8A",
+                // Primary: Neon Lime / Emerald (Classic crypto/fintech accent)
+                "primary": "#10B981", 
+                "on-primary": "#000000",
+                "primary-container": "#047857",
+                "on-primary-container": "#D1FAE5",
 
-                // Secondary: Luminous Cyan / Teal
-                "secondary": "#06B6D4", // Cyan
+                // Secondary: Electric Blue (Trust, tech)
+                "secondary": "#3B82F6",
                 "on-secondary": "#FFFFFF",
-                "secondary-container": "#CFFAFE",
-                "on-secondary-container": "#164E63",
+                "secondary-container": "#1D4ED8",
+                "on-secondary-container": "#DBEAFE",
 
-                // Tertiary: Deep Violet / Purple
-                "tertiary": "#8B5CF6", // Violet
+                // Tertiary: Deep Amethyst / Purple (Modern crypto gradient)
+                "tertiary": "#8B5CF6",
                 "on-tertiary": "#FFFFFF",
-                "tertiary-container": "#EDE9FE",
-                "on-tertiary-container": "#4C1D95",
+                "tertiary-container": "#5B21B6",
+                "on-tertiary-container": "#EDE9FE",
 
                 "error": "#EF4444",
                 "on-error": "#FFFFFF",
                 
-                "outline": "#CBD5E1",
-                "outline-variant": "#E2E8F0",
+                "outline": "#3F3F46", // Zinc-700
+                "outline-variant": "#52525B", // Zinc-600
                 
-                "glass-surface": "rgba(255, 255, 255, 0.4)",
-                "glass-border": "rgba(255, 255, 255, 0.7)",
-                "glass-shadow": "rgba(37, 99, 235, 0.05)"
+                "glass-surface": "rgba(255, 255, 255, 0.03)",
+                "glass-border": "rgba(255, 255, 255, 0.1)",
+                "glass-shadow": "rgba(0, 0, 0, 0.5)"
             },
             "borderRadius": {
                 "DEFAULT": "0.5rem",

@@ -95,24 +95,24 @@ export default function Dashboard() {
                         <p className="relative z-10 font-sans text-lg text-on-surface-variant max-w-3xl mx-auto mb-10 leading-relaxed">
                             A delicate approach to branding, design, and digital experiences. In just 15 minutes, discover a refined path to creating new opportunities on the internet.
                         </p>
-                        <a className="relative z-10 inline-flex items-center gap-2 bg-primary text-white px-8 py-4 rounded-full font-sans text-sm tracking-wide font-medium hover:bg-primary-container hover:text-on-primary-container transition-all duration-300 shadow-lg hover:shadow-primary/30 hover:-translate-y-1 border border-primary/20" href="#training">
+                        <a className="relative z-10 inline-flex items-center gap-3 bg-primary/10 border border-primary text-primary px-8 py-4 rounded-full font-sans text-sm tracking-widest uppercase font-bold hover:bg-primary hover:text-black transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_40px_rgba(16,185,129,0.6)] hover:-translate-y-1" href="#training">
                             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>play_circle</span>
                             Explore Our Work
                         </a>
                     </div>
                 </section>
 
-                <section className="py-20 px-margin-mobile md:px-gutter max-w-5xl mx-auto" id="training">
-                    <div className="relative w-full rounded-2xl overflow-hidden floral-glass ambient-shadow flex items-center justify-center border border-white/50 p-2">
-                        <div className="w-full rounded-xl overflow-hidden relative">
+                <section className="py-20 px-margin-mobile md:px-gutter max-w-6xl mx-auto" id="training">
+                    <div className="relative w-full rounded-[2rem] overflow-hidden floral-glass ambient-shadow flex items-center justify-center p-3 border border-white/5">
+                        <div className="w-full rounded-3xl overflow-hidden relative bg-black">
                             {videoAsset ? (
-                                <video key={videoAsset} src={videoAsset} controls autoPlay muted playsInline preload="auto" crossOrigin="anonymous" className="w-full max-h-[70vh] object-cover" poster="https://lh3.googleusercontent.com/aida-public/AB6AXuBpqbbDm_XhvRdXIWcfOR5axXjqhSEYYNj6YQ-TGgqF57fvnC5mQfK2ICeygyPmIyA0DvnsJOxuFuXjl28bI9i8k2oBUF6-2q_Jj0VwWBPVqVSFgNMecsa-Ta3kmnBi0ppQ4EPO5Y9T91AxJ9j3TOTJMG_kgLmeik_bDrXbxPw_o7bAvXI37k5LjynpslUP9SYsZBi19UPRNQ0rbQK9rJ-ORVILPUitwg62DATQ8fUM0L3-yEfDA4-PmiKABimKO5K7vQSMhIUEvNHZ" />
+                                <video key={videoAsset} src={videoAsset} controls autoPlay muted playsInline preload="auto" crossOrigin="anonymous" className="w-full max-h-[70vh] object-cover opacity-90" poster="https://lh3.googleusercontent.com/aida-public/AB6AXuBpqbbDm_XhvRdXIWcfOR5axXjqhSEYYNj6YQ-TGgqF57fvnC5mQfK2ICeygyPmIyA0DvnsJOxuFuXjl28bI9i8k2oBUF6-2q_Jj0VwWBPVqVSFgNMecsa-Ta3kmnBi0ppQ4EPO5Y9T91AxJ9j3TOTJMG_kgLmeik_bDrXbxPw_o7bAvXI37k5LjynpslUP9SYsZBi19UPRNQ0rbQK9rJ-ORVILPUitwg62DATQ8fUM0L3-yEfDA4-PmiKABimKO5K7vQSMhIUEvNHZ" />
                             ) : (
-                                <div className="relative w-full aspect-video flex items-center justify-center group cursor-pointer bg-surface-variant/30">
+                                <div className="relative w-full aspect-video flex items-center justify-center group cursor-pointer bg-surface/50">
                                     <div className="absolute inset-0 z-0">
-                                        <img className="w-full h-full object-cover opacity-80 mix-blend-multiply" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpqbbDm_XhvRdXIWcfOR5axXjqhSEYYNj6YQ-TGgqF57fvnC5mQfK2ICeygyPmIyA0DvnsJOxuFuXjl28bI9i8k2oBUF6-2q_Jj0VwWBPVqVSFgNMecsa-Ta3kmnBi0ppQ4EPO5Y9T91AxJ9j3TOTJMG_kgLmeik_bDrXbxPw_o7bAvXI37k5LjynpslUP9SYsZBi19UPRNQ0rbQK9rJ-ORVILPUitwg62DATQ8fUM0L3-yEfDA4-PmiKABimKO5K7vQSMhIUEvNHZ" />
+                                        <img className="w-full h-full object-cover opacity-30 mix-blend-overlay grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpqbbDm_XhvRdXIWcfOR5axXjqhSEYYNj6YQ-TGgqF57fvnC5mQfK2ICeygyPmIyA0DvnsJOxuFuXjl28bI9i8k2oBUF6-2q_Jj0VwWBPVqVSFgNMecsa-Ta3kmnBi0ppQ4EPO5Y9T91AxJ9j3TOTJMG_kgLmeik_bDrXbxPw_o7bAvXI37k5LjynpslUP9SYsZBi19UPRNQ0rbQK9rJ-ORVILPUitwg62DATQ8fUM0L3-yEfDA4-PmiKABimKO5K7vQSMhIUEvNHZ" />
                                     </div>
-                                    <div className="relative z-10 bg-white/40 p-6 rounded-full backdrop-blur-md group-hover:bg-white/60 group-hover:scale-110 transition-all shadow-lg text-primary">
+                                    <div className="relative z-10 bg-black/60 p-6 rounded-full backdrop-blur-xl group-hover:bg-primary group-hover:text-black group-hover:scale-110 transition-all shadow-[0_0_30px_rgba(16,185,129,0.3)] text-primary border border-white/10">
                                         <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
                                     </div>
                                 </div>
@@ -124,66 +124,66 @@ export default function Dashboard() {
                 <section className="py-24 px-margin-mobile md:px-gutter relative" id="contact">
                     <div className="max-w-container-max mx-auto grid md:grid-cols-2 gap-16 items-start">
                         <div className="md:sticky md:top-32">
-                            <h2 className="font-display text-4xl md:text-5xl font-bold text-on-surface mb-6">Let’s Create Together.</h2>
-                            <p className="font-sans text-lg text-on-surface-variant mb-8 leading-relaxed max-w-md">If this training resonated with your vision, fill out the form. We'd love to explore how we can elevate your digital presence.</p>
+                            <h2 className="font-display text-4xl md:text-5xl font-bold text-on-surface mb-6">Start Your Application</h2>
+                            <p className="font-sans text-lg text-on-surface-variant mb-8 leading-relaxed max-w-md">Join the platform to access premium insights. Fill out the application and a specialist will contact you.</p>
                             
                             {isUrgentVisible && (
-                                <div className="floral-glass rounded-xl p-6 mb-8 relative overflow-hidden border-l-4 border-l-primary">
-                                    <p className="font-sans text-on-surface mb-4">
+                                <div className="floral-glass rounded-xl p-6 mb-8 relative overflow-hidden border-l-4 border-l-primary flex items-center justify-between">
+                                    <p className="font-sans text-sm text-on-surface-variant flex-1 pr-4">
                                         {bannerText}
                                     </p>
-                                    <div className="flex items-center gap-4 text-primary font-display text-3xl">
-                                        <div><span id="mins">{minutes.toString().padStart(2, '0')}</span><span className="text-sm font-sans ml-1">m</span></div>
+                                    <div className="flex items-center gap-2 text-primary font-mono text-2xl bg-black/40 px-4 py-2 rounded-lg border border-primary/20">
+                                        <div><span id="mins">{minutes.toString().padStart(2, '0')}</span><span className="text-xs font-sans text-primary/70 ml-1">M</span></div>
                                         <span className="opacity-50">:</span>
-                                        <div><span id="secs">{seconds.toString().padStart(2, '0')}</span><span className="text-sm font-sans ml-1">s</span></div>
+                                        <div><span id="secs">{seconds.toString().padStart(2, '0')}</span><span className="text-xs font-sans text-primary/70 ml-1">S</span></div>
                                     </div>
                                 </div>
                             )}
                         </div>
 
-                        <div className="floral-glass-heavy rounded-2xl p-8 ambient-shadow relative">
+                        <div className="floral-glass-heavy rounded-3xl p-8 ambient-shadow relative">
                             {submitStatus === 'duplicate' && (
-                                <div className="bg-error/10 border border-error/20 text-error p-4 rounded-xl text-sm mb-6 animate-in slide-in-from-top-2">
-                                    We already have your details! Please check your inbox.
+                                <div className="bg-primary/10 border border-primary/20 text-primary p-4 rounded-xl text-sm mb-6 animate-in slide-in-from-top-2 flex gap-2 items-center">
+                                    <span className="material-symbols-outlined">info</span> We already have your details! Please check your inbox.
                                 </div>
                             )}
                             {submitStatus === 'error' && (
-                                <div className="bg-error/10 border border-error/20 text-error p-4 rounded-xl text-sm mb-6 animate-in slide-in-from-top-2">
-                                    Oops! Something went wrong. Please try again.
+                                <div className="bg-error/10 border border-error/20 text-error p-4 rounded-xl text-sm mb-6 animate-in slide-in-from-top-2 flex gap-2 items-center">
+                                    <span className="material-symbols-outlined">error</span> Oops! Something went wrong. Please try again.
                                 </div>
                             )}
                             <form className="space-y-5" onSubmit={handleSubmit}>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div>
-                                        <label className="block text-xs font-sans font-medium text-on-surface-variant mb-1.5 ml-1">Full Name</label>
+                                        <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-2 tracking-wider uppercase">Full Name</label>
                                         <div className="relative">
-                                            <input required name="name" onChange={handleChange} className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10 outline-none transition-all" placeholder="Jane Doe" type="text" />
+                                            <input required name="name" onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20" placeholder="Jane Doe" type="text" />
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-sans font-medium text-on-surface-variant mb-1.5 ml-1">Mobile</label>
+                                        <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-2 tracking-wider uppercase">Mobile</label>
                                         <div className="relative">
-                                            <input required name="phone" onChange={handleChange} className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10 outline-none transition-all" placeholder="+91 98765 43210" type="tel" />
+                                            <input required name="phone" onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20" placeholder="+91 98765 43210" type="tel" />
                                         </div>
                                     </div>
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-xs font-sans font-medium text-on-surface-variant mb-1.5 ml-1">Email Address</label>
+                                    <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-2 tracking-wider uppercase">Email Address</label>
                                     <div className="relative">
-                                        <input required name="email" onChange={handleChange} className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10 outline-none transition-all" placeholder="jane@example.com" type="email" />
+                                        <input required name="email" onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20" placeholder="jane@example.com" type="email" />
                                     </div>
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-xs font-sans font-medium text-on-surface-variant mb-1.5 ml-1">City</label>
+                                    <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-2 tracking-wider uppercase">City</label>
                                     <div className="relative">
-                                        <input required name="city" onChange={handleChange} className="w-full bg-secondary-container/20 border border-secondary-container/50 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-secondary focus:bg-white focus:ring-4 focus:ring-secondary/10 outline-none transition-all" placeholder="Your City" type="text" />
+                                        <input required name="city" onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-secondary focus:bg-black/60 focus:ring-1 focus:ring-secondary outline-none transition-all placeholder:text-white/20" placeholder="Your City" type="text" />
                                     </div>
                                 </div>
                                 
-                                <div className="pt-2">
-                                    <button disabled={isSubmitting} className="w-full bg-primary text-white py-4 flex items-center justify-center gap-2 rounded-xl font-sans font-medium hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none" type="submit">
+                                <div className="pt-4">
+                                    <button disabled={isSubmitting} className="w-full bg-primary text-black py-4 flex items-center justify-center gap-2 rounded-xl font-sans font-bold uppercase tracking-wider hover:bg-primary-container transition-all duration-300 disabled:opacity-50 hover:shadow-[0_0_20px_rgba(16,185,129,0.4)]" type="submit">
                                         {isSubmitting ? <Loader size="sm" /> : 'Get Free Access Now'}
                                     </button>
                                 </div>

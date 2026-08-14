@@ -12,55 +12,57 @@ export default function Benefits() {
                 </section>
                 
                 <section className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-                    <div className="floral-glass p-10 rounded-2xl ambient-shadow flex flex-col justify-between group hover:-translate-y-2 transition-all duration-300">
+                    <div className="floral-glass p-10 rounded-3xl ambient-shadow flex flex-col justify-between group hover:-translate-y-2 transition-all duration-300 border border-white/5">
                         <div>
-                            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300 shadow-sm">
+                            <div className="w-16 h-16 bg-primary/20 border border-primary/30 rounded-2xl flex items-center justify-center mb-6 text-primary transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.2)] group-hover:shadow-[0_0_25px_rgba(16,185,129,0.5)]">
                                 <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 0" }}>schedule</span>
                             </div>
-                            <h3 className="font-display text-2xl text-on-surface mb-4 font-semibold">Flexible Learning</h3>
+                            <h3 className="font-display text-2xl text-on-surface mb-4 font-bold tracking-tight">Flexible Learning</h3>
                             <p className="font-sans text-base text-on-surface-variant leading-relaxed">Adapt your education to your lifestyle. Access cutting-edge materials and expert sessions on your schedule, empowering you to learn at your own pace without sacrificing depth or quality.</p>
                         </div>
                     </div>
                     
-                    <div className="floral-glass p-10 rounded-2xl ambient-shadow flex flex-col justify-between group hover:-translate-y-2 transition-all duration-300">
+                    <div className="floral-glass p-10 rounded-3xl ambient-shadow flex flex-col justify-between group hover:-translate-y-2 transition-all duration-300 border border-white/5">
                         <div>
-                            <div className="w-16 h-16 bg-secondary/10 rounded-2xl flex items-center justify-center mb-6 text-secondary group-hover:bg-secondary group-hover:text-white transition-colors duration-300 shadow-sm">
+                            <div className="w-16 h-16 bg-secondary/20 border border-secondary/30 rounded-2xl flex items-center justify-center mb-6 text-secondary transition-all duration-300 shadow-[0_0_15px_rgba(59,130,246,0.2)] group-hover:shadow-[0_0_25px_rgba(59,130,246,0.5)]">
                                 <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 0" }}>public</span>
                             </div>
-                            <h3 className="font-display text-2xl text-on-surface mb-4 font-semibold">Global Opportunities</h3>
+                            <h3 className="font-display text-2xl text-on-surface mb-4 font-bold tracking-tight">Global Opportunities</h3>
                             <p className="font-sans text-base text-on-surface-variant leading-relaxed">The internet has no borders. Equip yourself with skills that are in demand worldwide, opening doors to international clients, remote roles, and expansive networks.</p>
                         </div>
                     </div>
                     
-                    <div className="floral-glass p-10 rounded-2xl ambient-shadow flex flex-col justify-between group hover:-translate-y-2 transition-all duration-300">
+                    <div className="floral-glass p-10 rounded-3xl ambient-shadow flex flex-col justify-between group hover:-translate-y-2 transition-all duration-300 border border-white/5">
                         <div>
-                            <div className="w-16 h-16 bg-tertiary/10 rounded-2xl flex items-center justify-center mb-6 text-tertiary group-hover:bg-tertiary group-hover:text-white transition-colors duration-300 shadow-sm">
+                            <div className="w-16 h-16 bg-tertiary/20 border border-tertiary/30 rounded-2xl flex items-center justify-center mb-6 text-tertiary transition-all duration-300 shadow-[0_0_15px_rgba(139,92,246,0.2)] group-hover:shadow-[0_0_25px_rgba(139,92,246,0.5)]">
                                 <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 0" }}>construction</span>
                             </div>
-                            <h3 className="font-display text-2xl text-on-surface mb-4 font-semibold">Practical Skills</h3>
+                            <h3 className="font-display text-2xl text-on-surface mb-4 font-bold tracking-tight">Practical Skills</h3>
                             <p className="font-sans text-base text-on-surface-variant leading-relaxed">Move beyond theory. Our training focuses on actionable, real-world applications that you can implement immediately to drive results and build tangible assets online.</p>
                         </div>
                     </div>
                     
-                    <div className="floral-glass p-10 rounded-2xl ambient-shadow flex flex-col justify-between group hover:-translate-y-2 transition-all duration-300">
+                    <div className="floral-glass p-10 rounded-3xl ambient-shadow flex flex-col justify-between group hover:-translate-y-2 transition-all duration-300 border border-white/5">
                         <div>
-                            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300 shadow-sm">
+                            <div className="w-16 h-16 bg-primary/20 border border-primary/30 rounded-2xl flex items-center justify-center mb-6 text-primary transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.2)] group-hover:shadow-[0_0_25px_rgba(16,185,129,0.5)]">
                                 <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 0" }}>model_training</span>
                             </div>
-                            <h3 className="font-display text-2xl text-on-surface mb-4 font-semibold">Expert Guidance</h3>
+                            <h3 className="font-display text-2xl text-on-surface mb-4 font-bold tracking-tight">Expert Guidance</h3>
                             <p className="font-sans text-base text-on-surface-variant leading-relaxed">Learn directly from seasoned professionals who have navigated the digital landscape. Benefit from their insights, avoid common pitfalls, and accelerate your path to success.</p>
                         </div>
                     </div>
                 </section>
                 
                 <section className="mt-24 text-center">
-                    <div className="floral-glass-heavy p-12 md:p-16 rounded-3xl ambient-shadow relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[80px] rounded-full"></div>
-                        <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary/5 blur-[80px] rounded-full"></div>
+                    <div className="floral-glass-heavy p-12 md:p-16 rounded-[3rem] ambient-shadow relative overflow-hidden border border-white/10">
+                        <div className="absolute -top-[50%] -right-[20%] w-[100%] h-[100%] bg-primary/10 blur-[120px] rounded-full pointer-events-none"></div>
+                        <div className="absolute -bottom-[50%] -left-[20%] w-[100%] h-[100%] bg-secondary/10 blur-[120px] rounded-full pointer-events-none"></div>
                         <div className="relative z-10">
-                            <h2 className="font-display text-3xl md:text-4xl text-on-surface mb-6 font-bold">Ready to Transform Your Trajectory?</h2>
-                            <p className="font-sans text-lg text-on-surface-variant mb-10 max-w-xl mx-auto">Join a community of forward-thinkers and start mastering the digital tools that define tomorrow.</p>
-                            <Link to="/#training" className="inline-block bg-primary text-white font-sans font-medium px-10 py-4 rounded-full hover:bg-primary-container hover:text-on-primary-container hover:-translate-y-1 transition-all duration-300 shadow-md">Start Learning Today</Link>
+                            <h2 className="font-display text-3xl md:text-4xl text-on-surface mb-6 font-bold tracking-tight">Ready to Transform Your Skills?</h2>
+                            <p className="font-sans text-lg text-on-surface-variant max-w-2xl mx-auto mb-10 leading-relaxed">Join thousands of others who have elevated their careers and businesses through our comprehensive digital training program.</p>
+                            <a href="/#contact" className="inline-block bg-primary text-black px-10 py-4 rounded-xl font-sans font-bold uppercase tracking-wider hover:bg-primary-container transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.4)] hover:shadow-[0_0_40px_rgba(16,185,129,0.6)] hover:-translate-y-1">
+                                Get Started Today
+                            </a>
                         </div>
                     </div>
                 </section>
