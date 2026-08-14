@@ -71,11 +71,12 @@ function App() {
   return (
     <AdminProvider>
       <Router>
-        {/* Elegant Organic Background Meshes */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none z-[0] bg-background">
-          <div className="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-primary/20 blur-[100px] animate-float" style={{ animationDuration: '10s' }}></div>
-          <div className="absolute top-[30%] -right-[10%] w-[50vw] h-[60vw] rounded-[100%] bg-secondary/30 blur-[120px] mix-blend-multiply animate-float" style={{ animationDuration: '12s', animationDelay: '2s' }}></div>
-          <div className="absolute -bottom-[20%] left-[20%] w-[60vw] h-[40vw] rounded-full bg-tertiary/25 blur-[120px] mix-blend-multiply animate-float" style={{ animationDuration: '15s', animationDelay: '4s' }}></div>
+        {/* Vibrant iOS-style Background Meshes */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none z-[0] bg-[#f8f9fa]">
+          <div className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full bg-primary/40 blur-[140px] animate-float" style={{ animationDuration: '15s' }}></div>
+          <div className="absolute top-[20%] -right-[20%] w-[80vw] h-[80vw] rounded-full bg-secondary/50 blur-[160px] animate-float" style={{ animationDuration: '20s', animationDelay: '2s' }}></div>
+          <div className="absolute -bottom-[30%] left-[10%] w-[90vw] h-[90vw] rounded-full bg-tertiary/40 blur-[150px] animate-float" style={{ animationDuration: '18s', animationDelay: '5s' }}></div>
+          <div className="absolute top-[40%] left-[40%] w-[50vw] h-[50vw] rounded-full bg-primary-container/60 blur-[130px] animate-float" style={{ animationDuration: '25s', animationDelay: '1s' }}></div>
         </div>
 
         {/* Core Router */}
