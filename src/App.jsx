@@ -85,14 +85,14 @@ function App() {
 
           {/* Multiverse SVG Filter */}
           <svg className="hidden">
-            <filter id="loki-multiverse">
+            <filter id="loki-multiverse" x="-20%" y="-20%" width="140%" height="140%">
               <feTurbulence type="fractalNoise" baseFrequency="0.006 0.004" numOctaves="3" result="noise" />
               <feDisplacementMap in="SourceGraphic" in2="noise" scale="120" xChannelSelector="R" yChannelSelector="G" />
             </filter>
           </svg>
 
           {/* Loki Multiverse Flow */}
-          <div className="absolute inset-0 pointer-events-none opacity-60 mix-blend-screen" style={{ filter: 'url(#loki-multiverse)' }}>
+          <div className="absolute inset-0 pointer-events-none opacity-60 mix-blend-screen" style={{ filter: 'url(#loki-multiverse)', WebkitFilter: 'url(#loki-multiverse)', transform: 'translateZ(0)', WebkitTransform: 'translateZ(0)' }}>
             
             {/* Flowing Cosmic Energy Clouds */}
             <div className="absolute top-0 left-0 w-[100vw] h-[200vh] animate-multiverse-flow"
