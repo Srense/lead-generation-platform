@@ -71,12 +71,16 @@ function App() {
   return (
     <AdminProvider>
       <Router>
-        {/* Vibrant iOS-style Background Meshes */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none z-[0] bg-[#f8f9fa]">
-          <div className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full bg-primary/40 blur-[140px] animate-float" style={{ animationDuration: '15s' }}></div>
-          <div className="absolute top-[20%] -right-[20%] w-[80vw] h-[80vw] rounded-full bg-secondary/50 blur-[160px] animate-float" style={{ animationDuration: '20s', animationDelay: '2s' }}></div>
-          <div className="absolute -bottom-[30%] left-[10%] w-[90vw] h-[90vw] rounded-full bg-tertiary/40 blur-[150px] animate-float" style={{ animationDuration: '18s', animationDelay: '5s' }}></div>
-          <div className="absolute top-[40%] left-[40%] w-[50vw] h-[50vw] rounded-full bg-primary-container/60 blur-[130px] animate-float" style={{ animationDuration: '25s', animationDelay: '1s' }}></div>
+        {/* Vibrant iOS-style Background with Grid for Refraction */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none z-[0] bg-[#f4f7fc]">
+          {/* Subtle Grid for glass to refract */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#1A233A 1px, transparent 1px)', backgroundSize: '32px 32px' }}></div>
+          
+          {/* Sharper colorful orbs so the glass has distinct shapes to blur */}
+          <div className="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-primary/40 blur-[60px] animate-float" style={{ animationDuration: '15s' }}></div>
+          <div className="absolute top-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-secondary/40 blur-[70px] animate-float" style={{ animationDuration: '20s', animationDelay: '2s' }}></div>
+          <div className="absolute -bottom-[20%] left-[20%] w-[70vw] h-[70vw] rounded-full bg-tertiary/30 blur-[80px] animate-float" style={{ animationDuration: '18s', animationDelay: '5s' }}></div>
+          <div className="absolute top-[40%] left-[30%] w-[40vw] h-[40vw] rounded-full bg-primary-container/60 blur-[60px] animate-float" style={{ animationDuration: '25s', animationDelay: '1s' }}></div>
         </div>
 
         {/* Core Router */}
