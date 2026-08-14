@@ -59,7 +59,7 @@ function App() {
     return (
       <div className="min-h-screen flex items-center justify-center relative bg-background">
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-[1]">
-          <div className="absolute top-[30%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-primary-container/40 blur-[120px] mix-blend-multiply animate-float"></div>
+          <div className="absolute top-[30%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-primary/20 blur-[120px] mix-blend-screen animate-blob"></div>
         </div>
         <div className="relative z-10">
           <Loader size="lg" text="Crafting Experience" />
@@ -77,9 +77,9 @@ function App() {
           <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(#FFFFFF 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
           
           {/* Neon Glow Orbs */}
-          <div className="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-primary/20 blur-[100px] animate-float" style={{ animationDuration: '20s' }}></div>
-          <div className="absolute top-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-secondary/15 blur-[120px] animate-float" style={{ animationDuration: '25s', animationDelay: '2s' }}></div>
-          <div className="absolute -bottom-[20%] left-[20%] w-[70vw] h-[70vw] rounded-full bg-tertiary/10 blur-[130px] animate-float" style={{ animationDuration: '22s', animationDelay: '5s' }}></div>
+          <div className="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-primary/20 blur-[100px] animate-blob"></div>
+          <div className="absolute top-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-secondary/15 blur-[120px] animate-blob" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute -bottom-[20%] left-[20%] w-[70vw] h-[70vw] rounded-full bg-tertiary/10 blur-[130px] animate-blob" style={{ animationDelay: '5s' }}></div>
         </div>
 
         {/* Core Router */}
