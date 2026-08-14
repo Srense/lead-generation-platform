@@ -61,8 +61,8 @@ export default {
             },
             "fontFamily": {
                 // Moving to a more elegant serif/sans mix or keeping Inter clean but styling lighter
-                "sans": ["Inter", "sans-serif"],
-                "display": ["Inter", "sans-serif"],
+                "sans": ["Plus Jakarta Sans", "sans-serif"],
+                "display": ["Outfit", "sans-serif"],
             },
             "boxShadow": {
                 "glass": "0 8px 32px 0 rgba(0, 0, 0, 0.04)",
