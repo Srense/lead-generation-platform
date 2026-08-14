@@ -1,5 +1,6 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import GlowCard from '../components/GlowCard';
 import { useState } from 'react';
 import { submitLead } from '../lib/submitLead';
 
@@ -47,15 +48,15 @@ export default function ContactUs() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-start">
                     <div className="md:col-span-5 grid grid-cols-1 gap-8">
-                        <div className="floral-glass rounded-3xl p-8 md:p-10 ambient-shadow hover:-translate-y-2 transition-transform duration-300 border border-white/5">
+                        <GlowCard className="floral-glass rounded-3xl p-8 md:p-10 ambient-shadow hover:-translate-y-2 transition-transform duration-300 border border-white/5">
                             <div className="bg-primary/20 border border-primary/30 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 text-primary shadow-[0_0_15px_rgba(16,185,129,0.2)]">
                                 <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>mail</span>
                             </div>
                             <h3 className="font-display text-2xl text-on-surface mb-3 font-semibold">Email Us</h3>
                             <p className="font-sans text-base text-on-surface-variant mb-6 leading-relaxed">For general inquiries and support, drop us an email anytime.</p>
                             <a className="inline-block text-primary font-sans font-semibold text-lg hover:text-white transition-colors" href="mailto:harshbahti90@gmail.com">harshbahti90@gmail.com</a>
-                        </div>
-                        <div className="floral-glass rounded-3xl p-8 md:p-10 ambient-shadow hover:-translate-y-2 transition-transform duration-300 border border-white/5">
+                        </GlowCard>
+                        <GlowCard className="floral-glass rounded-3xl p-8 md:p-10 ambient-shadow hover:-translate-y-2 transition-transform duration-300 border border-white/5">
                             <div className="bg-secondary/20 border border-secondary/30 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 text-secondary shadow-[0_0_15px_rgba(59,130,246,0.2)]">
                                 <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>location_on</span>
                             </div>
@@ -65,7 +66,7 @@ export default function ContactUs() {
                                 Chandigarh<br />
                                 Mohali
                             </address>
-                        </div>
+                        </GlowCard>
                     </div>
                     
                     <div className="md:col-span-7 floral-glass-heavy rounded-3xl p-8 md:p-12 ambient-shadow relative overflow-hidden">
