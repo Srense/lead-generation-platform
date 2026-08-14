@@ -87,7 +87,7 @@ function App() {
           <svg className="hidden">
             <filter id="loki-multiverse">
               <feTurbulence type="fractalNoise" baseFrequency="0.006 0.004" numOctaves="3" result="noise" />
-              <feDisplacementMap in="SourceGraphic" in2="noise" scale="250" xChannelSelector="R" yChannelSelector="G" />
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="120" xChannelSelector="R" yChannelSelector="G" />
             </filter>
           </svg>
 
@@ -98,10 +98,10 @@ function App() {
             <div className="absolute top-0 left-0 w-[100vw] h-[200vh] animate-multiverse-flow"
                  style={{
                    backgroundImage: `
-                     radial-gradient(ellipse at 20% 10%, rgba(16, 185, 129, 0.8) 0%, transparent 40%),
-                     radial-gradient(ellipse at 80% 30%, rgba(59, 130, 246, 0.5) 0%, transparent 40%),
-                     radial-gradient(ellipse at 40% 60%, rgba(16, 185, 129, 0.9) 0%, transparent 30%),
-                     radial-gradient(ellipse at 90% 80%, rgba(59, 130, 246, 0.6) 0%, transparent 40%),
+                     radial-gradient(circle at 20% 10%, rgba(16, 185, 129, 0.8) 0%, transparent 40vw),
+                     radial-gradient(circle at 80% 30%, rgba(59, 130, 246, 0.5) 0%, transparent 40vw),
+                     radial-gradient(circle at 40% 60%, rgba(16, 185, 129, 0.9) 0%, transparent 30vw),
+                     radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.6) 0%, transparent 40vw),
                      linear-gradient(to top, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.1))
                    `,
                    backgroundSize: '100% 50%' // Essential for the seamless translateY(-50%) loop

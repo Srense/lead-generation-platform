@@ -36,7 +36,7 @@ export default function Navbar() {
 
             {/* Mobile Menu Dropdown */}
             {isMobileMenuOpen && (
-                <div className="md:hidden floral-glass-heavy border-t border-glass-border shadow-2xl animate-in slide-in-from-top-4 duration-200 mt-4 rounded-3xl overflow-hidden mx-margin-mobile">
+                <div className="md:hidden bg-[#09090B]/95 backdrop-blur-2xl border border-white/10 shadow-2xl animate-in slide-in-from-top-4 duration-200 mt-4 rounded-3xl overflow-hidden mx-margin-mobile relative z-50">
                     <nav className="flex flex-col px-6 py-6 space-y-4">
                         <NavLink to="/" end className={({ isActive }) => `font-sans py-2 text-lg ${isActive ? 'text-primary font-semibold' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>Training</NavLink>
                         <NavLink to="/benefits" className={({ isActive }) => `font-sans py-2 text-lg ${isActive ? 'text-primary font-semibold' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>Benefits</NavLink>
