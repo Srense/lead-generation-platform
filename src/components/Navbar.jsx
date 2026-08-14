@@ -8,8 +8,8 @@ export default function Navbar() {
         `font-sans text-sm tracking-wide transition-colors duration-200 ${isActive ? "text-primary font-semibold" : "text-on-surface-variant hover:text-primary"}`;
 
     return (
-        <header className="floral-glass fixed top-0 w-full z-50 transition-all duration-300">
-            <div className="flex justify-between items-center px-margin-mobile md:px-gutter py-4 max-w-container-max mx-auto">
+        <header className="fixed top-4 w-full z-50 transition-all duration-300 px-margin-mobile md:px-gutter">
+            <div className="floral-glass rounded-full flex justify-between items-center px-6 md:px-8 py-3 max-w-container-max mx-auto shadow-lg">
                 <Link to="/" className="flex items-center gap-3 transition-transform duration-200">
                     <span className="font-display text-xl md:text-2xl font-bold text-on-surface tracking-tight">HarshBahti</span>
                 </Link>

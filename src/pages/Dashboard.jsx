@@ -85,16 +85,21 @@ export default function Dashboard() {
             <Navbar />
             <main>
                 <section className="relative pt-12 md:pt-24 pb-24 px-margin-mobile md:px-gutter max-w-container-max mx-auto text-center">
-                    <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-on-surface mb-6 tracking-tight leading-tight max-w-5xl mx-auto">
-                        HarshBahti: Curated Digital Craftsmanship.
-                    </h1>
-                    <p className="font-sans text-lg text-on-surface-variant max-w-3xl mx-auto mb-10 leading-relaxed">
-                        A delicate approach to branding, design, and digital experiences. In just 15 minutes, discover a refined path to creating new opportunities on the internet.
-                    </p>
-                    <a className="inline-flex items-center gap-2 bg-primary text-white px-8 py-4 rounded-full font-sans text-sm tracking-wide font-medium hover:bg-primary-container hover:text-on-primary-container transition-all duration-300 ambient-shadow hover:-translate-y-1" href="#training">
-                        <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>play_circle</span>
-                        Explore Our Work
-                    </a>
+                    <div className="floral-glass-heavy rounded-3xl p-12 md:p-20 ambient-shadow relative overflow-hidden">
+                        {/* Decorative internal reflection for liquid glass */}
+                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/40 to-transparent pointer-events-none rounded-3xl"></div>
+                        
+                        <h1 className="relative z-10 font-display text-4xl md:text-6xl lg:text-7xl font-bold text-on-surface mb-6 tracking-tight leading-tight max-w-5xl mx-auto">
+                            HarshBahti: Curated Digital Craftsmanship.
+                        </h1>
+                        <p className="relative z-10 font-sans text-lg text-on-surface-variant max-w-3xl mx-auto mb-10 leading-relaxed">
+                            A delicate approach to branding, design, and digital experiences. In just 15 minutes, discover a refined path to creating new opportunities on the internet.
+                        </p>
+                        <a className="relative z-10 inline-flex items-center gap-2 bg-primary text-white px-8 py-4 rounded-full font-sans text-sm tracking-wide font-medium hover:bg-primary-container hover:text-on-primary-container transition-all duration-300 shadow-lg hover:shadow-primary/30 hover:-translate-y-1 border border-primary/20" href="#training">
+                            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>play_circle</span>
+                            Explore Our Work
+                        </a>
+                    </div>
                 </section>
 
                 <section className="py-20 px-margin-mobile md:px-gutter max-w-5xl mx-auto" id="training">
