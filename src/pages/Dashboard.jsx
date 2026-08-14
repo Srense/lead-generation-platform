@@ -106,7 +106,7 @@ export default function Dashboard() {
                     <div className="relative w-full rounded-[2rem] overflow-hidden floral-glass ambient-shadow flex items-center justify-center p-3 border border-white/5">
                         <div className="w-full rounded-3xl overflow-hidden relative bg-black">
                             {videoAsset ? (
-                                <video key={videoAsset} src={videoAsset} controls autoPlay muted playsInline preload="auto" crossOrigin="anonymous" className="w-full max-h-[70vh] object-cover opacity-90" poster="https://lh3.googleusercontent.com/aida-public/AB6AXuBpqbbDm_XhvRdXIWcfOR5axXjqhSEYYNj6YQ-TGgqF57fvnC5mQfK2ICeygyPmIyA0DvnsJOxuFuXjl28bI9i8k2oBUF6-2q_Jj0VwWBPVqVSFgNMecsa-Ta3kmnBi0ppQ4EPO5Y9T91AxJ9j3TOTJMG_kgLmeik_bDrXbxPw_o7bAvXI37k5LjynpslUP9SYsZBi19UPRNQ0rbQK9rJ-ORVILPUitwg62DATQ8fUM0L3-yEfDA4-PmiKABimKO5K7vQSMhIUEvNHZ" />
+                                <video key={videoAsset} src={videoAsset} controls autoPlay muted playsInline preload="auto" crossOrigin="anonymous" className="w-full h-auto aspect-video object-contain bg-black opacity-90" poster="https://lh3.googleusercontent.com/aida-public/AB6AXuBpqbbDm_XhvRdXIWcfOR5axXjqhSEYYNj6YQ-TGgqF57fvnC5mQfK2ICeygyPmIyA0DvnsJOxuFuXjl28bI9i8k2oBUF6-2q_Jj0VwWBPVqVSFgNMecsa-Ta3kmnBi0ppQ4EPO5Y9T91AxJ9j3TOTJMG_kgLmeik_bDrXbxPw_o7bAvXI37k5LjynpslUP9SYsZBi19UPRNQ0rbQK9rJ-ORVILPUitwg62DATQ8fUM0L3-yEfDA4-PmiKABimKO5K7vQSMhIUEvNHZ" />
                             ) : (
                                 <div className="relative w-full aspect-video flex items-center justify-center group cursor-pointer bg-surface/50">
                                     <div className="absolute inset-0 z-0">
