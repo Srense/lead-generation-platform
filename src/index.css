@@ -59,6 +59,15 @@ html {
     mix-blend-mode: overlay;
   }
 
+  .text-gradient-shimmer {
+    background: linear-gradient(to right, #F8FAFC 20%, #10B981 40%, #10B981 60%, #F8FAFC 80%);
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: shimmer 8s linear infinite;
+  }
+
   .ambient-shadow {
     box-shadow: 0 20px 50px -10px rgba(16, 185, 129, 0.1), 0 0 30px rgba(0, 0, 0, 0.8) inset;
   }

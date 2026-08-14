@@ -74,7 +74,7 @@ function App() {
         {/* Fintech Dark Mode Background Meshes */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none z-[0] bg-[#09090B]">
           {/* Subtle Grid for depth */}
-          <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(#FFFFFF 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+          <div className="absolute inset-0 opacity-[0.04] animate-grid-pan" style={{ backgroundImage: 'radial-gradient(#FFFFFF 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
           
           {/* Neon Glow Orbs */}
           <div className="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-primary/20 blur-[100px] animate-blob"></div>

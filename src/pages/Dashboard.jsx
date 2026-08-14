@@ -89,7 +89,7 @@ export default function Dashboard() {
                         {/* Decorative internal reflection for liquid glass */}
                         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-white/40 to-transparent pointer-events-none rounded-3xl"></div>
                         
-                        <h1 className="relative z-10 font-display text-4xl md:text-6xl lg:text-7xl font-bold text-on-surface mb-6 tracking-tight leading-tight max-w-5xl mx-auto">
+                        <h1 className="relative z-10 font-display text-4xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight leading-tight max-w-5xl mx-auto text-gradient-shimmer">
                             HarshBahti: Curated Digital Craftsmanship.
                         </h1>
                         <p className="relative z-10 font-sans text-lg text-on-surface-variant max-w-3xl mx-auto mb-10 leading-relaxed">

@@ -74,6 +74,8 @@ export default {
                 "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
                 "blob": "blob 15s infinite alternate",
                 "wormhole": "wormhole 8s linear infinite",
+                "shimmer": "shimmer 8s linear infinite",
+                "grid-pan": "gridPan 3s linear infinite",
             },
             "keyframes": {
                 fadeUp: {
@@ -93,6 +95,14 @@ export default {
                 wormhole: {
                     "0%": { backgroundPosition: "0% 100%" },
                     "100%": { backgroundPosition: "0% -100%" }
+                },
+                shimmer: {
+                    "0%": { backgroundPosition: "200% center" },
+                    "100%": { backgroundPosition: "-200% center" }
+                },
+                gridPan: {
+                    "0%": { backgroundPosition: "0 0" },
+                    "100%": { backgroundPosition: "0 40px" }
                 }
             }
         }
