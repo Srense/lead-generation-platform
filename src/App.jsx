@@ -83,50 +83,39 @@ function App() {
           <div className="absolute top-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-secondary/15 blur-[120px] animate-blob" style={{ animationDelay: '2s' }}></div>
           <div className="absolute -bottom-[20%] left-[20%] w-[70vw] h-[70vw] rounded-full bg-tertiary/10 blur-[130px] animate-blob" style={{ animationDelay: '5s' }}></div>
 
-          {/* Loki Multiverse Flow (iOS Safari Backdrop-Filter Fix) */}
-          <div className="absolute inset-0 z-[0] pointer-events-none opacity-70 mix-blend-screen overflow-hidden">
+          {/* Multiverse SVG Filter */}
+          <svg className="hidden">
+            <filter id="loki-multiverse">
+              <feTurbulence type="fractalNoise" baseFrequency="0.006 0.004" numOctaves="3" result="noise" />
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="120" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+          </svg>
+
+          {/* Loki Multiverse Flow */}
+          <div className="absolute inset-0 pointer-events-none opacity-60 mix-blend-screen" style={{ filter: 'url(#loki-multiverse)' }}>
             
-            {/* The hidden SVG filter definition */}
-            <svg className="hidden">
-              <filter id="loki-multiverse" x="-20%" y="-20%" width="140%" height="140%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.006 0.004" numOctaves="3" result="noise" />
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="120" xChannelSelector="R" yChannelSelector="G" />
-              </filter>
-            </svg>
-
-            {/* The moving graphics layer (NO filter applied here directly) */}
-            <div className="absolute top-0 left-0 w-full h-[200vh] animate-multiverse-flow">
-              
-              {/* Flowing Cosmic Energy Clouds */}
-              <div className="absolute inset-0"
-                   style={{
-                     backgroundImage: `
-                       radial-gradient(circle at 20% 10%, rgba(16, 185, 129, 0.8) 0%, transparent 40vw),
-                       radial-gradient(circle at 80% 30%, rgba(59, 130, 246, 0.5) 0%, transparent 40vw),
-                       radial-gradient(circle at 40% 60%, rgba(16, 185, 129, 0.9) 0%, transparent 30vw),
-                       radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.6) 0%, transparent 40vw),
-                       linear-gradient(to top, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.1))
-                     `,
-                     backgroundSize: '100% 50%' 
-                   }}>
-              </div>
-              
-              {/* Multiverse Timelines / Threads */}
-              <div className="absolute inset-0 flex justify-evenly opacity-60">
-                  <div className="w-[3px] h-full" style={{ backgroundImage: 'linear-gradient(to bottom, rgba(16, 185, 129, 0.8) 0%, transparent 10%, rgba(16, 185, 129, 0.8) 20%)', backgroundSize: '100% 12.5%' }}></div>
-                  <div className="w-[1px] h-full" style={{ backgroundImage: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.6) 0%, transparent 30%, rgba(59, 130, 246, 0.6) 60%)', backgroundSize: '100% 25%' }}></div>
-                  <div className="w-[4px] h-full" style={{ backgroundImage: 'linear-gradient(to bottom, rgba(16, 185, 129, 0.9) 0%, transparent 15%, rgba(16, 185, 129, 0.9) 30%)', backgroundSize: '100% 10%' }}></div>
-                  <div className="w-[2px] h-full" style={{ backgroundImage: 'linear-gradient(to bottom, rgba(16, 185, 129, 0.5) 0%, transparent 40%, rgba(16, 185, 129, 0.5) 80%)', backgroundSize: '100% 25%' }}></div>
-                  <div className="w-[3px] h-full" style={{ backgroundImage: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7) 0%, transparent 20%, rgba(59, 130, 246, 0.7) 40%)', backgroundSize: '100% 50%' }}></div>
-              </div>
+            {/* Flowing Cosmic Energy Clouds */}
+            <div className="absolute top-0 left-0 w-[100vw] h-[200vh] animate-multiverse-flow"
+                 style={{
+                   backgroundImage: `
+                     radial-gradient(circle at 20% 10%, rgba(16, 185, 129, 0.8) 0%, transparent 40vw),
+                     radial-gradient(circle at 80% 30%, rgba(59, 130, 246, 0.5) 0%, transparent 40vw),
+                     radial-gradient(circle at 40% 60%, rgba(16, 185, 129, 0.9) 0%, transparent 30vw),
+                     radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.6) 0%, transparent 40vw),
+                     linear-gradient(to top, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.1))
+                   `,
+                   backgroundSize: '100% 50%' // Essential for the seamless translateY(-50%) loop
+                 }}>
             </div>
-
-            {/* 
-                The adjustment layer.
-                Instead of filtering the elements, we put a clear layer in FRONT of them 
-                and tell the OS compositor to filter the pixels behind it. Safari loves this.
-            */}
-            <div className="absolute inset-0 z-10" style={{ backdropFilter: 'url(#loki-multiverse)', WebkitBackdropFilter: 'url(#loki-multiverse)' }}></div>
+            
+            {/* Multiverse Timelines / Threads */}
+            <div className="absolute top-0 left-0 w-full h-[200vh] animate-multiverse-flow flex justify-evenly opacity-50">
+                <div className="w-[3px] h-full" style={{ backgroundImage: 'linear-gradient(to bottom, rgba(16, 185, 129, 0.8) 0%, transparent 10%, rgba(16, 185, 129, 0.8) 20%)', backgroundSize: '100% 12.5%' }}></div>
+                <div className="w-[1px] h-full" style={{ backgroundImage: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.6) 0%, transparent 30%, rgba(59, 130, 246, 0.6) 60%)', backgroundSize: '100% 25%' }}></div>
+                <div className="w-[4px] h-full" style={{ backgroundImage: 'linear-gradient(to bottom, rgba(16, 185, 129, 0.9) 0%, transparent 15%, rgba(16, 185, 129, 0.9) 30%)', backgroundSize: '100% 10%' }}></div>
+                <div className="w-[2px] h-full" style={{ backgroundImage: 'linear-gradient(to bottom, rgba(16, 185, 129, 0.5) 0%, transparent 40%, rgba(16, 185, 129, 0.5) 80%)', backgroundSize: '100% 25%' }}></div>
+                <div className="w-[3px] h-full" style={{ backgroundImage: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7) 0%, transparent 20%, rgba(59, 130, 246, 0.7) 40%)', backgroundSize: '100% 50%' }}></div>
+            </div>
           </div>
         </div>
 
