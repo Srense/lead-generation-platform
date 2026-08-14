@@ -18,6 +18,8 @@ import ContactsViewer from './pages/admin/ContactsViewer';
 import VideoManager from './pages/admin/VideoManager';
 import UrgencyController from './pages/admin/UrgencyController';
 
+import FloatingSocials from './components/FloatingSocials';
+
 function AnimatedRoutes() {
   const location = useLocation();
   return (
@@ -121,6 +123,9 @@ function App() {
         <div className="relative z-10 w-full flex flex-col min-h-screen">
           <AnimatedRoutes />
         </div>
+
+        {/* Floating Social Action Buttons */}
+        <FloatingSocials />
       </Router>
     </AdminProvider>
   );
