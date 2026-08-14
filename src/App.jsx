@@ -81,23 +81,39 @@ function App() {
           <div className="absolute top-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-secondary/15 blur-[120px] animate-blob" style={{ animationDelay: '2s' }}></div>
           <div className="absolute -bottom-[20%] left-[20%] w-[70vw] h-[70vw] rounded-full bg-tertiary/10 blur-[130px] animate-blob" style={{ animationDelay: '5s' }}></div>
 
-          {/* Funnel Wormhole Light Effect (Bottom to Top) */}
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[150vw] max-w-[1600px] h-[70vh] pointer-events-none mix-blend-screen opacity-40 animate-wormhole"
-               style={{
-                 clipPath: 'polygon(45% 100%, 55% 100%, 100% 0, 0 0)',
-                 background: 'linear-gradient(to top, transparent 0%, rgba(16, 185, 129, 0.3) 20%, rgba(3, 40, 20, 0.1) 50%, rgba(16, 185, 129, 0.5) 80%, transparent 100%)',
-                 backgroundSize: '100% 200%'
-               }}>
-          </div>
+          {/* Multiverse SVG Filter */}
+          <svg className="hidden">
+            <filter id="loki-multiverse">
+              <feTurbulence type="fractalNoise" baseFrequency="0.006 0.004" numOctaves="3" result="noise" />
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="250" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+          </svg>
 
-          {/* Funnel Wormhole Light Effect (Top to Bottom) */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[150vw] max-w-[1600px] h-[70vh] pointer-events-none mix-blend-screen opacity-30 animate-wormhole"
-               style={{
-                 clipPath: 'polygon(45% 0, 55% 0, 100% 100%, 0 100%)',
-                 background: 'linear-gradient(to bottom, transparent 0%, rgba(59, 130, 246, 0.2) 20%, rgba(29, 78, 216, 0.1) 50%, rgba(16, 185, 129, 0.3) 80%, transparent 100%)',
-                 backgroundSize: '100% 200%',
-                 animationDirection: 'reverse'
-               }}>
+          {/* Loki Multiverse Flow */}
+          <div className="absolute inset-0 pointer-events-none opacity-60 mix-blend-screen" style={{ filter: 'url(#loki-multiverse)' }}>
+            
+            {/* Flowing Cosmic Energy Clouds */}
+            <div className="absolute top-0 left-0 w-[100vw] h-[200vh] animate-multiverse-flow"
+                 style={{
+                   backgroundImage: `
+                     radial-gradient(ellipse at 20% 10%, rgba(16, 185, 129, 0.8) 0%, transparent 40%),
+                     radial-gradient(ellipse at 80% 30%, rgba(59, 130, 246, 0.5) 0%, transparent 40%),
+                     radial-gradient(ellipse at 40% 60%, rgba(16, 185, 129, 0.9) 0%, transparent 30%),
+                     radial-gradient(ellipse at 90% 80%, rgba(59, 130, 246, 0.6) 0%, transparent 40%),
+                     linear-gradient(to top, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.1))
+                   `,
+                   backgroundSize: '100% 50%' // Essential for the seamless translateY(-50%) loop
+                 }}>
+            </div>
+            
+            {/* Multiverse Timelines / Threads */}
+            <div className="absolute top-0 left-0 w-full h-[200vh] animate-multiverse-flow flex justify-evenly opacity-50">
+                <div className="w-[3px] h-full" style={{ backgroundImage: 'linear-gradient(to bottom, rgba(16, 185, 129, 0.8) 0%, transparent 10%, rgba(16, 185, 129, 0.8) 20%)', backgroundSize: '100% 12.5%' }}></div>
+                <div className="w-[1px] h-full" style={{ backgroundImage: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.6) 0%, transparent 30%, rgba(59, 130, 246, 0.6) 60%)', backgroundSize: '100% 25%' }}></div>
+                <div className="w-[4px] h-full" style={{ backgroundImage: 'linear-gradient(to bottom, rgba(16, 185, 129, 0.9) 0%, transparent 15%, rgba(16, 185, 129, 0.9) 30%)', backgroundSize: '100% 10%' }}></div>
+                <div className="w-[2px] h-full" style={{ backgroundImage: 'linear-gradient(to bottom, rgba(16, 185, 129, 0.5) 0%, transparent 40%, rgba(16, 185, 129, 0.5) 80%)', backgroundSize: '100% 25%' }}></div>
+                <div className="w-[3px] h-full" style={{ backgroundImage: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7) 0%, transparent 20%, rgba(59, 130, 246, 0.7) 40%)', backgroundSize: '100% 50%' }}></div>
+            </div>
           </div>
         </div>
 
