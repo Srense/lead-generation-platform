@@ -73,9 +73,9 @@ function App() {
       <Router>
         {/* Elegant Organic Background Meshes */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none z-[0] bg-background">
-          <div className="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-primary-container/30 blur-[120px] animate-float" style={{ animationDuration: '10s' }}></div>
-          <div className="absolute top-[40%] -right-[10%] w-[50vw] h-[60vw] rounded-[100%] bg-secondary-container/40 blur-[130px] mix-blend-multiply animate-float" style={{ animationDuration: '12s', animationDelay: '2s' }}></div>
-          <div className="absolute -bottom-[20%] left-[20%] w-[60vw] h-[40vw] rounded-full bg-tertiary-container/30 blur-[120px] mix-blend-multiply animate-float" style={{ animationDuration: '15s', animationDelay: '4s' }}></div>
+          <div className="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-primary/20 blur-[100px] animate-float" style={{ animationDuration: '10s' }}></div>
+          <div className="absolute top-[30%] -right-[10%] w-[50vw] h-[60vw] rounded-[100%] bg-secondary/30 blur-[120px] mix-blend-multiply animate-float" style={{ animationDuration: '12s', animationDelay: '2s' }}></div>
+          <div className="absolute -bottom-[20%] left-[20%] w-[60vw] h-[40vw] rounded-full bg-tertiary/25 blur-[120px] mix-blend-multiply animate-float" style={{ animationDuration: '15s', animationDelay: '4s' }}></div>
         </div>
 
         {/* Core Router */}
