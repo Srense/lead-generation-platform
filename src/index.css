@@ -25,25 +25,25 @@ html {
 @layer components {
   /* Subtle Liquid Glass Effect (Dark Fintech) */
   .floral-glass {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(24, 24, 27, 0.5) 100%);
-    backdrop-filter: blur(24px) saturate(130%);
-    -webkit-backdrop-filter: blur(24px) saturate(130%);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: linear-gradient(135deg, rgba(39, 39, 42, 0.5) 0%, rgba(9, 9, 11, 0.85) 100%);
+    backdrop-filter: blur(32px) saturate(150%);
+    -webkit-backdrop-filter: blur(32px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-top: 1px solid rgba(255, 255, 255, 0.15);
-    border-left: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     position: relative;
     z-index: 1;
   }
 
   .floral-glass-heavy {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(9, 9, 11, 0.6) 100%);
-    backdrop-filter: blur(40px) saturate(150%);
-    -webkit-backdrop-filter: blur(40px) saturate(150%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(135deg, rgba(39, 39, 42, 0.6) 0%, rgba(9, 9, 11, 0.95) 100%);
+    backdrop-filter: blur(48px) saturate(150%);
+    -webkit-backdrop-filter: blur(48px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     border-left: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.15);
     position: relative;
     z-index: 1;
   }
