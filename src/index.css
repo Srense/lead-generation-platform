@@ -3,14 +3,23 @@
 @tailwind utilities;
 
 @layer base {
-  a, button, input, textarea {
+
+  a,
+  button,
+  input,
+  textarea {
     @apply transition-all duration-300;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Outfit', sans-serif;
   }
-  
+
   body {
     background-color: theme('colors.background');
     color: theme('colors.on-background');
@@ -23,6 +32,7 @@ html {
 }
 
 @layer components {
+
   /* Subtle Liquid Glass Effect (Dark Fintech) */
   .floral-glass {
     background: transparent;
@@ -32,6 +42,8 @@ html {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     position: relative;
     z-index: 1;
+  }
+
   .floral-glass-heavy {
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -50,12 +62,13 @@ html {
     background-position: left center;
     transition: background-size 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  
+
   .hover-water-fill:hover {
     background-size: 100% 100%;
   }
 
-  .floral-glass::before, .floral-glass-heavy::before {
+  .floral-glass::before,
+  .floral-glass-heavy::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -91,6 +104,7 @@ html {
       transform: translateY(12px);
       filter: blur(3px);
     }
+
     100% {
       opacity: 1;
       transform: translateY(0);
