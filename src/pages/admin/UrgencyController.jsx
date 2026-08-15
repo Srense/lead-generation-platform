@@ -86,7 +86,7 @@ export default function UrgencyController() {
                                     max="60"
                                     value={countdownMinutes}
                                     onChange={(e) => setCountdownMinutes(e.target.value)}
-                                    className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3 px-4 text-on-surface focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                                    className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3 px-4 text-on-surface focus:border-primary focus:bg-surface-variant/80 focus:ring-4 focus:ring-primary/10 outline-none transition-all"
                                 />
                                 <span className="text-xl font-bold text-on-surface-variant">:</span>
                                 <input
@@ -95,7 +95,7 @@ export default function UrgencyController() {
                                     max="59"
                                     value={countdownSeconds}
                                     onChange={(e) => setCountdownSeconds(e.target.value)}
-                                    className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3 px-4 text-on-surface focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                                    className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3 px-4 text-on-surface focus:border-primary focus:bg-surface-variant/80 focus:ring-4 focus:ring-primary/10 outline-none transition-all"
                                 />
                             </div>
 
@@ -103,7 +103,7 @@ export default function UrgencyController() {
                             <textarea
                                 value={bannerText}
                                 onChange={(e) => setBannerText(e.target.value)}
-                                className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3 px-4 text-on-surface h-24 resize-none mb-6 focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                                className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3 px-4 text-on-surface h-24 resize-none mb-6 focus:border-primary focus:bg-surface-variant/80 focus:ring-4 focus:ring-primary/10 outline-none transition-all"
                             ></textarea>
 
                             <button type="submit" className="w-full bg-primary text-white py-4 rounded-xl font-sans font-medium hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300">

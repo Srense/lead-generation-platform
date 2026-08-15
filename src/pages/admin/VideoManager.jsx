@@ -126,7 +126,7 @@ export default function VideoManager() {
                                     value={videoUrl}
                                     onChange={(e) => setVideoUrl(e.target.value)}
                                     placeholder={isLoading ? "Loading securely..." : "https://..."}
-                                    className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3.5 pl-12 pr-4 text-on-surface text-sm focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                                    className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3.5 pl-12 pr-4 text-on-surface text-sm focus:border-primary focus:bg-surface-variant/80 focus:ring-4 focus:ring-primary/10 outline-none transition-all"
                                 />
                             </div>
                         </div>
