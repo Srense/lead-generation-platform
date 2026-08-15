@@ -67,22 +67,6 @@ html {
   .ambient-shadow {
     box-shadow: 0 20px 50px -10px rgba(16, 185, 129, 0.1), 0 0 30px rgba(0, 0, 0, 0.8) inset;
   }
-
-  /* Loki Multiverse Background - iOS Fallback */
-  .loki-bg-container {
-    filter: url(#loki-multiverse);
-    /* For standard browsers, apply the filter */
-  }
-
-  /* iOS Safari specifically struggles with feDisplacementMap + mix-blend-mode on massive divs.
-     This disables the heavy SVG filter ONLY on iOS devices (which support -webkit-touch-callout),
-     falling back to just the beautiful glowing CSS CSS gradients which run at 60fps on iPhones! */
-  @supports (-webkit-touch-callout: none) {
-    .loki-bg-container {
-      filter: none;
-      /* We keep the opacity and mix-blend-screen from the Tailwind classes */
-    }
-  }
 }
 
 @layer utilities {

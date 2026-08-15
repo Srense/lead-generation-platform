@@ -92,7 +92,7 @@ function App() {
           </svg>
 
           {/* Loki Multiverse Flow */}
-          <div className="loki-bg-container absolute inset-0 pointer-events-none opacity-60 mix-blend-screen">
+          <div className="absolute inset-0 pointer-events-none opacity-60 mix-blend-screen" style={{ filter: 'url(#loki-multiverse)' }}>
             
             {/* Flowing Cosmic Energy Clouds */}
             <div className="absolute top-0 left-0 w-[100vw] h-[200vh] animate-multiverse-flow"
