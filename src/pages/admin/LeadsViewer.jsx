@@ -85,7 +85,7 @@ export default function LeadsViewer() {
                             </thead>
                             <tbody className="divide-y divide-outline-variant/40 w-full">
                                 {leads.map((lead) => (
-                                    <tr key={lead.id} className="hover:bg-white/40 transition-colors group">
+                                    <tr key={lead.id} className="hover-water-fill group">
                                         <td className="p-5">
                                             <div className="font-semibold text-on-surface text-sm">{lead.name}</div>
                                             <div className="text-xs text-on-surface-variant mt-1">{lead.date}</div>

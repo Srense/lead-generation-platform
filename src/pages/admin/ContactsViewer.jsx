@@ -80,7 +80,7 @@ export default function ContactsViewer() {
                             </thead>
                             <tbody className="divide-y divide-outline-variant/40 w-full">
                                 {contacts.map((contact) => (
-                                    <tr key={contact.id} className="hover:bg-white/40 transition-colors group">
+                                    <tr key={contact.id} className="hover-water-fill group">
                                         <td className="p-5">
                                             <div className="font-semibold text-on-surface text-sm">{contact.name}</div>
                                             <div className="text-xs text-on-surface-variant mt-1">{contact.date}</div>

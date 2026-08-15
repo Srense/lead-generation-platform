@@ -32,8 +32,6 @@ html {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     position: relative;
     z-index: 1;
-  }
-
   .floral-glass-heavy {
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -42,6 +40,19 @@ html {
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
     position: relative;
     z-index: 1;
+  }
+
+  /* Water fill hover effect for table rows */
+  .hover-water-fill {
+    background-image: linear-gradient(90deg, rgba(82, 82, 91, 0.4), rgba(39, 39, 42, 0.6));
+    background-size: 0% 100%;
+    background-repeat: no-repeat;
+    background-position: left center;
+    transition: background-size 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .hover-water-fill:hover {
+    background-size: 100% 100%;
   }
 
   .floral-glass::before, .floral-glass-heavy::before {
