@@ -16,15 +16,30 @@ export default function Dashboard() {
     const [submitStatus, setSubmitStatus] = useState(null);
     const [videoAsset, setVideoAsset] = useState(null);
     const [showSkipWarning, setShowSkipWarning] = useState(false);
+    const [isRegistered, setIsRegistered] = useState(() => {
+        return localStorage.getItem('user_registered') === 'true';
+    });
+    const [isVideoCompleted, setIsVideoCompleted] = useState(() => {
+        return localStorage.getItem('video_completed') === 'true';
+    });
 
     const videoRef = useRef(null);
     const maxWatchedTimeRef = useRef(0);
+    const bootcampRef = useRef(null);
     const navigate = useNavigate();
 
-    // Anti-skip handlers
+    // Anti-skip & completion handlers
     const handleTimeUpdate = () => {
         if (!videoRef.current) return;
         const current = videoRef.current.currentTime;
+        const duration = videoRef.current.duration;
+
+        // Check completion if near end
+        if (duration && current >= duration - 1) {
+            setIsVideoCompleted(true);
+            localStorage.setItem('video_completed', 'true');
+        }
+
         // If current time jumped ahead of max watched time by more than 1.5 seconds
         if (current > maxWatchedTimeRef.current + 1.5) {
             videoRef.current.currentTime = maxWatchedTimeRef.current;
@@ -44,8 +59,23 @@ export default function Dashboard() {
         }
     };
 
+    const handleVideoEnded = () => {
+        setIsVideoCompleted(true);
+        localStorage.setItem('video_completed', 'true');
+    };
+
     const handleDismissWarning = () => {
         setShowSkipWarning(false);
+        if (videoRef.current) {
+            videoRef.current.play().catch(() => {});
+        }
+    };
+
+    const scrollToVideo = () => {
+        const videoElement = document.getElementById('training');
+        if (videoElement) {
+            videoElement.scrollIntoView({ behavior: 'smooth' });
+        }
         if (videoRef.current) {
             videoRef.current.play().catch(() => {});
         }
@@ -88,10 +118,16 @@ export default function Dashboard() {
             city: formData.city
         });
         setIsSubmitting(false);
-        if (result.success) {
-            navigate('/success');
-        } else if (result.isDuplicate) {
-            setSubmitStatus('duplicate');
+        if (result.success || result.isDuplicate) {
+            setIsRegistered(true);
+            localStorage.setItem('user_registered', 'true');
+            setSubmitStatus(result.isDuplicate ? 'duplicate' : 'success');
+            setTimeout(() => {
+                const bootcampElement = document.getElementById('hbootcamp');
+                if (bootcampElement) {
+                    bootcampElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 200);
         } else {
             setSubmitStatus('error');
         }
@@ -150,6 +186,7 @@ export default function Dashboard() {
                                     crossOrigin="anonymous"
                                     onTimeUpdate={handleTimeUpdate}
                                     onSeeking={handleSeeking}
+                                    onEnded={handleVideoEnded}
                                     onContextMenu={(e) => e.preventDefault()}
                                     controlsList="nodownload noplaybackrate"
                                     className="w-full h-auto aspect-video object-contain bg-transparent opacity-90"
@@ -218,7 +255,12 @@ export default function Dashboard() {
                         <div className="floral-glass-heavy rounded-3xl p-8 ambient-shadow relative">
                             {submitStatus === 'duplicate' && (
                                 <div className="bg-primary/10 border border-primary/20 text-primary p-4 rounded-xl text-sm mb-6 animate-in slide-in-from-top-2 flex gap-2 items-center">
-                                    <span className="material-symbols-outlined">info</span> We already have your details! Please check your inbox.
+                                    <span className="material-symbols-outlined">info</span> We already have your details! Your registration is active.
+                                </div>
+                            )}
+                            {submitStatus === 'success' && (
+                                <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-4 rounded-xl text-sm mb-6 animate-in slide-in-from-top-2 flex gap-2 items-center">
+                                    <span className="material-symbols-outlined">check_circle</span> Application submitted successfully! See HBootcamp below.
                                 </div>
                             )}
                             {submitStatus === 'error' && (
@@ -265,6 +307,108 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </section>
+
+                {/* HBootcamp Section - Appears below application form and above footer */}
+                {isRegistered && (
+                    <section className="py-20 px-margin-mobile md:px-gutter max-w-6xl mx-auto border-t border-white/10 animate-in fade-in slide-in-from-bottom-6 duration-500" id="hbootcamp" ref={bootcampRef}>
+                        <div className="floral-glass-heavy rounded-3xl p-8 md:p-14 ambient-shadow relative overflow-hidden">
+                            {/* Decorative background glows */}
+                            <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
+                            <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+                            {!isVideoCompleted ? (
+                                /* LOCKED STATE */
+                                <div className="relative z-10 text-center max-w-2xl mx-auto">
+                                    <div className="w-20 h-20 rounded-3xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(245,158,11,0.2)]">
+                                        <span className="material-symbols-outlined text-4xl animate-pulse">lock</span>
+                                    </div>
+
+                                    <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-300 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
+                                        <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                                        Step 1 of 2 Complete (Registered)
+                                    </div>
+
+                                    <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
+                                        HBootcamp Access Locked
+                                    </h2>
+
+                                    <p className="text-on-surface-variant text-base leading-relaxed mb-8">
+                                        You have to first complete the video above to unlock the bootcamp. Please watch the complete training without skipping to unlock all curriculum modules and materials.
+                                    </p>
+
+                                    <div className="p-4 rounded-2xl bg-black/40 border border-white/10 mb-8 text-left space-y-3">
+                                        <div className="flex items-center justify-between text-xs text-on-surface-variant font-medium">
+                                            <span>Video Training Progress</span>
+                                            <span className="text-amber-400 font-bold">Watching In Progress</span>
+                                        </div>
+                                        <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+                                            <div className="bg-amber-400 h-full rounded-full transition-all duration-300" style={{ width: '40%' }}></div>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={scrollToVideo}
+                                        className="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black px-8 py-4 rounded-full font-sans text-sm tracking-widest uppercase font-bold transition-all duration-300 shadow-[0_0_30px_rgba(245,158,11,0.3)] hover:scale-105"
+                                    >
+                                        <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>play_circle</span>
+                                        Watch Video Training Above
+                                    </button>
+                                </div>
+                            ) : (
+                                /* UNLOCKED STATE */
+                                <div className="relative z-10 text-center max-w-3xl mx-auto">
+                                    <div className="w-20 h-20 rounded-3xl bg-primary/20 border border-primary/40 text-primary flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(16,185,129,0.4)]">
+                                        <span className="material-symbols-outlined text-4xl">lock_open</span>
+                                    </div>
+
+                                    <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 text-primary px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
+                                        <span className="material-symbols-outlined text-sm">verified</span>
+                                        Full Access Unlocked
+                                    </div>
+
+                                    <h2 className="font-display text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight text-gradient-shimmer">
+                                        Welcome to HBootcamp!
+                                    </h2>
+
+                                    <p className="text-on-surface-variant text-base leading-relaxed mb-8 max-w-xl mx-auto">
+                                        Congratulations! You have completed the prerequisite training and registered your spot. Your full HBootcamp curriculum is now unlocked.
+                                    </p>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left mb-8">
+                                        <div className="p-5 rounded-2xl bg-black/40 border border-primary/20">
+                                            <span className="text-primary text-xl font-bold block mb-1">Module 01</span>
+                                            <h4 className="text-white font-semibold text-sm mb-1">Foundations & Mindset</h4>
+                                            <p className="text-xs text-on-surface-variant">Core setup and modern opportunities.</p>
+                                        </div>
+                                        <div className="p-5 rounded-2xl bg-black/40 border border-primary/20">
+                                            <span className="text-primary text-xl font-bold block mb-1">Module 02</span>
+                                            <h4 className="text-white font-semibold text-sm mb-1">High-Converting Systems</h4>
+                                            <p className="text-xs text-on-surface-variant">Traffic generation & workflows.</p>
+                                        </div>
+                                        <div className="p-5 rounded-2xl bg-black/40 border border-primary/20">
+                                            <span className="text-primary text-xl font-bold block mb-1">Module 03</span>
+                                            <h4 className="text-white font-semibold text-sm mb-1">Execution & Scale</h4>
+                                            <p className="text-xs text-on-surface-variant">1-on-1 support and roadmap.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-6 rounded-2xl bg-primary/10 border border-primary/30 text-center">
+                                        <p className="text-primary font-medium text-sm mb-3">Our team is reviewing your profile and will connect with your access keys via WhatsApp / Email.</p>
+                                        <a
+                                            href="https://wa.me/"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-2 bg-primary text-black px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-primary-container transition-all"
+                                        >
+                                            <span className="material-symbols-outlined text-base">chat</span>
+                                            Join Bootcamp Onboarding
+                                        </a>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </section>
+                )}
             </main>
             <Footer />
         </div>
