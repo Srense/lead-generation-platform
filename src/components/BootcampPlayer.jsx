@@ -36,11 +36,22 @@ export const getEmbedUrl = (rawUrl) => {
     };
 };
 
+// Helper to create a unique fingerprint for a module and its specific video URL
+const getModuleCompletionKey = (moduleId, videoUrl) => {
+    if (!moduleId) return '';
+    try {
+        const urlHash = videoUrl ? btoa(encodeURIComponent(videoUrl)).replace(/[^a-zA-Z0-9]/g, '').slice(0, 16) : 'nourl';
+        return `${moduleId}_${urlHash}`;
+    } catch {
+        return `${moduleId}_${(videoUrl || '').length}`;
+    }
+};
+
 export default function BootcampPlayer({ modules = [], userEmail = '' }) {
     const [activeModuleIndex, setActiveModuleIndex] = useState(0);
-    const [completedModuleIds, setCompletedModuleIds] = useState(() => {
+    const [completedModuleKeys, setCompletedModuleKeys] = useState(() => {
         try {
-            const saved = localStorage.getItem(`bootcamp_completed_modules_${userEmail}`) || localStorage.getItem('bootcamp_completed_modules');
+            const saved = localStorage.getItem(`bootcamp_completed_keys_${userEmail}`) || localStorage.getItem('bootcamp_completed_keys');
             return saved ? JSON.parse(saved) : [];
         } catch {
             return [];
@@ -56,17 +67,20 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
     const ytContainerRef = useRef(null);
 
     const activeModule = modules[activeModuleIndex] || modules[0];
-    const isCurrentModuleCompleted = activeModule && completedModuleIds.includes(activeModule.id);
+    const activeModuleKey = activeModule ? getModuleCompletionKey(activeModule.id, activeModule.videoUrl) : null;
+    const isCurrentModuleCompleted = Boolean(activeModuleKey && completedModuleKeys.includes(activeModuleKey));
 
-    // Save completed modules
-    const handleModuleCompleted = (moduleId) => {
-        if (!moduleId) return;
-        setCompletedModuleIds((prev) => {
-            if (prev.includes(moduleId)) return prev;
-            const updated = [...prev, moduleId];
+    // Save completed modules keyed by both ID and video URL
+    const handleModuleCompleted = (moduleObj) => {
+        const target = moduleObj || activeModule;
+        if (!target) return;
+        const key = getModuleCompletionKey(target.id, target.videoUrl);
+        setCompletedModuleKeys((prev) => {
+            if (prev.includes(key)) return prev;
+            const updated = [...prev, key];
             try {
-                localStorage.setItem(`bootcamp_completed_modules_${userEmail}`, JSON.stringify(updated));
-                localStorage.setItem('bootcamp_completed_modules', JSON.stringify(updated));
+                localStorage.setItem(`bootcamp_completed_keys_${userEmail}`, JSON.stringify(updated));
+                localStorage.setItem('bootcamp_completed_keys', JSON.stringify(updated));
             } catch (e) { }
 
             // Trigger animation for next module
@@ -214,7 +228,8 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
         return null;
     }
 
-    const completedCount = modules.filter((m) => completedModuleIds.includes(m.id)).length;
+    const isModDone = (mod) => mod && completedModuleKeys.includes(getModuleCompletionKey(mod.id, mod.videoUrl));
+    const completedCount = modules.filter(isModDone).length;
     const progressPercent = Math.round((completedCount / modules.length) * 100);
 
     return (
@@ -350,9 +365,9 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                     </div>
 
                     {modules.map((mod, idx) => {
-                        const isCompleted = completedModuleIds.includes(mod.id);
+                        const isCompleted = isModDone(mod);
                         // Module 0 is unlocked by default; subsequent modules unlock if previous is completed
-                        const isUnlocked = idx === 0 || completedModuleIds.includes(modules[idx - 1]?.id);
+                        const isUnlocked = idx === 0 || isModDone(modules[idx - 1]);
                         const isActive = idx === activeModuleIndex;
                         const isJustUnlocked = newlyUnlockedIndex === idx;
 
