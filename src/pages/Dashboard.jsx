@@ -1,6 +1,6 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { submitLead } from '../lib/submitLead';
 import Loader from '../components/Loader';
@@ -15,7 +15,41 @@ export default function Dashboard() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState(null);
     const [videoAsset, setVideoAsset] = useState(null);
+    const [showSkipWarning, setShowSkipWarning] = useState(false);
+
+    const videoRef = useRef(null);
+    const maxWatchedTimeRef = useRef(0);
     const navigate = useNavigate();
+
+    // Anti-skip handlers
+    const handleTimeUpdate = () => {
+        if (!videoRef.current) return;
+        const current = videoRef.current.currentTime;
+        // If current time jumped ahead of max watched time by more than 1.5 seconds
+        if (current > maxWatchedTimeRef.current + 1.5) {
+            videoRef.current.currentTime = maxWatchedTimeRef.current;
+            setShowSkipWarning(true);
+        } else {
+            maxWatchedTimeRef.current = Math.max(maxWatchedTimeRef.current, current);
+        }
+    };
+
+    const handleSeeking = () => {
+        if (!videoRef.current) return;
+        const current = videoRef.current.currentTime;
+        // If seeking ahead of max watched time
+        if (current > maxWatchedTimeRef.current + 0.5) {
+            videoRef.current.currentTime = maxWatchedTimeRef.current;
+            setShowSkipWarning(true);
+        }
+    };
+
+    const handleDismissWarning = () => {
+        setShowSkipWarning(false);
+        if (videoRef.current) {
+            videoRef.current.play().catch(() => {});
+        }
+    };
 
     useEffect(() => {
         const fetchRemoteAssets = async () => {
@@ -104,7 +138,23 @@ export default function Dashboard() {
                     <div className="relative w-full rounded-[2rem] overflow-hidden floral-glass ambient-shadow flex items-center justify-center p-3 border border-white/5">
                         <div className="w-full rounded-3xl overflow-hidden relative bg-transparent">
                             {videoAsset ? (
-                                <video key={videoAsset} src={videoAsset} controls autoPlay muted playsInline preload="auto" crossOrigin="anonymous" className="w-full h-auto aspect-video object-contain bg-transparent opacity-90" poster="https://lh3.googleusercontent.com/aida-public/AB6AXuBpqbbDm_XhvRdXIWcfOR5axXjqhSEYYNj6YQ-TGgqF57fvnC5mQfK2ICeygyPmIyA0DvnsJOxuFuXjl28bI9i8k2oBUF6-2q_Jj0VwWBPVqVSFgNMecsa-Ta3kmnBi0ppQ4EPO5Y9T91AxJ9j3TOTJMG_kgLmeik_bDrXbxPw_o7bAvXI37k5LjynpslUP9SYsZBi19UPRNQ0rbQK9rJ-ORVILPUitwg62DATQ8fUM0L3-yEfDA4-PmiKABimKO5K7vQSMhIUEvNHZ" />
+                                <video
+                                    ref={videoRef}
+                                    key={videoAsset}
+                                    src={videoAsset}
+                                    controls
+                                    autoPlay
+                                    muted
+                                    playsInline
+                                    preload="auto"
+                                    crossOrigin="anonymous"
+                                    onTimeUpdate={handleTimeUpdate}
+                                    onSeeking={handleSeeking}
+                                    onContextMenu={(e) => e.preventDefault()}
+                                    controlsList="nodownload noplaybackrate"
+                                    className="w-full h-auto aspect-video object-contain bg-transparent opacity-90"
+                                    poster="https://lh3.googleusercontent.com/aida-public/AB6AXuBpqbbDm_XhvRdXIWcfOR5axXjqhSEYYNj6YQ-TGgqF57fvnC5mQfK2ICeygyPmIyA0DvnsJOxuFuXjl28bI9i8k2oBUF6-2q_Jj0VwWBPVqVSFgNMecsa-Ta3kmnBi0ppQ4EPO5Y9T91AxJ9j3TOTJMG_kgLmeik_bDrXbxPw_o7bAvXI37k5LjynpslUP9SYsZBi19UPRNQ0rbQK9rJ-ORVILPUitwg62DATQ8fUM0L3-yEfDA4-PmiKABimKO5K7vQSMhIUEvNHZ"
+                                />
                             ) : (
                                 <div className="relative w-full aspect-video flex items-center justify-center group cursor-pointer bg-surface/50">
                                     <div className="absolute inset-0 z-0">
@@ -118,6 +168,32 @@ export default function Dashboard() {
                         </div>
                     </div>
                 </section>
+
+                {/* Anti-Skip Warning Modal */}
+                {showSkipWarning && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+                        <div className="floral-glass-heavy border border-amber-500/30 rounded-3xl p-8 max-w-md w-full text-center relative shadow-[0_0_50px_rgba(245,158,11,0.2)] animate-in zoom-in-95 duration-200">
+                            <div className="w-16 h-16 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto mb-5 border border-amber-500/30">
+                                <span className="material-symbols-outlined text-3xl">warning</span>
+                            </div>
+                            
+                            <h3 className="font-display text-2xl font-bold text-white mb-2 tracking-tight">
+                                Skipping Video Is Not Allowed
+                            </h3>
+                            
+                            <p className="text-on-surface-variant text-sm leading-relaxed mb-6">
+                                Skipping is not allowed. You have to watch the video completely to unlock the bootcamp.
+                            </p>
+                            
+                            <button
+                                onClick={handleDismissWarning}
+                                className="w-full py-3.5 px-6 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-bold uppercase tracking-wider text-xs rounded-xl shadow-lg transition-all transform active:scale-95"
+                            >
+                                Continue Watching
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 <section className="py-24 px-margin-mobile md:px-gutter relative" id="contact">
                     <div className="max-w-container-max mx-auto grid md:grid-cols-2 gap-16 items-start">
