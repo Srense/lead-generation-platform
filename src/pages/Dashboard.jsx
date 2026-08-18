@@ -30,7 +30,13 @@ export default function Dashboard() {
     const [isRegistered, setIsRegistered] = useState(() => {
         return localStorage.getItem('user_registered') === 'true';
     });
-    const [isVideoCompleted, setIsVideoCompleted] = useState(false);
+    const [isVideoCompleted, setIsVideoCompleted] = useState(() => {
+        const savedEmail = localStorage.getItem('user_email');
+        if (savedEmail && localStorage.getItem(`bootcamp_unlocked_${savedEmail}`) === 'true') {
+            return true;
+        }
+        return localStorage.getItem('bootcamp_unlocked') === 'true' || localStorage.getItem('video_completed') === 'true';
+    });
 
     const videoRef = useRef(null);
     const maxWatchedTimeRef = useRef(0);
@@ -40,12 +46,15 @@ export default function Dashboard() {
     const markVideoCompleted = (currentUrl) => {
         const urlToUse = currentUrl || videoAsset;
         setIsVideoCompleted(true);
+        localStorage.setItem('bootcamp_unlocked', 'true');
+        localStorage.setItem('video_completed', 'true');
         if (urlToUse) {
             const vKey = getVideoKey(urlToUse);
             localStorage.setItem(`completed_${vKey}`, 'true');
             const activeEmail = userEmail || localStorage.getItem('user_email');
             if (activeEmail) {
                 localStorage.setItem(`completed_${vKey}_${activeEmail}`, 'true');
+                localStorage.setItem(`bootcamp_unlocked_${activeEmail}`, 'true');
             }
         }
     };
@@ -116,6 +125,9 @@ export default function Dashboard() {
             if (!supabase) return;
 
             const savedEmail = localStorage.getItem('user_email');
+            const alreadyUnlocked =
+                localStorage.getItem('bootcamp_unlocked') === 'true' ||
+                (savedEmail && localStorage.getItem(`bootcamp_unlocked_${savedEmail}`) === 'true');
 
             // Fetch video
             const { data: videoData } = await supabase.from('config').select('value').eq('key', 'video_url').single();
@@ -123,10 +135,13 @@ export default function Dashboard() {
                 setVideoAsset(videoData.value);
                 const vKey = getVideoKey(videoData.value);
                 const isCompletedForThisVideo =
+                    alreadyUnlocked ||
                     localStorage.getItem(`completed_${vKey}`) === 'true' ||
                     (savedEmail && localStorage.getItem(`completed_${vKey}_${savedEmail}`) === 'true');
                 
                 setIsVideoCompleted(Boolean(isCompletedForThisVideo));
+            } else if (alreadyUnlocked) {
+                setIsVideoCompleted(true);
             }
 
             // Fetch urgency
