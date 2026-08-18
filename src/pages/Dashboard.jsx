@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { submitLead, checkLeadStatus } from '../lib/submitLead';
 import Loader from '../components/Loader';
+import BootcampPlayer from '../components/BootcampPlayer';
 
 // Helper to create a consistent storage key from video URL
 const getVideoKey = (url) => {
@@ -14,6 +15,33 @@ const getVideoKey = (url) => {
         return 'video_' + url.length;
     }
 };
+
+const DEFAULT_BOOTCAMP_MODULES = [
+    {
+        id: 'module-1',
+        title: 'Module 01: Foundations & Mindset',
+        description: 'Core fundamentals of digital business and high-income leverage systems.',
+        videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        duration: '12 mins',
+        resourceLink: ''
+    },
+    {
+        id: 'module-2',
+        title: 'Module 02: High-Converting Digital Systems',
+        description: 'Step-by-step blueprint for automating lead generation and conversion funnels.',
+        videoUrl: '',
+        duration: '18 mins',
+        resourceLink: ''
+    },
+    {
+        id: 'module-3',
+        title: 'Module 03: Execution, Scaling & Mentorship',
+        description: 'Roadmap to scale from first dollar to consistent daily recurring assets.',
+        videoUrl: '',
+        duration: '25 mins',
+        resourceLink: ''
+    }
+];
 
 export default function Dashboard() {
     const [minutes, setMinutes] = useState(14);
@@ -26,6 +54,7 @@ export default function Dashboard() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState(null);
     const [videoAsset, setVideoAsset] = useState(null);
+    const [bootcampModules, setBootcampModules] = useState(DEFAULT_BOOTCAMP_MODULES);
     const [showSkipWarning, setShowSkipWarning] = useState(false);
     const [isRegistered, setIsRegistered] = useState(() => {
         return localStorage.getItem('user_registered') === 'true';
@@ -163,6 +192,17 @@ export default function Dashboard() {
                     setSeconds(parsed.seconds);
                     setBannerText(parsed.text);
                     setIsUrgentVisible(parsed.visible);
+                } catch (e) { }
+            }
+
+            // Fetch Bootcamp modules
+            const { data: bootcampData } = await supabase.from('config').select('value').eq('key', 'bootcamp_modules').single();
+            if (bootcampData && bootcampData.value) {
+                try {
+                    const parsed = JSON.parse(bootcampData.value);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        setBootcampModules(parsed);
+                    }
                 } catch (e) { }
             }
 
@@ -437,45 +477,27 @@ export default function Dashboard() {
                                     </button>
                                 </div>
                             ) : (
-                                /* UNLOCKED STATE */
-                                <div className="relative z-10 text-center max-w-3xl mx-auto">
-                                    <div className="w-20 h-20 rounded-3xl bg-primary/20 border border-primary/40 text-primary flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(16,185,129,0.4)]">
-                                        <span className="material-symbols-outlined text-4xl">lock_open</span>
+                                /* UNLOCKED STATE - SEQUENTIAL BOOTCAMP MODULE PLAYER */
+                                <div className="relative z-10 w-full space-y-8">
+                                    <div className="text-center max-w-2xl mx-auto mb-8">
+                                        <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 text-primary px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
+                                            <span className="material-symbols-outlined text-sm">verified</span>
+                                            Full Access Unlocked
+                                        </div>
+
+                                        <h2 className="font-display text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight text-gradient-shimmer">
+                                            HBootcamp Video Masterclass
+                                        </h2>
+
+                                        <p className="text-on-surface-variant text-sm leading-relaxed max-w-xl mx-auto">
+                                            Welcome to your dedicated training curriculum. Complete each session to unlock the next advanced module.
+                                        </p>
                                     </div>
 
-                                    <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 text-primary px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
-                                        <span className="material-symbols-outlined text-sm">verified</span>
-                                        Full Access Unlocked
-                                    </div>
+                                    <BootcampPlayer modules={bootcampModules} userEmail={userEmail} />
 
-                                    <h2 className="font-display text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight text-gradient-shimmer">
-                                        Welcome to HBootcamp!
-                                    </h2>
-
-                                    <p className="text-on-surface-variant text-base leading-relaxed mb-8 max-w-xl mx-auto">
-                                        Congratulations! You have completed the prerequisite training and registered your spot. Your full HBootcamp curriculum is now unlocked.
-                                    </p>
-
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left mb-8">
-                                        <div className="p-5 rounded-2xl bg-black/40 border border-primary/20">
-                                            <span className="text-primary text-xl font-bold block mb-1">Module 01</span>
-                                            <h4 className="text-white font-semibold text-sm mb-1">Foundations & Mindset</h4>
-                                            <p className="text-xs text-on-surface-variant">Core setup and modern opportunities.</p>
-                                        </div>
-                                        <div className="p-5 rounded-2xl bg-black/40 border border-primary/20">
-                                            <span className="text-primary text-xl font-bold block mb-1">Module 02</span>
-                                            <h4 className="text-white font-semibold text-sm mb-1">High-Converting Systems</h4>
-                                            <p className="text-xs text-on-surface-variant">Traffic generation & workflows.</p>
-                                        </div>
-                                        <div className="p-5 rounded-2xl bg-black/40 border border-primary/20">
-                                            <span className="text-primary text-xl font-bold block mb-1">Module 03</span>
-                                            <h4 className="text-white font-semibold text-sm mb-1">Execution & Scale</h4>
-                                            <p className="text-xs text-on-surface-variant">1-on-1 support and roadmap.</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="p-6 rounded-2xl bg-primary/10 border border-primary/30 text-center">
-                                        <p className="text-primary font-medium text-sm mb-3">Our team is reviewing your profile and will connect with your access keys via WhatsApp / Email.</p>
+                                    <div className="p-6 rounded-2xl bg-primary/10 border border-primary/30 text-center max-w-2xl mx-auto mt-10">
+                                        <p className="text-primary font-medium text-sm mb-3">Need 1-on-1 assistance or have questions regarding these sessions?</p>
                                         <a
                                             href="https://wa.me/"
                                             target="_blank"
@@ -483,7 +505,7 @@ export default function Dashboard() {
                                             className="inline-flex items-center gap-2 bg-primary text-black px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-primary-container transition-all"
                                         >
                                             <span className="material-symbols-outlined text-base">chat</span>
-                                            Join Bootcamp Onboarding
+                                            Connect with Instructor Support
                                         </a>
                                     </div>
                                 </div>

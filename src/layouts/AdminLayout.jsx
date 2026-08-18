@@ -40,7 +40,11 @@ export default function AdminLayout() {
                     <div className="text-xs font-bold uppercase tracking-widest text-on-surface-variant/50 px-4 mb-2 mt-6">Configuration</div>
                     <Link to="/admin/video" onClick={() => setIsMobileMenuOpen(false)} className={navItemClass('/admin/video')}>
                         <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 0" }}>videocam</span>
-                        Video Manager
+                        Video Manager (Hero)
+                    </Link>
+                    <Link to="/admin/bootcamp" onClick={() => setIsMobileMenuOpen(false)} className={navItemClass('/admin/bootcamp')}>
+                        <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 0" }}>school</span>
+                        Bootcamp Modules
                     </Link>
                     <Link to="/admin/urgency" onClick={() => setIsMobileMenuOpen(false)} className={navItemClass('/admin/urgency')}>
                         <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 0" }}>notifications_active</span>

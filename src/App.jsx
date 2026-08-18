@@ -16,6 +16,7 @@ import CookiePolicy from './pages/CookiePolicy';
 import LeadsViewer from './pages/admin/LeadsViewer';
 import ContactsViewer from './pages/admin/ContactsViewer';
 import VideoManager from './pages/admin/VideoManager';
+import BootcampManager from './pages/admin/BootcampManager';
 import UrgencyController from './pages/admin/UrgencyController';
 
 import FloatingSocials from './components/FloatingSocials';
@@ -40,6 +41,7 @@ function AnimatedRoutes() {
           <Route path="leads" element={<LeadsViewer />} />
           <Route path="contacts" element={<ContactsViewer />} />
           <Route path="video" element={<VideoManager />} />
+          <Route path="bootcamp" element={<BootcampManager />} />
           <Route path="urgency" element={<UrgencyController />} />
         </Route>
       </Routes>
