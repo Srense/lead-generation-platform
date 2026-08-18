@@ -95,22 +95,6 @@ export default function Dashboard() {
         }
     };
 
-    // Helper to get watch time key for hero video
-    const getHeroWatchKey = (url) => {
-        const vKey = getVideoKey(url || videoAsset);
-        return `hero_watch_sec_${vKey}_${userEmail}`;
-    };
-
-    const updateHeroProgress = (currentTime) => {
-        if (currentTime > maxWatchedTimeRef.current) {
-            maxWatchedTimeRef.current = currentTime;
-            const sKey = getHeroWatchKey();
-            try {
-                localStorage.setItem(sKey, currentTime.toString());
-            } catch (e) { }
-        }
-    };
-
     // Anti-skip & completion handlers
     const handleTimeUpdate = () => {
         if (!videoRef.current) return;
@@ -132,7 +116,13 @@ export default function Dashboard() {
             videoRef.current.currentTime = maxWatchedTimeRef.current;
             setShowSkipWarning(true);
         } else {
-            updateHeroProgress(current);
+            maxWatchedTimeRef.current = Math.max(maxWatchedTimeRef.current, current);
+            if (current > 2 && videoAsset) {
+                const vKey = getVideoKey(videoAsset);
+                try {
+                    localStorage.setItem(`hero_watch_sec_${vKey}`, current.toString());
+                } catch (e) {}
+            }
         }
     };
 
@@ -196,12 +186,11 @@ export default function Dashboard() {
                     (savedEmail && localStorage.getItem(`completed_${vKey}_${savedEmail}`) === 'true');
                 
                 setIsCurrentVideoCompleted(Boolean(isThisVideoDone));
-
-                const savedSec = parseFloat(localStorage.getItem(`hero_watch_sec_${vKey}_${savedEmail || ''}`) || '0');
-                const validSec = !isNaN(savedSec) && savedSec > 0 ? savedSec : 0;
-                maxWatchedTimeRef.current = validSec;
-                if (videoRef.current && validSec > 2) {
-                    videoRef.current.currentTime = validSec;
+                const savedPos = parseFloat(localStorage.getItem(`hero_watch_sec_${vKey}`) || '0');
+                const validPos = !isNaN(savedPos) && savedPos > 0 ? savedPos : 0;
+                maxWatchedTimeRef.current = validPos;
+                if (videoRef.current && validPos > 2) {
+                    videoRef.current.currentTime = validPos;
                 }
             }
 

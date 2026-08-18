@@ -99,11 +99,38 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
         });
     };
 
-    // Reset module completion readiness on module switch
+    // Helper for watch progress storage key
+    const getWatchStorageKey = (key) => key ? `watch_sec_${key}_${userEmail}` : null;
+
+    // Load saved watch position and resume video on module switch
     useEffect(() => {
-        maxWatchedRef.current = 0;
+        const sKey = getWatchStorageKey(activeModuleKey);
+        const savedTime = sKey ? parseFloat(localStorage.getItem(sKey) || '0') : 0;
+        const validSaved = !isNaN(savedTime) && savedTime > 0 ? savedTime : 0;
+
+        maxWatchedRef.current = validSaved;
         setCanCompleteCurrentModule(false);
-    }, [activeModuleIndex]);
+
+        // Resume HTML5 video if exists
+        if (videoRef.current && validSaved > 2) {
+            videoRef.current.currentTime = validSaved;
+        }
+    }, [activeModuleIndex, activeModuleKey]);
+
+    // Save furthest watched progress helper
+    const saveWatchProgress = (currentTime) => {
+        if (currentTime > maxWatchedRef.current) {
+            maxWatchedRef.current = currentTime;
+        }
+        if (activeModuleKey && currentTime > 2) {
+            const sKey = getWatchStorageKey(activeModuleKey);
+            if (sKey) {
+                try {
+                    localStorage.setItem(sKey, currentTime.toString());
+                } catch (e) { }
+            }
+        }
+    };
 
     // --- Direct Video Anti-Skip Handlers ---
     const handleTimeUpdate = () => {
@@ -116,14 +143,14 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
         }
 
         if (duration && current >= duration - 0.5) {
-            handleModuleCompleted(activeModule?.id);
+            handleModuleCompleted(activeModule);
         }
 
         if (current > maxWatchedRef.current + 1.5) {
             videoRef.current.currentTime = maxWatchedRef.current;
             setShowModuleSkipWarning(true);
         } else {
-            maxWatchedRef.current = Math.max(maxWatchedRef.current, current);
+            saveWatchProgress(current);
         }
     };
 
@@ -138,7 +165,7 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
 
     const handleVideoEnded = () => {
         setCanCompleteCurrentModule(true);
-        handleModuleCompleted(activeModule?.id);
+        handleModuleCompleted(activeModule);
     };
 
     // --- YouTube IFrame API Anti-Skip & Tracking ---
@@ -165,6 +192,10 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                 ytPlayerRef.current.destroy();
             }
 
+            const sKey = getWatchStorageKey(activeModuleKey);
+            const savedTime = sKey ? parseFloat(localStorage.getItem(sKey) || '0') : 0;
+            const resumeAt = !isNaN(savedTime) && savedTime > 2 ? Math.floor(savedTime) : 0;
+
             ytPlayerRef.current = new window.YT.Player(ytContainerRef.current, {
                 videoId: embed.id,
                 playerVars: {
@@ -172,14 +203,20 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                     controls: 1,
                     modestbranding: 1,
                     rel: 0,
-                    playsinline: 1
+                    playsinline: 1,
+                    start: resumeAt
                 },
                 events: {
+                    onReady: (e) => {
+                        if (resumeAt > 0 && e.target && typeof e.target.seekTo === 'function') {
+                            e.target.seekTo(resumeAt, true);
+                        }
+                    },
                     onStateChange: (event) => {
                         // Ended state = 0
                         if (event.data === 0) {
                             setCanCompleteCurrentModule(true);
-                            handleModuleCompleted(activeModule?.id);
+                            handleModuleCompleted(activeModule);
                         }
                     }
                 }
@@ -206,7 +243,7 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                             ytPlayerRef.current.seekTo(maxWatchedRef.current, true);
                             setShowModuleSkipWarning(true);
                         } else {
-                            maxWatchedRef.current = Math.max(maxWatchedRef.current, current);
+                            saveWatchProgress(current);
                         }
                     }
                 } catch (e) { }
@@ -227,7 +264,7 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                 } catch (e) { }
             }
         };
-    }, [activeModuleIndex, activeModule?.videoUrl, isCurrentModuleCompleted]);
+    }, [activeModuleIndex, activeModuleKey, isCurrentModuleCompleted]);
 
     if (!modules || modules.length === 0) {
         return null;
@@ -323,7 +360,7 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                                 </span>
                             ) : canCompleteCurrentModule ? (
                                 <button
-                                    onClick={() => handleModuleCompleted(activeModule?.id)}
+                                    onClick={() => handleModuleCompleted(activeModule)}
                                     className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-400 to-primary text-black px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(16,185,129,0.5)] animate-bounce hover:scale-105 active:scale-95"
                                 >
                                     <span className="material-symbols-outlined text-base font-bold">task_alt</span>
