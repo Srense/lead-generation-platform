@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { submitLead, checkLeadStatus } from '../lib/submitLead';
 import Loader from '../components/Loader';
 import BootcampPlayer, { getEmbedUrl } from '../components/BootcampPlayer';
+import GovtProofSection from '../components/GovtProofSection';
 
 // Helper to create a consistent storage key from video URL
 const getVideoKey = (url) => {
@@ -383,6 +384,9 @@ export default function Dashboard() {
                         </div>
                     </div>
                 )}
+
+                {/* Government Registration & Legal Proof Showcase */}
+                <GovtProofSection />
 
                 <section className="py-24 px-margin-mobile md:px-gutter relative" id="contact">
                     <div className="max-w-container-max mx-auto grid md:grid-cols-2 gap-16 items-start">
