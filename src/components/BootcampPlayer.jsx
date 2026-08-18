@@ -42,12 +42,19 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
     });
     const [showModuleSkipWarning, setShowModuleSkipWarning] = useState(false);
     const [newlyUnlockedIndex, setNewlyUnlockedIndex] = useState(null);
+    const [canCompleteCurrentModule, setCanCompleteCurrentModule] = useState(false);
 
     const videoRef = useRef(null);
     const maxWatchedRef = useRef(0);
 
     const activeModule = modules[activeModuleIndex] || modules[0];
     const isCurrentModuleCompleted = activeModule && completedModuleIds.includes(activeModule.id);
+
+    // Reset module completion readiness on module switch
+    useEffect(() => {
+        maxWatchedRef.current = 0;
+        setCanCompleteCurrentModule(false);
+    }, [activeModuleIndex]);
 
     // Save completed modules
     const handleModuleCompleted = (moduleId) => {
@@ -77,10 +84,17 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
         const current = videoRef.current.currentTime;
         const duration = videoRef.current.duration;
 
-        if (duration && current >= duration - 1) {
+        // Enable complete button only in the last 10 seconds
+        if (duration && duration - current <= 10) {
+            setCanCompleteCurrentModule(true);
+        }
+
+        // Auto-complete when reaching very end
+        if (duration && current >= duration - 0.5) {
             handleModuleCompleted(activeModule?.id);
         }
 
+        // Anti-skip check
         if (current > maxWatchedRef.current + 1.5) {
             videoRef.current.currentTime = maxWatchedRef.current;
             setShowModuleSkipWarning(true);
@@ -99,13 +113,24 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
     };
 
     const handleVideoEnded = () => {
+        setCanCompleteCurrentModule(true);
         handleModuleCompleted(activeModule?.id);
     };
 
-    // Reset max watched tracking on module switch
+    // Listen for YouTube / iframe end postMessage if applicable
     useEffect(() => {
-        maxWatchedRef.current = 0;
-    }, [activeModuleIndex]);
+        const handleMessage = (e) => {
+            try {
+                const data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
+                if (data && (data.event === 'onStateChange' && data.info === 0)) {
+                    setCanCompleteCurrentModule(true);
+                    handleModuleCompleted(activeModule?.id);
+                }
+            } catch (err) {}
+        };
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, [activeModule]);
 
     if (!modules || modules.length === 0) {
         return null;
@@ -191,18 +216,23 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                                 </h3>
                             </div>
                             {isCurrentModuleCompleted ? (
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/20 border border-primary/40 text-primary text-xs font-bold uppercase tracking-wider">
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary/20 border border-primary/40 text-primary text-xs font-bold uppercase tracking-wider">
                                     <span className="material-symbols-outlined text-base">check_circle</span>
-                                    Completed
+                                    Session Completed
                                 </span>
-                            ) : (
+                            ) : canCompleteCurrentModule ? (
                                 <button
                                     onClick={() => handleModuleCompleted(activeModule?.id)}
-                                    className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-emerald-400 hover:from-emerald-400 hover:to-primary text-black px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md active:scale-95"
+                                    className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-400 to-primary text-black px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(16,185,129,0.5)] animate-bounce hover:scale-105 active:scale-95"
                                 >
-                                    <span className="material-symbols-outlined text-base">task_alt</span>
-                                    Mark as Completed
+                                    <span className="material-symbols-outlined text-base font-bold">task_alt</span>
+                                    Complete & Unlock Next Module
                                 </button>
+                            ) : (
+                                <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-on-surface-variant text-xs font-semibold">
+                                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                                    Watch to End to Unlock Next
+                                </span>
                             )}
                         </div>
 
