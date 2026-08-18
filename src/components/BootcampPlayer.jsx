@@ -1,16 +1,28 @@
 import { useState, useRef, useEffect } from 'react';
 
-// Helper to extract YouTube video ID
+// Helper to extract YouTube video ID from links, shorts, or iframe embed code
 export const getYouTubeVideoId = (rawUrl) => {
     if (!rawUrl) return null;
-    const match = rawUrl.trim().match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/i);
+    let url = rawUrl.trim();
+    // If an iframe snippet was pasted, extract src
+    const iframeSrc = url.match(/src=["']([^"']+)["']/i);
+    if (iframeSrc && iframeSrc[1]) {
+        url = iframeSrc[1];
+    }
+    const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/|live\/|watch\?.+&v=))([\w-]{11})/i);
     return match ? match[1] : null;
 };
 
-// Helper to convert standard video URLs to embeddable URLs
+// Helper to convert standard video URLs/embed codes to embeddable URLs
 export const getEmbedUrl = (rawUrl) => {
     if (!rawUrl) return null;
-    const url = rawUrl.trim();
+    let url = rawUrl.trim();
+
+    // If full iframe tag pasted
+    const iframeSrc = url.match(/src=["']([^"']+)["']/i);
+    if (iframeSrc && iframeSrc[1]) {
+        url = iframeSrc[1];
+    }
 
     const ytId = getYouTubeVideoId(url);
     if (ytId) {
@@ -27,6 +39,23 @@ export const getEmbedUrl = (rawUrl) => {
             type: 'vimeo',
             id: vimeoMatch[3],
             src: `https://player.vimeo.com/video/${vimeoMatch[3]}?badge=0&autopause=0&player_id=0`
+        };
+    }
+
+    // Google Drive Preview URL
+    const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/i);
+    if (driveMatch && driveMatch[1]) {
+        return {
+            type: 'iframe',
+            src: `https://drive.google.com/file/d/${driveMatch[1]}/preview`
+        };
+    }
+
+    // Generic iframe embed URL (e.g. iframes from Loom, Wistia, etc.)
+    if (url.includes('/embed/') || url.includes('/preview')) {
+        return {
+            type: 'iframe',
+            src: url
         };
     }
 

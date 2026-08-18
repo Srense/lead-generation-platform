@@ -211,14 +211,21 @@ export default function BootcampManager() {
                             <div>
                                 <label className="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Video Link / Embed URL</label>
                                 <input
-                                    type="url"
+                                    type="text"
                                     required
                                     value={editingModule.videoUrl}
-                                    onChange={(e) => setEditingModule({ ...editingModule, videoUrl: e.target.value })}
+                                    onChange={(e) => {
+                                        let val = e.target.value;
+                                        const iframeSrc = val.match(/src=["']([^"']+)["']/i);
+                                        if (iframeSrc && iframeSrc[1]) {
+                                            val = iframeSrc[1];
+                                        }
+                                        setEditingModule({ ...editingModule, videoUrl: val });
+                                    }}
                                     className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:border-primary outline-none"
-                                    placeholder="https://www.youtube.com/watch?v=... or MP4 URL"
+                                    placeholder="https://www.youtube.com/watch?v=... or <iframe> embed code"
                                 />
-                                <p className="text-xs text-on-surface-variant/70 mt-1">Supports YouTube, Vimeo, and direct .mp4/.webm streaming URLs.</p>
+                                <p className="text-xs text-on-surface-variant/70 mt-1">Paste standard link OR embed snippet (YouTube, Vimeo, Google Drive, MP4).</p>
                             </div>
 
                             <div>
