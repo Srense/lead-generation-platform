@@ -2,7 +2,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { submitLead, updateLeadVideoCompleted, checkLeadStatus } from '../lib/submitLead';
+import { submitLead, checkLeadStatus } from '../lib/submitLead';
 import Loader from '../components/Loader';
 
 export default function Dashboard() {
@@ -39,7 +39,6 @@ export default function Dashboard() {
         const activeEmail = userEmail || localStorage.getItem('user_email');
         if (activeEmail) {
             localStorage.setItem(`video_completed_${activeEmail}`, 'true');
-            updateLeadVideoCompleted(activeEmail);
         }
     };
 
@@ -118,14 +117,12 @@ export default function Dashboard() {
             // Sync user status if already registered
             const savedEmail = localStorage.getItem('user_email');
             if (savedEmail) {
+                if (localStorage.getItem(`video_completed_${savedEmail}`) === 'true') {
+                    setIsVideoCompleted(true);
+                }
                 const lead = await checkLeadStatus(savedEmail);
                 if (lead) {
                     setIsRegistered(true);
-                    if (lead.video_completed) {
-                        setIsVideoCompleted(true);
-                        localStorage.setItem('video_completed', 'true');
-                        localStorage.setItem(`video_completed_${savedEmail}`, 'true');
-                    }
                 }
             }
         };
@@ -143,8 +140,7 @@ export default function Dashboard() {
             name: formData.name,
             email: normalizedEmail,
             phone: formData.phone,
-            city: formData.city,
-            video_completed: isVideoCompleted
+            city: formData.city
         });
         setIsSubmitting(false);
         if (result.success || result.isDuplicate) {
@@ -154,7 +150,6 @@ export default function Dashboard() {
             localStorage.setItem('user_registered', 'true');
             if (isVideoCompleted) {
                 localStorage.setItem(`video_completed_${normalizedEmail}`, 'true');
-                updateLeadVideoCompleted(normalizedEmail);
             }
             setSubmitStatus(result.isDuplicate ? 'duplicate' : 'success');
             setTimeout(() => {
