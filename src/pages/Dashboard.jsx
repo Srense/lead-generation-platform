@@ -5,6 +5,16 @@ import { useNavigate } from 'react-router-dom';
 import { submitLead, checkLeadStatus } from '../lib/submitLead';
 import Loader from '../components/Loader';
 
+// Helper to create a consistent storage key from video URL
+const getVideoKey = (url) => {
+    if (!url) return 'default_video';
+    try {
+        return 'video_' + btoa(encodeURIComponent(url)).replace(/[^a-zA-Z0-9]/g, '').slice(0, 24);
+    } catch {
+        return 'video_' + url.length;
+    }
+};
+
 export default function Dashboard() {
     const [minutes, setMinutes] = useState(14);
     const [seconds, setSeconds] = useState(59);
@@ -20,25 +30,23 @@ export default function Dashboard() {
     const [isRegistered, setIsRegistered] = useState(() => {
         return localStorage.getItem('user_registered') === 'true';
     });
-    const [isVideoCompleted, setIsVideoCompleted] = useState(() => {
-        const savedEmail = localStorage.getItem('user_email');
-        if (savedEmail && localStorage.getItem(`video_completed_${savedEmail}`) === 'true') {
-            return true;
-        }
-        return localStorage.getItem('video_completed') === 'true';
-    });
+    const [isVideoCompleted, setIsVideoCompleted] = useState(false);
 
     const videoRef = useRef(null);
     const maxWatchedTimeRef = useRef(0);
     const bootcampRef = useRef(null);
     const navigate = useNavigate();
 
-    const markVideoCompleted = () => {
+    const markVideoCompleted = (currentUrl) => {
+        const urlToUse = currentUrl || videoAsset;
         setIsVideoCompleted(true);
-        localStorage.setItem('video_completed', 'true');
-        const activeEmail = userEmail || localStorage.getItem('user_email');
-        if (activeEmail) {
-            localStorage.setItem(`video_completed_${activeEmail}`, 'true');
+        if (urlToUse) {
+            const vKey = getVideoKey(urlToUse);
+            localStorage.setItem(`completed_${vKey}`, 'true');
+            const activeEmail = userEmail || localStorage.getItem('user_email');
+            if (activeEmail) {
+                localStorage.setItem(`completed_${vKey}_${activeEmail}`, 'true');
+            }
         }
     };
 
@@ -53,6 +61,11 @@ export default function Dashboard() {
             markVideoCompleted();
         }
 
+        // If user already completed this video, allow free seeking/rewatching
+        if (isVideoCompleted) {
+            return;
+        }
+
         // If current time jumped ahead of max watched time by more than 1.5 seconds
         if (current > maxWatchedTimeRef.current + 1.5) {
             videoRef.current.currentTime = maxWatchedTimeRef.current;
@@ -64,6 +77,10 @@ export default function Dashboard() {
 
     const handleSeeking = () => {
         if (!videoRef.current) return;
+        // If user already completed this video, allow free seeking
+        if (isVideoCompleted) {
+            return;
+        }
         const current = videoRef.current.currentTime;
         // If seeking ahead of max watched time
         if (current > maxWatchedTimeRef.current + 0.5) {
@@ -98,9 +115,19 @@ export default function Dashboard() {
             const { supabase } = await import('../lib/supabase');
             if (!supabase) return;
 
+            const savedEmail = localStorage.getItem('user_email');
+
             // Fetch video
             const { data: videoData } = await supabase.from('config').select('value').eq('key', 'video_url').single();
-            if (videoData && videoData.value) setVideoAsset(videoData.value);
+            if (videoData && videoData.value) {
+                setVideoAsset(videoData.value);
+                const vKey = getVideoKey(videoData.value);
+                const isCompletedForThisVideo =
+                    localStorage.getItem(`completed_${vKey}`) === 'true' ||
+                    (savedEmail && localStorage.getItem(`completed_${vKey}_${savedEmail}`) === 'true');
+                
+                setIsVideoCompleted(Boolean(isCompletedForThisVideo));
+            }
 
             // Fetch urgency
             const { data: urgencyData } = await supabase.from('config').select('value').eq('key', 'urgency_config').single();
@@ -114,12 +141,8 @@ export default function Dashboard() {
                 } catch (e) { }
             }
 
-            // Sync user status if already registered
-            const savedEmail = localStorage.getItem('user_email');
+            // Sync user registration status
             if (savedEmail) {
-                if (localStorage.getItem(`video_completed_${savedEmail}`) === 'true') {
-                    setIsVideoCompleted(true);
-                }
                 const lead = await checkLeadStatus(savedEmail);
                 if (lead) {
                     setIsRegistered(true);
@@ -148,8 +171,9 @@ export default function Dashboard() {
             setUserEmail(normalizedEmail);
             localStorage.setItem('user_email', normalizedEmail);
             localStorage.setItem('user_registered', 'true');
-            if (isVideoCompleted) {
-                localStorage.setItem(`video_completed_${normalizedEmail}`, 'true');
+            if (isVideoCompleted && videoAsset) {
+                const vKey = getVideoKey(videoAsset);
+                localStorage.setItem(`completed_${vKey}_${normalizedEmail}`, 'true');
             }
             setSubmitStatus(result.isDuplicate ? 'duplicate' : 'success');
             setTimeout(() => {
