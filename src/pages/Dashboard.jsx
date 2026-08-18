@@ -30,13 +30,18 @@ export default function Dashboard() {
     const [isRegistered, setIsRegistered] = useState(() => {
         return localStorage.getItem('user_registered') === 'true';
     });
-    const [isVideoCompleted, setIsVideoCompleted] = useState(() => {
+    
+    // Permanent Bootcamp unlock state
+    const [isBootcampUnlocked, setIsBootcampUnlocked] = useState(() => {
         const savedEmail = localStorage.getItem('user_email');
         if (savedEmail && localStorage.getItem(`bootcamp_unlocked_${savedEmail}`) === 'true') {
             return true;
         }
         return localStorage.getItem('bootcamp_unlocked') === 'true' || localStorage.getItem('video_completed') === 'true';
     });
+
+    // Per-video completion state (controls anti-skip for the active video)
+    const [isCurrentVideoCompleted, setIsCurrentVideoCompleted] = useState(false);
 
     const videoRef = useRef(null);
     const maxWatchedTimeRef = useRef(0);
@@ -45,9 +50,11 @@ export default function Dashboard() {
 
     const markVideoCompleted = (currentUrl) => {
         const urlToUse = currentUrl || videoAsset;
-        setIsVideoCompleted(true);
+        setIsCurrentVideoCompleted(true);
+        setIsBootcampUnlocked(true);
         localStorage.setItem('bootcamp_unlocked', 'true');
         localStorage.setItem('video_completed', 'true');
+
         if (urlToUse) {
             const vKey = getVideoKey(urlToUse);
             localStorage.setItem(`completed_${vKey}`, 'true');
@@ -70,8 +77,8 @@ export default function Dashboard() {
             markVideoCompleted();
         }
 
-        // If user already completed this video, allow free seeking/rewatching
-        if (isVideoCompleted) {
+        // If user already completed THIS specific video, allow free seeking
+        if (isCurrentVideoCompleted) {
             return;
         }
 
@@ -86,8 +93,8 @@ export default function Dashboard() {
 
     const handleSeeking = () => {
         if (!videoRef.current) return;
-        // If user already completed this video, allow free seeking
-        if (isVideoCompleted) {
+        // If user already completed THIS specific video, allow free seeking
+        if (isCurrentVideoCompleted) {
             return;
         }
         const current = videoRef.current.currentTime;
@@ -129,19 +136,22 @@ export default function Dashboard() {
                 localStorage.getItem('bootcamp_unlocked') === 'true' ||
                 (savedEmail && localStorage.getItem(`bootcamp_unlocked_${savedEmail}`) === 'true');
 
+            if (alreadyUnlocked) {
+                setIsBootcampUnlocked(true);
+            }
+
             // Fetch video
             const { data: videoData } = await supabase.from('config').select('value').eq('key', 'video_url').single();
             if (videoData && videoData.value) {
                 setVideoAsset(videoData.value);
                 const vKey = getVideoKey(videoData.value);
-                const isCompletedForThisVideo =
-                    alreadyUnlocked ||
+                // Check if user has watched THIS particular video before
+                const isThisVideoDone =
                     localStorage.getItem(`completed_${vKey}`) === 'true' ||
                     (savedEmail && localStorage.getItem(`completed_${vKey}_${savedEmail}`) === 'true');
                 
-                setIsVideoCompleted(Boolean(isCompletedForThisVideo));
-            } else if (alreadyUnlocked) {
-                setIsVideoCompleted(true);
+                setIsCurrentVideoCompleted(Boolean(isThisVideoDone));
+                maxWatchedTimeRef.current = 0; // reset for active video instance
             }
 
             // Fetch urgency
@@ -186,7 +196,10 @@ export default function Dashboard() {
             setUserEmail(normalizedEmail);
             localStorage.setItem('user_email', normalizedEmail);
             localStorage.setItem('user_registered', 'true');
-            if (isVideoCompleted && videoAsset) {
+            if (isBootcampUnlocked) {
+                localStorage.setItem(`bootcamp_unlocked_${normalizedEmail}`, 'true');
+            }
+            if (isCurrentVideoCompleted && videoAsset) {
                 const vKey = getVideoKey(videoAsset);
                 localStorage.setItem(`completed_${vKey}_${normalizedEmail}`, 'true');
             }
@@ -385,7 +398,7 @@ export default function Dashboard() {
                             <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
                             <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/10 blur-[100px] rounded-full pointer-events-none"></div>
 
-                            {!isVideoCompleted ? (
+                            {!isBootcampUnlocked ? (
                                 /* LOCKED STATE */
                                 <div className="relative z-10 text-center max-w-2xl mx-auto">
                                     <div className="w-20 h-20 rounded-3xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(245,158,11,0.2)]">
