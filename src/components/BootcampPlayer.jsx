@@ -1,29 +1,35 @@
 import { useState, useRef, useEffect } from 'react';
 
+// Helper to extract YouTube video ID
+export const getYouTubeVideoId = (rawUrl) => {
+    if (!rawUrl) return null;
+    const match = rawUrl.trim().match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/i);
+    return match ? match[1] : null;
+};
+
 // Helper to convert standard video URLs to embeddable URLs
 export const getEmbedUrl = (rawUrl) => {
     if (!rawUrl) return null;
     const url = rawUrl.trim();
 
-    // YouTube
-    const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/i);
-    if (ytMatch && ytMatch[1]) {
+    const ytId = getYouTubeVideoId(url);
+    if (ytId) {
         return {
             type: 'youtube',
-            src: `https://www.youtube-nocookie.com/embed/${ytMatch[1]}?enablejsapi=1&rel=0&modestbranding=1`
+            id: ytId,
+            src: `https://www.youtube-nocookie.com/embed/${ytId}?enablejsapi=1&rel=0&modestbranding=1`
         };
     }
 
-    // Vimeo
     const vimeoMatch = url.match(/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|video\/|)(\d+)/i);
     if (vimeoMatch && vimeoMatch[3]) {
         return {
             type: 'vimeo',
+            id: vimeoMatch[3],
             src: `https://player.vimeo.com/video/${vimeoMatch[3]}?badge=0&autopause=0&player_id=0`
         };
     }
 
-    // Direct MP4 / WebM
     return {
         type: 'direct',
         src: url
@@ -46,15 +52,11 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
 
     const videoRef = useRef(null);
     const maxWatchedRef = useRef(0);
+    const ytPlayerRef = useRef(null);
+    const ytContainerRef = useRef(null);
 
     const activeModule = modules[activeModuleIndex] || modules[0];
     const isCurrentModuleCompleted = activeModule && completedModuleIds.includes(activeModule.id);
-
-    // Reset module completion readiness on module switch
-    useEffect(() => {
-        maxWatchedRef.current = 0;
-        setCanCompleteCurrentModule(false);
-    }, [activeModuleIndex]);
 
     // Save completed modules
     const handleModuleCompleted = (moduleId) => {
@@ -78,23 +80,26 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
         });
     };
 
-    // Direct video anti-skip handlers
+    // Reset module completion readiness on module switch
+    useEffect(() => {
+        maxWatchedRef.current = 0;
+        setCanCompleteCurrentModule(false);
+    }, [activeModuleIndex]);
+
+    // --- Direct Video Anti-Skip Handlers ---
     const handleTimeUpdate = () => {
         if (!videoRef.current || isCurrentModuleCompleted) return;
         const current = videoRef.current.currentTime;
         const duration = videoRef.current.duration;
 
-        // Enable complete button only in the last 10 seconds
         if (duration && duration - current <= 10) {
             setCanCompleteCurrentModule(true);
         }
 
-        // Auto-complete when reaching very end
         if (duration && current >= duration - 0.5) {
             handleModuleCompleted(activeModule?.id);
         }
 
-        // Anti-skip check
         if (current > maxWatchedRef.current + 1.5) {
             videoRef.current.currentTime = maxWatchedRef.current;
             setShowModuleSkipWarning(true);
@@ -117,26 +122,98 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
         handleModuleCompleted(activeModule?.id);
     };
 
-    // Listen for YouTube / iframe end postMessage if applicable
+    // --- YouTube IFrame API Anti-Skip & Tracking ---
+    const embed = getEmbedUrl(activeModule?.videoUrl);
+
     useEffect(() => {
-        const handleMessage = (e) => {
-            try {
-                const data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
-                if (data && (data.event === 'onStateChange' && data.info === 0)) {
-                    setCanCompleteCurrentModule(true);
-                    handleModuleCompleted(activeModule?.id);
+        if (!embed || embed.type !== 'youtube') return;
+
+        // Load YouTube IFrame API script if not already present
+        if (!window.YT) {
+            const tag = document.createElement('script');
+            tag.src = 'https://www.youtube.com/iframe_api';
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        }
+
+        let interval = null;
+
+        const initPlayer = () => {
+            if (!window.YT || !window.YT.Player || !ytContainerRef.current) return;
+
+            // Destroy previous player instance if any
+            if (ytPlayerRef.current && typeof ytPlayerRef.current.destroy === 'function') {
+                ytPlayerRef.current.destroy();
+            }
+
+            ytPlayerRef.current = new window.YT.Player(ytContainerRef.current, {
+                videoId: embed.id,
+                playerVars: {
+                    autoplay: 0,
+                    controls: 1,
+                    modestbranding: 1,
+                    rel: 0,
+                    playsinline: 1
+                },
+                events: {
+                    onStateChange: (event) => {
+                        // Ended state = 0
+                        if (event.data === 0) {
+                            setCanCompleteCurrentModule(true);
+                            handleModuleCompleted(activeModule?.id);
+                        }
+                    }
                 }
-            } catch (err) {}
+            });
+
+            // Anti-skip interval polling for YouTube
+            interval = setInterval(() => {
+                if (!ytPlayerRef.current || typeof ytPlayerRef.current.getCurrentTime !== 'function') return;
+
+                try {
+                    const current = ytPlayerRef.current.getCurrentTime();
+                    const duration = ytPlayerRef.current.getDuration();
+
+                    if (!current || !duration) return;
+
+                    // Last 10 seconds check
+                    if (duration - current <= 10) {
+                        setCanCompleteCurrentModule(true);
+                    }
+
+                    // Anti-skip if not completed
+                    if (!isCurrentModuleCompleted) {
+                        if (current > maxWatchedRef.current + 2.5) {
+                            ytPlayerRef.current.seekTo(maxWatchedRef.current, true);
+                            setShowModuleSkipWarning(true);
+                        } else {
+                            maxWatchedRef.current = Math.max(maxWatchedRef.current, current);
+                        }
+                    }
+                } catch (e) { }
+            }, 500);
         };
-        window.addEventListener('message', handleMessage);
-        return () => window.removeEventListener('message', handleMessage);
-    }, [activeModule]);
+
+        if (window.YT && window.YT.Player) {
+            initPlayer();
+        } else {
+            window.onYouTubeIframeAPIReady = initPlayer;
+        }
+
+        return () => {
+            if (interval) clearInterval(interval);
+            if (ytPlayerRef.current && typeof ytPlayerRef.current.destroy === 'function') {
+                try {
+                    ytPlayerRef.current.destroy();
+                } catch (e) { }
+            }
+        };
+    }, [activeModuleIndex, activeModule?.videoUrl, isCurrentModuleCompleted]);
 
     if (!modules || modules.length === 0) {
         return null;
     }
 
-    const embed = getEmbedUrl(activeModule?.videoUrl);
     const completedCount = modules.filter((m) => completedModuleIds.includes(m.id)).length;
     const progressPercent = Math.round((completedCount / modules.length) * 100);
 
@@ -173,7 +250,11 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                 <div className="lg:col-span-2 space-y-6">
                     <div className="relative w-full aspect-video rounded-3xl overflow-hidden floral-glass-heavy border border-primary/20 shadow-[0_0_40px_rgba(16,185,129,0.15)] bg-black/60 flex items-center justify-center">
                         {embed ? (
-                            embed.type === 'direct' ? (
+                            embed.type === 'youtube' ? (
+                                <div className="w-full h-full">
+                                    <div ref={ytContainerRef} className="w-full h-full"></div>
+                                </div>
+                            ) : embed.type === 'direct' ? (
                                 <video
                                     ref={videoRef}
                                     key={embed.src}
@@ -329,7 +410,7 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                 </div>
             </div>
 
-            {/* Anti-Skip Warning Modal for Direct MP4s */}
+            {/* Anti-Skip Warning Modal */}
             {showModuleSkipWarning && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
                     <div className="floral-glass-heavy border border-amber-500/30 rounded-3xl p-8 max-w-md w-full text-center relative shadow-[0_0_50px_rgba(245,158,11,0.2)]">
