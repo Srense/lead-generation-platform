@@ -95,6 +95,22 @@ export default function Dashboard() {
         }
     };
 
+    // Helper to get watch time key for hero video
+    const getHeroWatchKey = (url) => {
+        const vKey = getVideoKey(url || videoAsset);
+        return `hero_watch_sec_${vKey}_${userEmail}`;
+    };
+
+    const updateHeroProgress = (currentTime) => {
+        if (currentTime > maxWatchedTimeRef.current) {
+            maxWatchedTimeRef.current = currentTime;
+            const sKey = getHeroWatchKey();
+            try {
+                localStorage.setItem(sKey, currentTime.toString());
+            } catch (e) { }
+        }
+    };
+
     // Anti-skip & completion handlers
     const handleTimeUpdate = () => {
         if (!videoRef.current) return;
@@ -116,7 +132,7 @@ export default function Dashboard() {
             videoRef.current.currentTime = maxWatchedTimeRef.current;
             setShowSkipWarning(true);
         } else {
-            maxWatchedTimeRef.current = Math.max(maxWatchedTimeRef.current, current);
+            updateHeroProgress(current);
         }
     };
 
@@ -180,7 +196,13 @@ export default function Dashboard() {
                     (savedEmail && localStorage.getItem(`completed_${vKey}_${savedEmail}`) === 'true');
                 
                 setIsCurrentVideoCompleted(Boolean(isThisVideoDone));
-                maxWatchedTimeRef.current = 0; // reset for active video instance
+
+                const savedSec = parseFloat(localStorage.getItem(`hero_watch_sec_${vKey}_${savedEmail || ''}`) || '0');
+                const validSec = !isNaN(savedSec) && savedSec > 0 ? savedSec : 0;
+                maxWatchedTimeRef.current = validSec;
+                if (videoRef.current && validSec > 2) {
+                    videoRef.current.currentTime = validSec;
+                }
             }
 
             // Fetch urgency

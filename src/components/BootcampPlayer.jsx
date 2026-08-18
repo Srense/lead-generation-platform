@@ -94,15 +94,47 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
         });
     };
 
-    // Reset module completion readiness on module switch
+    // Helper to get watch time storage key
+    const getWatchStorageKey = (key) => key ? `watched_sec_${key}_${userEmail}` : null;
+
+    // Reset / load module watch progress on module switch
     useEffect(() => {
-        maxWatchedRef.current = 0;
+        if (!activeModuleKey) {
+            maxWatchedRef.current = 0;
+            setCanCompleteCurrentModule(false);
+            return;
+        }
+
+        const sKey = getWatchStorageKey(activeModuleKey);
+        const savedTime = sKey ? parseFloat(localStorage.getItem(sKey) || '0') : 0;
+        const validSaved = !isNaN(savedTime) && savedTime > 0 ? savedTime : 0;
+        maxWatchedRef.current = validSaved;
         setCanCompleteCurrentModule(false);
-    }, [activeModuleIndex]);
+
+        // Resume HTML5 video if exists
+        if (videoRef.current && validSaved > 2) {
+            videoRef.current.currentTime = validSaved;
+        }
+    }, [activeModuleIndex, activeModuleKey]);
+
+    // Save furthest watched progress helper
+    const updateProgressTime = (currentTime) => {
+        if (currentTime > maxWatchedRef.current) {
+            maxWatchedRef.current = currentTime;
+            if (activeModuleKey) {
+                const sKey = getWatchStorageKey(activeModuleKey);
+                if (sKey) {
+                    try {
+                        localStorage.setItem(sKey, currentTime.toString());
+                    } catch (e) { }
+                }
+            }
+        }
+    };
 
     // --- Direct Video Anti-Skip Handlers ---
     const handleTimeUpdate = () => {
-        if (!videoRef.current || isCurrentModuleCompleted) return;
+        if (!videoRef.current) return;
         const current = videoRef.current.currentTime;
         const duration = videoRef.current.duration;
 
@@ -111,14 +143,17 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
         }
 
         if (duration && current >= duration - 0.5) {
-            handleModuleCompleted(activeModule?.id);
+            handleModuleCompleted(activeModule);
         }
 
-        if (current > maxWatchedRef.current + 1.5) {
-            videoRef.current.currentTime = maxWatchedRef.current;
-            setShowModuleSkipWarning(true);
-        } else {
-            maxWatchedRef.current = Math.max(maxWatchedRef.current, current);
+        if (!isCurrentModuleCompleted) {
+            // If user attempts to skip ahead of their furthest watched time
+            if (current > maxWatchedRef.current + 1.5) {
+                videoRef.current.currentTime = maxWatchedRef.current;
+                setShowModuleSkipWarning(true);
+            } else {
+                updateProgressTime(current);
+            }
         }
     };
 
@@ -133,7 +168,7 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
 
     const handleVideoEnded = () => {
         setCanCompleteCurrentModule(true);
-        handleModuleCompleted(activeModule?.id);
+        handleModuleCompleted(activeModule);
     };
 
     // --- YouTube IFrame API Anti-Skip & Tracking ---
@@ -160,6 +195,10 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                 ytPlayerRef.current.destroy();
             }
 
+            const sKey = getWatchStorageKey(activeModuleKey);
+            const savedTime = sKey ? parseFloat(localStorage.getItem(sKey) || '0') : 0;
+            const resumeAt = !isNaN(savedTime) && savedTime > 2 ? Math.floor(savedTime) : 0;
+
             ytPlayerRef.current = new window.YT.Player(ytContainerRef.current, {
                 videoId: embed.id,
                 playerVars: {
@@ -167,14 +206,20 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                     controls: 1,
                     modestbranding: 1,
                     rel: 0,
-                    playsinline: 1
+                    playsinline: 1,
+                    start: resumeAt
                 },
                 events: {
+                    onReady: () => {
+                        if (resumeAt > 0 && ytPlayerRef.current?.seekTo) {
+                            ytPlayerRef.current.seekTo(resumeAt, true);
+                        }
+                    },
                     onStateChange: (event) => {
                         // Ended state = 0
                         if (event.data === 0) {
                             setCanCompleteCurrentModule(true);
-                            handleModuleCompleted(activeModule?.id);
+                            handleModuleCompleted(activeModule);
                         }
                     }
                 }
@@ -197,11 +242,13 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
 
                     // Anti-skip if not completed
                     if (!isCurrentModuleCompleted) {
+                        // User tried to jump forward beyond furthest watched point
                         if (current > maxWatchedRef.current + 2.5) {
                             ytPlayerRef.current.seekTo(maxWatchedRef.current, true);
                             setShowModuleSkipWarning(true);
                         } else {
-                            maxWatchedRef.current = Math.max(maxWatchedRef.current, current);
+                            // User is playing naturally or rewound and playing up to furthest watched point
+                            updateProgressTime(current);
                         }
                     }
                 } catch (e) { }
@@ -222,7 +269,7 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                 } catch (e) { }
             }
         };
-    }, [activeModuleIndex, activeModule?.videoUrl, isCurrentModuleCompleted]);
+    }, [activeModuleIndex, activeModuleKey, isCurrentModuleCompleted]);
 
     if (!modules || modules.length === 0) {
         return null;
