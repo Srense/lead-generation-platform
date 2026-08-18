@@ -18,13 +18,17 @@ export const submitLead = async (leadData) => {
       if (error && error.code === '23505') isDuplicate = true;
     } else {
       // 1. Save data into the Supabase 'leads' table natively with explicit UUID to bypass auth limitations
-      const { error } = await supabase.from('leads').insert([{
+      const leadPayload = {
         id: crypto.randomUUID(),
         name: leadData.name,
         email: leadData.email,
         phone: leadData.phone,
         city: leadData.city
-      }]);
+      };
+      if (leadData.video_completed !== undefined) {
+        leadPayload.video_completed = leadData.video_completed;
+      }
+      const { error } = await supabase.from('leads').insert([leadPayload]);
       dbSuccess = !error;
       if (error && error.code === '23505') isDuplicate = true;
     }
@@ -53,3 +57,33 @@ export const submitLead = async (leadData) => {
 
   return { success: dbSuccess, isDuplicate };
 };
+
+export const updateLeadVideoCompleted = async (email) => {
+  if (!email || !supabase) return;
+  try {
+    await supabase
+      .from('leads')
+      .update({ video_completed: true })
+      .eq('email', email.trim().toLowerCase());
+  } catch (err) {
+    console.error("Error updating video status in Supabase:", err);
+  }
+};
+
+export const checkLeadStatus = async (email) => {
+  if (!email || !supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('leads')
+      .select('name, email, video_completed')
+      .eq('email', email.trim().toLowerCase())
+      .single();
+    if (!error && data) {
+      return data;
+    }
+  } catch (err) {
+    console.error("Error checking lead status:", err);
+  }
+  return null;
+};
+

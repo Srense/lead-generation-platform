@@ -2,7 +2,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { submitLead } from '../lib/submitLead';
+import { submitLead, updateLeadVideoCompleted, checkLeadStatus } from '../lib/submitLead';
 import Loader from '../components/Loader';
 
 export default function Dashboard() {
@@ -11,6 +11,7 @@ export default function Dashboard() {
     const [bannerText, setBannerText] = useState('🎁 This training is completely FREE for a limited time. Previously ₹299, but today you can access it at absolutely no cost.');
     const [isUrgentVisible, setIsUrgentVisible] = useState(true);
 
+    const [userEmail, setUserEmail] = useState(() => localStorage.getItem('user_email') || '');
     const [formData, setFormData] = useState({ name: '', phone: '', email: '', city: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState(null);
@@ -20,6 +21,10 @@ export default function Dashboard() {
         return localStorage.getItem('user_registered') === 'true';
     });
     const [isVideoCompleted, setIsVideoCompleted] = useState(() => {
+        const savedEmail = localStorage.getItem('user_email');
+        if (savedEmail && localStorage.getItem(`video_completed_${savedEmail}`) === 'true') {
+            return true;
+        }
         return localStorage.getItem('video_completed') === 'true';
     });
 
@@ -27,6 +32,16 @@ export default function Dashboard() {
     const maxWatchedTimeRef = useRef(0);
     const bootcampRef = useRef(null);
     const navigate = useNavigate();
+
+    const markVideoCompleted = () => {
+        setIsVideoCompleted(true);
+        localStorage.setItem('video_completed', 'true');
+        const activeEmail = userEmail || localStorage.getItem('user_email');
+        if (activeEmail) {
+            localStorage.setItem(`video_completed_${activeEmail}`, 'true');
+            updateLeadVideoCompleted(activeEmail);
+        }
+    };
 
     // Anti-skip & completion handlers
     const handleTimeUpdate = () => {
@@ -36,8 +51,7 @@ export default function Dashboard() {
 
         // Check completion if near end
         if (duration && current >= duration - 1) {
-            setIsVideoCompleted(true);
-            localStorage.setItem('video_completed', 'true');
+            markVideoCompleted();
         }
 
         // If current time jumped ahead of max watched time by more than 1.5 seconds
@@ -60,8 +74,7 @@ export default function Dashboard() {
     };
 
     const handleVideoEnded = () => {
-        setIsVideoCompleted(true);
-        localStorage.setItem('video_completed', 'true');
+        markVideoCompleted();
     };
 
     const handleDismissWarning = () => {
@@ -101,6 +114,20 @@ export default function Dashboard() {
                     setIsUrgentVisible(parsed.visible);
                 } catch (e) { }
             }
+
+            // Sync user status if already registered
+            const savedEmail = localStorage.getItem('user_email');
+            if (savedEmail) {
+                const lead = await checkLeadStatus(savedEmail);
+                if (lead) {
+                    setIsRegistered(true);
+                    if (lead.video_completed) {
+                        setIsVideoCompleted(true);
+                        localStorage.setItem('video_completed', 'true');
+                        localStorage.setItem(`video_completed_${savedEmail}`, 'true');
+                    }
+                }
+            }
         };
         fetchRemoteAssets();
     }, []);
@@ -111,16 +138,24 @@ export default function Dashboard() {
         e.preventDefault();
         setIsSubmitting(true);
         setSubmitStatus(null);
+        const normalizedEmail = formData.email.trim().toLowerCase();
         const result = await submitLead({
             name: formData.name,
-            email: formData.email,
+            email: normalizedEmail,
             phone: formData.phone,
-            city: formData.city
+            city: formData.city,
+            video_completed: isVideoCompleted
         });
         setIsSubmitting(false);
         if (result.success || result.isDuplicate) {
             setIsRegistered(true);
+            setUserEmail(normalizedEmail);
+            localStorage.setItem('user_email', normalizedEmail);
             localStorage.setItem('user_registered', 'true');
+            if (isVideoCompleted) {
+                localStorage.setItem(`video_completed_${normalizedEmail}`, 'true');
+                updateLeadVideoCompleted(normalizedEmail);
+            }
             setSubmitStatus(result.isDuplicate ? 'duplicate' : 'success');
             setTimeout(() => {
                 const bootcampElement = document.getElementById('hbootcamp');
