@@ -1,11 +1,10 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { submitLead, checkLeadStatus } from '../lib/submitLead';
 import Loader from '../components/Loader';
 import BootcampPlayer, { getEmbedUrl } from '../components/BootcampPlayer';
-import GovtProofSection from '../components/GovtProofSection';
 
 // Helper to create a consistent storage key from video URL
 const getVideoKey = (url) => {
@@ -385,8 +384,37 @@ export default function Dashboard() {
                     </div>
                 )}
 
-                {/* Government Registration & Legal Proof Showcase */}
-                <GovtProofSection />
+                {/* Government Registration & Legal Proof Teaser */}
+                <section className="py-12 px-margin-mobile md:px-gutter max-w-6xl mx-auto">
+                    <div className="floral-glass rounded-3xl p-6 md:p-8 ambient-shadow border border-emerald-500/20 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden group">
+                        <div className="flex items-center gap-4 text-left z-10">
+                            <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center flex-shrink-0 shadow-[0_0_20px_rgba(16,185,129,0.25)]">
+                                <span className="material-symbols-outlined text-2xl md:text-3xl">verified_user</span>
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                                        100% Legal & Verified
+                                    </span>
+                                </div>
+                                <h3 className="font-display text-lg md:text-xl font-bold text-white mt-1">
+                                    Official Government Proof & 24+ Legal Certifications
+                                </h3>
+                                <p className="text-xs text-on-surface-variant max-w-xl">
+                                    Incorporation acts, direct selling statutory registrations, ISO standards, and consumer charters.
+                                </p>
+                            </div>
+                        </div>
+
+                        <Link
+                            to="/certificates"
+                            className="z-10 inline-flex items-center gap-2 bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-black border border-emerald-500/40 px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] w-full md:w-auto justify-center flex-shrink-0"
+                        >
+                            <span>Inspect Proofs</span>
+                            <span className="material-symbols-outlined text-base">arrow_forward</span>
+                        </Link>
+                    </div>
+                </section>
 
                 <section className="py-24 px-margin-mobile md:px-gutter relative" id="contact">
                     <div className="max-w-container-max mx-auto grid md:grid-cols-2 gap-16 items-start">

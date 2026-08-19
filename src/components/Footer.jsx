@@ -13,7 +13,8 @@ export default function Footer() {
                     </div>
                     
                     <div className="flex flex-col items-center md:items-end gap-4">
-                        <div className="flex gap-6">
+                        <div className="flex flex-wrap gap-4 md:gap-6 justify-center md:justify-end">
+                            <Link to="/certificates" className="font-sans text-sm text-on-surface-variant hover:text-primary transition-colors">Certificates</Link>
                             <Link to="/privacy-policy" className="font-sans text-sm text-on-surface-variant hover:text-primary transition-colors">Privacy</Link>
                             <Link to="/terms-of-service" className="font-sans text-sm text-on-surface-variant hover:text-primary transition-colors">Terms</Link>
                             <Link to="/cookie-policy" className="font-sans text-sm text-on-surface-variant hover:text-primary transition-colors">Cookies</Link>

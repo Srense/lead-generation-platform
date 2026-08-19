@@ -14,9 +14,10 @@ export default function Navbar() {
                     <span className="font-display text-xl md:text-2xl font-bold text-on-surface tracking-tight">HarshBahti</span>
                 </Link>
                 
-                <nav className="hidden md:flex space-x-10 items-center">
+                <nav className="hidden md:flex space-x-8 lg:space-x-10 items-center">
                     <NavLink to="/" end className={navLinkClasses}>Training</NavLink>
                     <NavLink to="/benefits" className={navLinkClasses}>Benefits</NavLink>
+                    <NavLink to="/certificates" className={navLinkClasses}>Certificates</NavLink>
                     <NavLink to="/about" className={navLinkClasses}>About</NavLink>
                     <NavLink to="/contact" className={navLinkClasses}>Contact</NavLink>
                 </nav>
@@ -40,6 +41,7 @@ export default function Navbar() {
                     <nav className="flex flex-col px-6 py-6 space-y-4">
                         <NavLink to="/" end className={({ isActive }) => `font-sans py-2 text-lg ${isActive ? 'text-primary font-semibold' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>Training</NavLink>
                         <NavLink to="/benefits" className={({ isActive }) => `font-sans py-2 text-lg ${isActive ? 'text-primary font-semibold' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>Benefits</NavLink>
+                        <NavLink to="/certificates" className={({ isActive }) => `font-sans py-2 text-lg ${isActive ? 'text-primary font-semibold' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>Certificates</NavLink>
                         <NavLink to="/about" className={({ isActive }) => `font-sans py-2 text-lg ${isActive ? 'text-primary font-semibold' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>About</NavLink>
                         <NavLink to="/contact" className={({ isActive }) => `font-sans py-2 text-lg ${isActive ? 'text-primary font-semibold' : 'text-on-surface-variant'}`} onClick={() => setIsMobileMenuOpen(false)}>Contact</NavLink>
                         <a href="/#training" onClick={() => setIsMobileMenuOpen(false)} className="bg-primary/10 border border-primary text-primary hover:bg-primary hover:text-black text-center font-sans px-6 py-4 rounded-full mt-6 w-full font-semibold transition-all">Watch Now</a>
