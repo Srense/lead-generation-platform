@@ -2,7 +2,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { submitLead, checkLeadStatus } from '../lib/submitLead';
+import { submitLead, checkLeadStatus, updateLeadProgress } from '../lib/submitLead';
 import Loader from '../components/Loader';
 import BootcampPlayer, { getEmbedUrl } from '../components/BootcampPlayer';
 
@@ -118,6 +118,7 @@ export default function Dashboard() {
             if (activeEmail) {
                 localStorage.setItem(`completed_${vKey}_${activeEmail}`, 'true');
                 localStorage.setItem(`first_video_completed_${activeEmail}`, 'true');
+                updateLeadProgress(activeEmail, { is_first_video_completed: true });
             }
         }
     };
@@ -133,6 +134,7 @@ export default function Dashboard() {
             if (activeEmail) {
                 localStorage.setItem(`completed_${vKey}_${activeEmail}`, 'true');
                 localStorage.setItem(`bootcamp_unlocked_${activeEmail}`, 'true');
+                updateLeadProgress(activeEmail, { is_why_session_completed: true });
             }
         }
     };
@@ -320,11 +322,24 @@ export default function Dashboard() {
                 } catch (e) { }
             }
 
-            // Sync user registration status
+            // Sync user registration status & cross-device video progress
             if (savedEmail) {
                 const lead = await checkLeadStatus(savedEmail);
                 if (lead) {
                     setIsRegistered(true);
+                    if (lead.is_first_video_completed) {
+                        setIsFirstVideoCompleted(true);
+                        localStorage.setItem('first_video_completed', 'true');
+                        localStorage.setItem(`first_video_completed_${savedEmail}`, 'true');
+                    }
+                    if (lead.is_why_session_completed) {
+                        setIsBootcampUnlocked(true);
+                        localStorage.setItem('bootcamp_unlocked', 'true');
+                        localStorage.setItem(`bootcamp_unlocked_${savedEmail}`, 'true');
+                    }
+                    if (Array.isArray(lead.completed_modules) && lead.completed_modules.length > 0) {
+                        localStorage.setItem(`bootcamp_completed_keys_${savedEmail}`, JSON.stringify(lead.completed_modules));
+                    }
                 }
             }
         };
@@ -350,6 +365,25 @@ export default function Dashboard() {
             setUserEmail(normalizedEmail);
             localStorage.setItem('user_email', normalizedEmail);
             localStorage.setItem('user_registered', 'true');
+
+            // Hydrate progress from Supabase if available (cross-device sync)
+            const lead = await checkLeadStatus(normalizedEmail);
+            if (lead) {
+                if (lead.is_first_video_completed) {
+                    setIsFirstVideoCompleted(true);
+                    localStorage.setItem('first_video_completed', 'true');
+                    localStorage.setItem(`first_video_completed_${normalizedEmail}`, 'true');
+                }
+                if (lead.is_why_session_completed) {
+                    setIsBootcampUnlocked(true);
+                    localStorage.setItem('bootcamp_unlocked', 'true');
+                    localStorage.setItem(`bootcamp_unlocked_${normalizedEmail}`, 'true');
+                }
+                if (Array.isArray(lead.completed_modules) && lead.completed_modules.length > 0) {
+                    localStorage.setItem(`bootcamp_completed_keys_${normalizedEmail}`, JSON.stringify(lead.completed_modules));
+                }
+            }
+
             if (isBootcampUnlocked) {
                 localStorage.setItem(`bootcamp_unlocked_${normalizedEmail}`, 'true');
             }

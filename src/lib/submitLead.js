@@ -61,7 +61,7 @@ export const checkLeadStatus = async (email) => {
   try {
     const { data, error } = await supabase
       .from('leads')
-      .select('name, email')
+      .select('name, email, is_first_video_completed, is_why_session_completed, completed_modules')
       .eq('email', email.trim().toLowerCase())
       .single();
     if (!error && data) {
@@ -71,6 +71,25 @@ export const checkLeadStatus = async (email) => {
     console.error("Error checking lead status:", err);
   }
   return null;
+};
+
+export const updateLeadProgress = async (email, updates) => {
+  if (!email || !supabase) return false;
+  try {
+    const normalizedEmail = email.trim().toLowerCase();
+    const { error } = await supabase
+      .from('leads')
+      .update(updates)
+      .eq('email', normalizedEmail);
+    if (error) {
+      console.warn("Could not update progress in Supabase (check if columns exist):", error.message);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.warn("Error updating lead progress:", err);
+    return false;
+  }
 };
 
 
