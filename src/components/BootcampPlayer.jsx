@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { updateLeadProgress } from '../lib/submitLead';
 
 // Helper to extract YouTube video ID from links, shorts, or iframe embed code
 export const getYouTubeVideoId = (rawUrl) => {
@@ -116,6 +117,12 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                 localStorage.setItem(`bootcamp_completed_keys_${userEmail}`, JSON.stringify(updated));
                 localStorage.setItem('bootcamp_completed_keys', JSON.stringify(updated));
             } catch (e) { }
+
+            // Sync to Supabase in the background
+            const activeEmail = userEmail || localStorage.getItem('user_email');
+            if (activeEmail) {
+                updateLeadProgress(activeEmail, { completed_modules: updated });
+            }
 
             // Trigger animation for next module
             const nextIdx = activeModuleIndex + 1;

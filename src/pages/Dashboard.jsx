@@ -2,7 +2,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { submitLead, checkLeadStatus } from '../lib/submitLead';
+import { submitLead, checkLeadStatus, updateLeadProgress } from '../lib/submitLead';
 import Loader from '../components/Loader';
 import BootcampPlayer, { getEmbedUrl } from '../components/BootcampPlayer';
 
@@ -68,6 +68,10 @@ export default function Dashboard() {
     const [formData, setFormData] = useState({ name: '', phone: '', email: '', city: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState(null);
+    const [activeFormTab, setActiveFormTab] = useState('register'); // 'register' | 'resume'
+    const [resumeEmail, setResumeEmail] = useState('');
+    const [resumeLoading, setResumeLoading] = useState(false);
+    const [resumeMessage, setResumeMessage] = useState(null);
     const [videoAsset, setVideoAsset] = useState(null);
     const [whySessionAsset, setWhySessionAsset] = useState(null);
     const [bootcampModules, setBootcampModules] = useState(DEFAULT_BOOTCAMP_MODULES);
@@ -104,6 +108,36 @@ export default function Dashboard() {
     const bootcampRef = useRef(null);
     const navigate = useNavigate();
 
+    // Helper to restore all progress states from a Supabase lead record
+    const restoreLeadProgress = (lead) => {
+        if (!lead) return;
+        const normEmail = lead.email ? lead.email.trim().toLowerCase() : '';
+        if (!normEmail) return;
+
+        setIsRegistered(true);
+        setUserEmail(normEmail);
+        localStorage.setItem('user_email', normEmail);
+        localStorage.setItem('user_registered', 'true');
+
+        if (lead.is_first_video_completed) {
+            setIsFirstVideoCompleted(true);
+            localStorage.setItem('first_video_completed', 'true');
+            localStorage.setItem('video_completed', 'true');
+            localStorage.setItem(`first_video_completed_${normEmail}`, 'true');
+        }
+
+        if (lead.is_why_session_completed) {
+            setIsBootcampUnlocked(true);
+            localStorage.setItem('bootcamp_unlocked', 'true');
+            localStorage.setItem(`bootcamp_unlocked_${normEmail}`, 'true');
+        }
+
+        if (Array.isArray(lead.completed_modules) && lead.completed_modules.length > 0) {
+            localStorage.setItem(`bootcamp_completed_keys_${normEmail}`, JSON.stringify(lead.completed_modules));
+            localStorage.setItem('bootcamp_completed_keys', JSON.stringify(lead.completed_modules));
+        }
+    };
+
     const markVideoCompleted = (currentUrl) => {
         const urlToUse = currentUrl || videoAsset;
         setIsCurrentVideoCompleted(true);
@@ -111,14 +145,18 @@ export default function Dashboard() {
         localStorage.setItem('first_video_completed', 'true');
         localStorage.setItem('video_completed', 'true');
 
+        const activeEmail = userEmail || localStorage.getItem('user_email');
         if (urlToUse) {
             const vKey = getVideoKey(urlToUse);
             localStorage.setItem(`completed_${vKey}`, 'true');
-            const activeEmail = userEmail || localStorage.getItem('user_email');
             if (activeEmail) {
                 localStorage.setItem(`completed_${vKey}_${activeEmail}`, 'true');
                 localStorage.setItem(`first_video_completed_${activeEmail}`, 'true');
             }
+        }
+
+        if (activeEmail) {
+            updateLeadProgress(activeEmail, { is_first_video_completed: true });
         }
     };
 
@@ -126,14 +164,18 @@ export default function Dashboard() {
         setIsBootcampUnlocked(true);
         localStorage.setItem('bootcamp_unlocked', 'true');
 
+        const activeEmail = userEmail || localStorage.getItem('user_email');
         if (whySessionAsset) {
             const vKey = getVideoKey(whySessionAsset);
             localStorage.setItem(`completed_${vKey}`, 'true');
-            const activeEmail = userEmail || localStorage.getItem('user_email');
             if (activeEmail) {
                 localStorage.setItem(`completed_${vKey}_${activeEmail}`, 'true');
                 localStorage.setItem(`bootcamp_unlocked_${activeEmail}`, 'true');
             }
+        }
+
+        if (activeEmail) {
+            updateLeadProgress(activeEmail, { is_why_session_completed: true });
         }
     };
 
@@ -320,11 +362,11 @@ export default function Dashboard() {
                 } catch (e) { }
             }
 
-            // Sync user registration status
+            // Sync user registration status & cloud video progress
             if (savedEmail) {
                 const lead = await checkLeadStatus(savedEmail);
                 if (lead) {
-                    setIsRegistered(true);
+                    restoreLeadProgress(lead);
                 }
             }
         };
@@ -332,6 +374,40 @@ export default function Dashboard() {
     }, []);
 
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+
+    const handleResumeSubmit = async (e) => {
+        e.preventDefault();
+        setResumeLoading(true);
+        setResumeMessage(null);
+
+        const normEmail = resumeEmail.trim().toLowerCase();
+        if (!normEmail) {
+            setResumeLoading(false);
+            return;
+        }
+
+        const lead = await checkLeadStatus(normEmail);
+        setResumeLoading(false);
+
+        if (lead) {
+            restoreLeadProgress(lead);
+            setResumeMessage({
+                type: 'success',
+                text: `Welcome back, ${lead.name || 'friend'}! Your training progress has been restored.`
+            });
+            setTimeout(() => {
+                const targetElement = document.getElementById('hbootcamp') || document.getElementById('training');
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 300);
+        } else {
+            setResumeMessage({
+                type: 'error',
+                text: 'No registration found with this email. Please register to get access.'
+            });
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -350,6 +426,13 @@ export default function Dashboard() {
             setUserEmail(normalizedEmail);
             localStorage.setItem('user_email', normalizedEmail);
             localStorage.setItem('user_registered', 'true');
+
+            // Hydrate progress from database if existing lead
+            const lead = await checkLeadStatus(normalizedEmail);
+            if (lead) {
+                restoreLeadProgress(lead);
+            }
+
             if (isBootcampUnlocked) {
                 localStorage.setItem(`bootcamp_unlocked_${normalizedEmail}`, 'true');
             }
@@ -509,58 +592,152 @@ export default function Dashboard() {
                             )}
                         </div>
 
-                        <div className="floral-glass-heavy rounded-3xl p-8 ambient-shadow relative">
-                            {submitStatus === 'duplicate' && (
-                                <div className="bg-primary/10 border border-primary/20 text-primary p-4 rounded-xl text-sm mb-6 animate-in slide-in-from-top-2 flex gap-2 items-center">
-                                    <span className="material-symbols-outlined">info</span> We already have your details! Your registration is active.
-                                </div>
-                            )}
-                            {submitStatus === 'success' && (
-                                <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-4 rounded-xl text-sm mb-6 animate-in slide-in-from-top-2 flex gap-2 items-center">
-                                    <span className="material-symbols-outlined">check_circle</span> Application submitted successfully! See HBootcamp below.
-                                </div>
-                            )}
-                            {submitStatus === 'error' && (
-                                <div className="bg-error/10 border border-error/20 text-error p-4 rounded-xl text-sm mb-6 animate-in slide-in-from-top-2 flex gap-2 items-center">
-                                    <span className="material-symbols-outlined">error</span> Oops! Something went wrong. Please try again.
-                                </div>
-                            )}
-                            <form className="space-y-5" onSubmit={handleSubmit}>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                    <div>
-                                        <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-2 tracking-wider uppercase">Full Name</label>
-                                        <div className="relative">
-                                            <input required name="name" onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20" placeholder="Jane Doe" type="text" />
+                        <div className="floral-glass-heavy rounded-3xl p-6 sm:p-8 ambient-shadow relative">
+                            {/* Tab Switcher */}
+                            <div className="flex p-1 bg-black/50 border border-white/10 rounded-2xl mb-6">
+                                <button
+                                    type="button"
+                                    onClick={() => { setActiveFormTab('register'); setResumeMessage(null); setSubmitStatus(null); }}
+                                    className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+                                        activeFormTab === 'register'
+                                            ? 'bg-primary text-black shadow-lg'
+                                            : 'text-on-surface-variant hover:text-white'
+                                    }`}
+                                >
+                                    <span className="material-symbols-outlined text-sm">how_to_reg</span>
+                                    New Registration
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => { setActiveFormTab('resume'); setResumeMessage(null); setSubmitStatus(null); }}
+                                    className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
+                                        activeFormTab === 'resume'
+                                            ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg'
+                                            : 'text-on-surface-variant hover:text-white'
+                                    }`}
+                                >
+                                    <span className="material-symbols-outlined text-sm">sync</span>
+                                    Resume Progress
+                                </button>
+                            </div>
+
+                            {activeFormTab === 'resume' ? (
+                                /* RESUME ON NEW DEVICE FORM */
+                                <div className="space-y-5 animate-in fade-in duration-200">
+                                    <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs leading-relaxed flex items-start gap-3">
+                                        <span className="material-symbols-outlined text-base flex-shrink-0 text-blue-400 mt-0.5">devices</span>
+                                        <div>
+                                            <strong className="block text-white mb-0.5">Switched phones or laptops?</strong>
+                                            <p className="opacity-80">Enter your registered email to immediately restore all your unlocked training modules on this device.</p>
                                         </div>
                                     </div>
-                                    <div>
-                                        <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-2 tracking-wider uppercase">Mobile</label>
-                                        <div className="relative">
-                                            <input required name="phone" onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20" placeholder="+91 98765 43210" type="tel" />
+
+                                    {resumeMessage?.type === 'success' && (
+                                        <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-4 rounded-xl text-sm animate-in slide-in-from-top-2 flex gap-2 items-center">
+                                            <span className="material-symbols-outlined">check_circle</span> {resumeMessage.text}
                                         </div>
-                                    </div>
+                                    )}
+                                    {resumeMessage?.type === 'error' && (
+                                        <div className="bg-amber-500/10 border border-amber-500/30 text-amber-300 p-4 rounded-xl text-sm animate-in slide-in-from-top-2 flex gap-2 items-start">
+                                            <span className="material-symbols-outlined text-base mt-0.5 flex-shrink-0">warning</span>
+                                            <div>
+                                                <p>{resumeMessage.text}</p>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => { setActiveFormTab('register'); setResumeMessage(null); }}
+                                                    className="mt-2 text-xs font-bold text-amber-400 underline uppercase tracking-wider hover:text-white"
+                                                >
+                                                    Switch to Registration Form &rarr;
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <form onSubmit={handleResumeSubmit} className="space-y-5">
+                                        <div>
+                                            <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-2 tracking-wider uppercase">Your Registered Email</label>
+                                            <div className="relative">
+                                                <input
+                                                    required
+                                                    value={resumeEmail}
+                                                    onChange={(e) => setResumeEmail(e.target.value)}
+                                                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-blue-400 focus:bg-black/60 focus:ring-1 focus:ring-blue-400 outline-none transition-all placeholder:text-white/20"
+                                                    placeholder="Enter registered email (e.g. jane@example.com)"
+                                                    type="email"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            disabled={resumeLoading}
+                                            type="submit"
+                                            className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white py-4 flex items-center justify-center gap-2 rounded-xl font-sans font-bold uppercase tracking-wider transition-all duration-300 disabled:opacity-50 shadow-[0_0_20px_rgba(59,130,246,0.3)]"
+                                        >
+                                            {resumeLoading ? <Loader size="sm" /> : (
+                                                <>
+                                                    <span className="material-symbols-outlined text-base">cloud_download</span>
+                                                    Restore & Continue Training
+                                                </>
+                                            )}
+                                        </button>
+                                    </form>
                                 </div>
-                                
-                                <div>
-                                    <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-2 tracking-wider uppercase">Email Address</label>
-                                    <div className="relative">
-                                        <input required name="email" onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20" placeholder="jane@example.com" type="email" />
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-2 tracking-wider uppercase">City</label>
-                                    <div className="relative">
-                                        <input required name="city" onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-secondary focus:bg-black/60 focus:ring-1 focus:ring-secondary outline-none transition-all placeholder:text-white/20" placeholder="Your City" type="text" />
-                                    </div>
-                                </div>
-                                
-                                <div className="pt-4">
-                                    <button disabled={isSubmitting} className="w-full bg-primary text-black py-4 flex items-center justify-center gap-2 rounded-xl font-sans font-bold uppercase tracking-wider hover:bg-primary-container transition-all duration-300 disabled:opacity-50 hover:shadow-[0_0_20px_rgba(16,185,129,0.4)]" type="submit">
-                                        {isSubmitting ? <Loader size="sm" /> : 'Get Free Access Now'}
-                                    </button>
-                                </div>
-                            </form>
+                            ) : (
+                                /* NEW REGISTRATION FORM */
+                                <>
+                                    {submitStatus === 'duplicate' && (
+                                        <div className="bg-primary/10 border border-primary/20 text-primary p-4 rounded-xl text-sm mb-6 animate-in slide-in-from-top-2 flex gap-2 items-center">
+                                            <span className="material-symbols-outlined">info</span> We already have your details! Your registration is active and progress is restored.
+                                        </div>
+                                    )}
+                                    {submitStatus === 'success' && (
+                                        <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-4 rounded-xl text-sm mb-6 animate-in slide-in-from-top-2 flex gap-2 items-center">
+                                            <span className="material-symbols-outlined">check_circle</span> Application submitted successfully! See HBootcamp below.
+                                        </div>
+                                    )}
+                                    {submitStatus === 'error' && (
+                                        <div className="bg-error/10 border border-error/20 text-error p-4 rounded-xl text-sm mb-6 animate-in slide-in-from-top-2 flex gap-2 items-center">
+                                            <span className="material-symbols-outlined">error</span> Oops! Something went wrong. Please try again.
+                                        </div>
+                                    )}
+                                    <form className="space-y-5" onSubmit={handleSubmit}>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                            <div>
+                                                <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-2 tracking-wider uppercase">Full Name</label>
+                                                <div className="relative">
+                                                    <input required name="name" onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20" placeholder="Jane Doe" type="text" />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-2 tracking-wider uppercase">Mobile</label>
+                                                <div className="relative">
+                                                    <input required name="phone" onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20" placeholder="+91 98765 43210" type="tel" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-2 tracking-wider uppercase">Email Address</label>
+                                            <div className="relative">
+                                                <input required name="email" onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20" placeholder="jane@example.com" type="email" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-2 tracking-wider uppercase">City</label>
+                                            <div className="relative">
+                                                <input required name="city" onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-secondary focus:bg-black/60 focus:ring-1 focus:ring-secondary outline-none transition-all placeholder:text-white/20" placeholder="Your City" type="text" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="pt-4">
+                                            <button disabled={isSubmitting} className="w-full bg-primary text-black py-4 flex items-center justify-center gap-2 rounded-xl font-sans font-bold uppercase tracking-wider hover:bg-primary-container transition-all duration-300 disabled:opacity-50 hover:shadow-[0_0_20px_rgba(16,185,129,0.4)]" type="submit">
+                                                {isSubmitting ? <Loader size="sm" /> : 'Get Free Access Now'}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </>
+                            )}
                         </div>
                     </div>
                 </section>
