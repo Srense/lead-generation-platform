@@ -339,7 +339,7 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                     <div className="relative w-full aspect-video rounded-3xl overflow-hidden floral-glass-heavy border border-primary/20 shadow-[0_0_40px_rgba(16,185,129,0.15)] bg-black/60 flex items-center justify-center">
                         {embed ? (
                             embed.type === 'youtube' ? (
-                                <div key={embed.id} className="w-full h-full aspect-video">
+                                <div key={embed.id} className="absolute inset-0 w-full h-full">
                                     <div ref={ytContainerRef} className="w-full h-full"></div>
                                 </div>
                             ) : embed.type === 'direct' ? (
@@ -362,7 +362,7 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                                     title={activeModule?.title || 'Bootcamp Video'}
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     allowFullScreen
-                                    className="w-full h-full border-0"
+                                    className="absolute inset-0 w-full h-full border-0"
                                 ></iframe>
                             )
                         ) : (
