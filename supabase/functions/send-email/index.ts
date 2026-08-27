@@ -39,7 +39,7 @@ serve(async (req) => {
                 <p style="color: #94A3B8; line-height: 1.6;">We received a request to reset your account password for your HarshBahti Training portal.</p>
                 <div style="background-color: #18181B; border: 1px solid #27272A; border-radius: 12px; padding: 16px; margin: 20px 0; text-align: center;">
                   <p style="color: #94A3B8; font-size: 13px; margin: 0 0 12px 0;">Click the button below or visit the website to set your new password:</p>
-                  <a href="https://harshbahti.in/#auth-gate" style="display: inline-block; background-color: #10B981; color: #000000; font-weight: bold; font-size: 14px; text-decoration: none; padding: 12px 24px; border-radius: 10px;">Reset My Password</a>
+                  <a href="https://harshbahti.in/#reset-password" style="display: inline-block; background-color: #10B981; color: #000000; font-weight: bold; font-size: 14px; text-decoration: none; padding: 12px 24px; border-radius: 10px;">Set New Password</a>
                 </div>
                 <p style="color: #64748B; font-size: 12px;">If you did not request a password reset, you can safely ignore this email.</p>
                 <hr style="border: none; border-top: 1px solid #27272A; margin: 20px 0;" />

@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useUserAuth } from '../context/UserAuthContext';
 import Loader from './Loader';
 
 export default function AuthGate({ onSuccess }) {
-    const [mode, setMode] = useState('signup'); // 'signup' | 'login' | 'forgot'
+    const [mode, setMode] = useState('signup'); // 'signup' | 'login' | 'forgot' | 'set_new_password'
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -15,7 +15,30 @@ export default function AuthGate({ onSuccess }) {
     const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { signup, login, resetPassword } = useUserAuth();
+    const { signup, login, resetPassword, updatePassword } = useUserAuth();
+
+    useEffect(() => {
+        const checkResetMode = () => {
+            const hash = window.location.hash || '';
+            const search = window.location.search || '';
+            if (
+                hash.includes('reset-password') ||
+                hash.includes('type=recovery') ||
+                search.includes('type=recovery') ||
+                search.includes('reset=true')
+            ) {
+                setMode('set_new_password');
+                setTimeout(() => {
+                    const gate = document.getElementById('auth-gate');
+                    if (gate) gate.scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+            }
+        };
+
+        checkResetMode();
+        window.addEventListener('hashchange', checkResetMode);
+        return () => window.removeEventListener('hashchange', checkResetMode);
+    }, []);
 
     const handleChange = (e) => {
         setError(null);
@@ -68,7 +91,7 @@ export default function AuthGate({ onSuccess }) {
             if (res.success) {
                 if (onSuccess) onSuccess(res.user);
             } else {
-                setError(res.error || 'Invalid credentials.');
+                setError(res.error || 'Invalid email or password.');
             }
         } else if (mode === 'forgot') {
             if (!formData.email.trim()) {
@@ -85,6 +108,29 @@ export default function AuthGate({ onSuccess }) {
             } else {
                 setError(res.error || 'Failed to send reset link. Please verify your email.');
             }
+        } else if (mode === 'set_new_password') {
+            if (formData.password.length < 6) {
+                setError('Password must be at least 6 characters.');
+                return;
+            }
+            if (formData.password !== formData.confirmPassword) {
+                setError('Passwords do not match. Please verify.');
+                return;
+            }
+
+            setIsSubmitting(true);
+            const res = await updatePassword(formData.password);
+            setIsSubmitting(false);
+
+            if (res.success) {
+                setSuccessMsg('Your password has been updated successfully! Logging you in...');
+                setTimeout(() => {
+                    if (onSuccess) onSuccess(res.user);
+                    window.location.hash = 'hbootcamp';
+                }, 1200);
+            } else {
+                setError(res.error || 'Failed to update password. Please try again.');
+            }
         }
     };
 
@@ -99,7 +145,13 @@ export default function AuthGate({ onSuccess }) {
                 <div className="text-center mb-6 sm:mb-8">
                     <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-primary/20 border border-primary/30 text-primary shadow-[0_0_25px_rgba(16,185,129,0.3)] mb-3 sm:mb-4">
                         <span className="material-symbols-outlined text-2xl sm:text-3xl">
-                            {mode === 'signup' ? 'person_add' : mode === 'login' ? 'lock_open' : 'mark_email_read'}
+                            {mode === 'signup'
+                                ? 'person_add'
+                                : mode === 'login'
+                                ? 'lock_open'
+                                : mode === 'set_new_password'
+                                ? 'key'
+                                : 'mark_email_read'}
                         </span>
                     </div>
 
@@ -113,6 +165,8 @@ export default function AuthGate({ onSuccess }) {
                             ? 'Create Free Learning Account'
                             : mode === 'login'
                             ? 'Welcome Back, Learner'
+                            : mode === 'set_new_password'
+                            ? 'Set Your New Password'
                             : 'Reset Your Password'}
                     </h2>
                     <p className="text-on-surface-variant text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
@@ -120,12 +174,14 @@ export default function AuthGate({ onSuccess }) {
                             ? 'Unlock the 2nd Why Session, personalized progress tracking, and full Bootcamp Masterclass modules for free.'
                             : mode === 'login'
                             ? 'Sign in to automatically restore your video progress and resume where you left off.'
+                            : mode === 'set_new_password'
+                            ? 'Enter your new secure password below to immediately access your training.'
                             : 'Enter your registered email address and we will send you password reset instructions via Resend email.'}
                     </p>
                 </div>
 
                 {/* Mode Switcher Tabs */}
-                {mode !== 'forgot' && (
+                {mode !== 'forgot' && mode !== 'set_new_password' && (
                     <div className="flex bg-black/40 border border-white/10 p-1 rounded-2xl mb-8 max-w-sm mx-auto">
                         <button
                             type="button"
@@ -163,7 +219,7 @@ export default function AuthGate({ onSuccess }) {
                 {/* Success Banner */}
                 {successMsg && (
                     <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-4 rounded-xl text-xs sm:text-sm font-medium mb-6 flex items-center gap-2 animate-in fade-in">
-                        <span className="material-symbols-outlined text-base flex-shrink-0">mark_email_read</span>
+                        <span className="material-symbols-outlined text-base flex-shrink-0">check_circle</span>
                         <span>{successMsg}</span>
                     </div>
                 )}
@@ -192,31 +248,33 @@ export default function AuthGate({ onSuccess }) {
                         </div>
                     )}
 
-                    <div>
-                        <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-1.5 tracking-wider uppercase">
-                            Email Address
-                        </label>
-                        <div className="relative">
-                            <span className="absolute left-4 top-3.5 material-symbols-outlined text-on-surface-variant text-lg">
-                                mail
-                            </span>
-                            <input
-                                required
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                placeholder="you@example.com"
-                                className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20"
-                            />
+                    {mode !== 'set_new_password' && (
+                        <div>
+                            <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-1.5 tracking-wider uppercase">
+                                Email Address
+                            </label>
+                            <div className="relative">
+                                <span className="absolute left-4 top-3.5 material-symbols-outlined text-on-surface-variant text-lg">
+                                    mail
+                                </span>
+                                <input
+                                    required
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    placeholder="you@example.com"
+                                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20"
+                                />
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {mode !== 'forgot' && (
                         <div>
                             <div className="flex items-center justify-between mb-1.5">
                                 <label className="block text-xs font-sans font-semibold text-on-surface-variant tracking-wider uppercase">
-                                    Password
+                                    {mode === 'set_new_password' ? 'New Password' : 'Password'}
                                 </label>
                                 {mode === 'login' && (
                                     <button
@@ -254,10 +312,10 @@ export default function AuthGate({ onSuccess }) {
                         </div>
                     )}
 
-                    {mode === 'signup' && (
+                    {(mode === 'signup' || mode === 'set_new_password') && (
                         <div>
                             <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-1.5 tracking-wider uppercase">
-                                Confirm Password
+                                Confirm {mode === 'set_new_password' ? 'New Password' : 'Password'}
                             </label>
                             <div className="relative">
                                 <span className="absolute left-4 top-3.5 material-symbols-outlined text-on-surface-variant text-lg">
@@ -294,6 +352,11 @@ export default function AuthGate({ onSuccess }) {
                                     <span className="material-symbols-outlined text-xl">login</span>
                                     Log In & Resume Progress
                                 </>
+                            ) : mode === 'set_new_password' ? (
+                                <>
+                                    <span className="material-symbols-outlined text-xl">save</span>
+                                    Save New Password & Continue
+                                </>
                             ) : (
                                 <>
                                     <span className="material-symbols-outlined text-xl">send</span>
@@ -302,7 +365,7 @@ export default function AuthGate({ onSuccess }) {
                             )}
                         </button>
 
-                        {mode === 'forgot' && (
+                        {(mode === 'forgot' || mode === 'set_new_password') && (
                             <button
                                 type="button"
                                 onClick={() => { setMode('login'); setError(null); setSuccessMsg(null); }}

@@ -158,42 +158,33 @@ export const UserAuthProvider = ({ children }) => {
     const updatePassword = async (newPassword) => {
         setIsLoading(true);
         try {
-            const currentProfile = userProfile || JSON.parse(localStorage.getItem('learner_user') || '{}');
-            const email = currentProfile?.email?.toLowerCase();
-
             if (supabase) {
-                try {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (session) {
-                        const { error } = await supabase.auth.updateUser({
-                            password: newPassword
-                        });
-                        if (error) {
-                            console.warn("Supabase updateUser notice:", error.message);
-                        }
-                    }
-                } catch (supaErr) {
-                    console.warn("Supabase session update bypassed:", supaErr);
+                const { data, error } = await supabase.auth.updateUser({
+                    password: newPassword
+                });
+                if (error) {
+                    setIsLoading(false);
+                    return { success: false, error: error.message };
+                }
+                if (data?.user) {
+                    const profile = {
+                        id: data.user.id,
+                        email: data.user.email,
+                        name: data.user.user_metadata?.name || data.user.email?.split('@')[0] || 'Learner'
+                    };
+                    setUser(data.user);
+                    setUserProfile(profile);
+                    localStorage.setItem('learner_user', JSON.stringify(profile));
+                    localStorage.setItem('user_email', profile.email);
+                    localStorage.setItem('user_registered', 'true');
                 }
             }
-
-            // Persist updated password to local credential store
-            if (email) {
-                localStorage.setItem(`learner_pwd_${email}`, newPassword);
-            }
-
-            const updatedProfile = {
-                ...currentProfile,
-                updatedAt: new Date().toISOString()
-            };
-            setUserProfile(updatedProfile);
-            localStorage.setItem('learner_user', JSON.stringify(updatedProfile));
 
             setIsLoading(false);
             return { success: true };
         } catch (err) {
             setIsLoading(false);
-            return { success: true };
+            return { success: false, error: err.message || 'Password update failed' };
         }
     };
 
@@ -206,7 +197,7 @@ export const UserAuthProvider = ({ children }) => {
                 // 1. Trigger Supabase native reset
                 try {
                     await supabase.auth.resetPasswordForEmail(normalizedEmail, {
-                        redirectTo: `${window.location.origin}/#auth-gate`
+                        redirectTo: `${window.location.origin}/#reset-password`
                     });
                 } catch (supaErr) {
                     console.warn("Supabase auth reset warning:", supaErr);
