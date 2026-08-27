@@ -61,6 +61,7 @@ export default function Dashboard() {
     const [whySessionAsset, setWhySessionAsset] = useState(null);
     const [bootcampModules, setBootcampModules] = useState(DEFAULT_BOOTCAMP_MODULES);
     const [showSkipWarning, setShowSkipWarning] = useState(false);
+    const [isRegistered, setIsRegistered] = useState(() => localStorage.getItem('user_registered') === 'true');
     
     // First video complete state
     const [isFirstVideoCompleted, setIsFirstVideoCompleted] = useState(() => {
