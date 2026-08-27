@@ -53,12 +53,8 @@ export const UserAuthProvider = ({ children }) => {
                 });
 
                 if (error) {
-                    // Check if already registered
-                    if (error.message?.toLowerCase().includes('already registered') || error.status === 400) {
-                        // Attempt auto-login if account exists
-                        return await login(normalizedEmail, password);
-                    }
-                    throw error;
+                    setIsLoading(false);
+                    return { success: false, error: error.message };
                 }
 
                 const profile = {
@@ -73,7 +69,7 @@ export const UserAuthProvider = ({ children }) => {
                 localStorage.setItem('user_email', normalizedEmail);
                 localStorage.setItem('user_registered', 'true');
 
-                // Save initial lead record to DB if needed
+                // Save lead record to DB
                 try {
                     await supabase.from('leads').upsert({
                         email: normalizedEmail,
@@ -85,25 +81,11 @@ export const UserAuthProvider = ({ children }) => {
                     console.warn("Could not insert lead on signup:", dbErr);
                 }
 
-                // Cache credential for resilient cross-device/offline access
-                localStorage.setItem(`learner_pwd_${normalizedEmail}`, password);
-
                 setIsLoading(false);
                 return { success: true, user: profile };
             } else {
-                // Mock local signup
-                const profile = {
-                    id: crypto.randomUUID(),
-                    email: normalizedEmail,
-                    name: trimmedName
-                };
-                setUserProfile(profile);
-                localStorage.setItem('learner_user', JSON.stringify(profile));
-                localStorage.setItem('user_email', normalizedEmail);
-                localStorage.setItem('user_registered', 'true');
-                localStorage.setItem(`learner_pwd_${normalizedEmail}`, password);
                 setIsLoading(false);
-                return { success: true, user: profile };
+                return { success: false, error: 'Database connection offline.' };
             }
         } catch (err) {
             setIsLoading(false);
@@ -116,14 +98,22 @@ export const UserAuthProvider = ({ children }) => {
         const normalizedEmail = email.trim().toLowerCase();
 
         try {
-            // 1. Check with Supabase Auth first
             if (supabase) {
                 const { data, error } = await supabase.auth.signInWithPassword({
                     email: normalizedEmail,
                     password: password
                 });
 
-                if (!error && data?.user) {
+                if (error) {
+                    // Clean up any stale local data if credentials are not valid in Supabase
+                    localStorage.removeItem('learner_user');
+                    setUserProfile(null);
+                    setUser(null);
+                    setIsLoading(false);
+                    return { success: false, error: error.message || 'Invalid email or password.' };
+                }
+
+                if (data?.user) {
                     const nameFromMeta = data.user.user_metadata?.name || normalizedEmail.split('@')[0];
                     const profile = {
                         id: data.user.id,
@@ -136,40 +126,12 @@ export const UserAuthProvider = ({ children }) => {
                     localStorage.setItem('learner_user', JSON.stringify(profile));
                     localStorage.setItem('user_email', normalizedEmail);
                     localStorage.setItem('user_registered', 'true');
-                    localStorage.setItem(`learner_pwd_${normalizedEmail}`, password);
 
                     setIsLoading(false);
                     return { success: true, user: profile };
                 }
             }
 
-            // 2. Check local stored credentials - ONLY allow if password matches exactly
-            const savedPwd = localStorage.getItem(`learner_pwd_${normalizedEmail}`);
-            
-            if (savedPwd && savedPwd === password) {
-                const savedUser = localStorage.getItem('learner_user');
-                let profile;
-                try {
-                    profile = savedUser ? JSON.parse(savedUser) : null;
-                } catch {}
-                
-                if (!profile || profile.email?.toLowerCase() !== normalizedEmail) {
-                    profile = {
-                        id: crypto.randomUUID(),
-                        email: normalizedEmail,
-                        name: normalizedEmail.split('@')[0]
-                    };
-                }
-
-                setUserProfile(profile);
-                localStorage.setItem('learner_user', JSON.stringify(profile));
-                localStorage.setItem('user_email', normalizedEmail);
-                localStorage.setItem('user_registered', 'true');
-                setIsLoading(false);
-                return { success: true, user: profile };
-            }
-
-            // If passwords don't match, strictly reject
             setIsLoading(false);
             return { success: false, error: 'Incorrect email or password. Please try again.' };
         } catch (err) {
