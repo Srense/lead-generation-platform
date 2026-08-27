@@ -71,16 +71,16 @@ export default function AuthGate({ onSuccess }) {
     };
 
     return (
-        <div id="auth-gate" className="w-full max-w-2xl mx-auto my-12 px-2 sm:px-4">
-            <div className="floral-glass-heavy rounded-3xl p-6 sm:p-10 ambient-shadow relative overflow-hidden border border-white/10">
+        <div id="auth-gate" className="w-full max-w-2xl mx-auto my-8 sm:my-12 px-2 sm:px-4">
+            <div className="floral-glass-heavy rounded-2xl sm:rounded-3xl p-4 sm:p-10 ambient-shadow relative overflow-hidden border border-white/10">
                 {/* Ambient Glows */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/15 blur-[90px] rounded-full pointer-events-none -z-10"></div>
                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary/15 blur-[90px] rounded-full pointer-events-none -z-10"></div>
 
                 {/* Header Lock Badge */}
-                <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/20 border border-primary/30 text-primary shadow-[0_0_25px_rgba(16,185,129,0.3)] mb-4">
-                        <span className="material-symbols-outlined text-3xl">
+                <div className="text-center mb-6 sm:mb-8">
+                    <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-primary/20 border border-primary/30 text-primary shadow-[0_0_25px_rgba(16,185,129,0.3)] mb-3 sm:mb-4">
+                        <span className="material-symbols-outlined text-2xl sm:text-3xl">
                             {mode === 'signup' ? 'person_add' : 'lock_open'}
                         </span>
                     </div>

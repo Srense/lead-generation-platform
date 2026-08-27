@@ -49,8 +49,8 @@ export default function UserProfileSidebar({ isOpen, onClose }) {
             />
 
             {/* Sidebar Drawer */}
-            <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-                <div className="w-screen max-w-md bg-[#09090B] border-l border-white/10 p-6 sm:p-8 flex flex-col justify-between shadow-2xl relative z-10 overflow-y-auto">
+            <div className="fixed inset-y-0 right-0 max-w-full flex w-full justify-end pointer-events-none">
+                <div className="w-full max-w-md bg-[#09090B] border-l border-white/10 p-5 sm:p-8 flex flex-col justify-between shadow-2xl relative z-10 overflow-y-auto pointer-events-auto">
                     {/* Ambient Glow */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] rounded-full pointer-events-none -z-10"></div>
 
