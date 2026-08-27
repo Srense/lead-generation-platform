@@ -17,58 +17,25 @@ export const UserAuthProvider = ({ children }) => {
 
     useEffect(() => {
         const initAuth = async () => {
-            if (supabase) {
+            // Check if learner session exists in local storage
+            const savedLearner = localStorage.getItem('learner_user');
+            if (savedLearner) {
                 try {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (session?.user) {
-                        setUser(session.user);
-                        const profile = {
-                            id: session.user.id,
-                            email: session.user.email,
-                            name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Learner'
-                        };
-                        setUserProfile(profile);
-                        localStorage.setItem('learner_user', JSON.stringify(profile));
+                    const parsed = JSON.parse(savedLearner);
+                    // Ensure admin account isn't mistakenly treated as learner
+                    if (parsed.email !== 'admin@harshbhati.com') {
+                        setUserProfile(parsed);
+                    } else {
+                        localStorage.removeItem('learner_user');
+                        setUserProfile(null);
                     }
                 } catch (e) {
-                    console.warn("Error getting auth session:", e);
+                    setUserProfile(null);
                 }
-
-                // Listen to auth changes
-                const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
-                    if (session?.user) {
-                        setUser(session.user);
-                        const profile = {
-                            id: session.user.id,
-                            email: session.user.email,
-                            name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'Learner'
-                        };
-                        setUserProfile(profile);
-                        localStorage.setItem('learner_user', JSON.stringify(profile));
-                    } else {
-                        // Only clear if no local learner session
-                        const local = localStorage.getItem('learner_user');
-                        if (!local) {
-                            setUser(null);
-                            setUserProfile(null);
-                        }
-                    }
-                });
-
-                setIsLoading(false);
-                return () => {
-                    authListener?.subscription?.unsubscribe?.();
-                };
             } else {
-                // Fallback to local storage profile if Supabase is offline
-                const saved = localStorage.getItem('learner_user');
-                if (saved) {
-                    try {
-                        setUserProfile(JSON.parse(saved));
-                    } catch (e) {}
-                }
-                setIsLoading(false);
+                setUserProfile(null);
             }
+            setIsLoading(false);
         };
 
         initAuth();
