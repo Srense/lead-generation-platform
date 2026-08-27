@@ -611,82 +611,86 @@ export default function Dashboard() {
                                         Watch Video Training Above
                                     </button>
                                 </div>
-                            ) : !isBootcampUnlocked ? (
-                                /* INTERMEDIARY STATE - WHY SESSION */
-                                <div className="relative z-10 w-full space-y-8 text-center">
-                                    <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 text-blue-300 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-2">
-                                        <span className="material-symbols-outlined text-sm">play_circle</span>
-                                        Step 2 of 3 (Why Session)
-                                    </div>
-                                    
-                                    <h2 className="font-display text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
-                                        Why Are We Doing This?
-                                    </h2>
-                                    
-                                    <p className="text-on-surface-variant text-sm leading-relaxed max-w-xl mx-auto mb-8">
-                                        Before you jump into the core curriculum, watch this brief session to understand the philosophy and exactly what to expect.
-                                    </p>
-
-                                    <div className="relative w-full max-w-4xl mx-auto rounded-[2rem] overflow-hidden floral-glass ambient-shadow flex items-center justify-center p-3 border border-white/5">
-                                        <div className="w-full rounded-3xl overflow-hidden relative bg-black/60 aspect-video">
-                                            {whySessionAsset ? (
-                                                <video
-                                                    ref={whySessionRef}
-                                                    key={whySessionAsset}
-                                                    src={whySessionAsset}
-                                                    controls
-                                                    playsInline
-                                                    preload="auto"
-                                                    crossOrigin="anonymous"
-                                                    onTimeUpdate={handleWhySessionTimeUpdate}
-                                                    onSeeking={handleWhySessionSeeking}
-                                                    onEnded={handleWhySessionEnded}
-                                                    onContextMenu={(e) => e.preventDefault()}
-                                                    controlsList="nodownload noplaybackrate"
-                                                    className="w-full h-full object-contain"
-                                                />
-                                            ) : (
-                                                <div className="flex flex-col items-center justify-center h-full text-on-surface-variant p-6">
-                                                    <span className="material-symbols-outlined text-5xl mb-4">video_library</span>
-                                                    <p>The instructor is preparing the "Why Session". Please check back soon.</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
                             ) : (
-                                /* UNLOCKED STATE - SEQUENTIAL BOOTCAMP MODULE PLAYER */
-                                <div className="relative z-10 w-full space-y-8">
-                                    <div className="text-center max-w-2xl mx-auto mb-8">
-                                        <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 text-primary px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
-                                            <span className="material-symbols-outlined text-sm">verified</span>
-                                            Full Access Unlocked
+                                <>
+                                    {/* ALWAYS SHOW WHY SESSION ONCE FIRST VIDEO IS COMPLETED */}
+                                    <div className="relative z-10 w-full space-y-8 text-center mb-12">
+                                        <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 text-blue-300 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-2">
+                                            <span className="material-symbols-outlined text-sm">play_circle</span>
+                                            Step 2 of 3 (Why Session)
                                         </div>
-
-                                        <h2 className="font-display text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight text-gradient-shimmer">
-                                            HBootcamp Video Masterclass
+                                        
+                                        <h2 className="font-display text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+                                            Why Are We Doing This?
                                         </h2>
-
-                                        <p className="text-on-surface-variant text-sm leading-relaxed max-w-xl mx-auto">
-                                            Welcome to your dedicated training curriculum. Complete each session to unlock the next advanced module.
+                                        
+                                        <p className="text-on-surface-variant text-sm leading-relaxed max-w-xl mx-auto mb-8">
+                                            Before you jump into the core curriculum, watch this brief session to understand the philosophy and exactly what to expect.
                                         </p>
+
+                                        <div className="relative w-full max-w-4xl mx-auto rounded-[2rem] overflow-hidden floral-glass ambient-shadow flex items-center justify-center p-3 border border-white/5">
+                                            <div className="w-full rounded-3xl overflow-hidden relative bg-black/60 aspect-video">
+                                                {whySessionAsset ? (
+                                                    <video
+                                                        ref={whySessionRef}
+                                                        key={whySessionAsset}
+                                                        src={whySessionAsset}
+                                                        controls
+                                                        playsInline
+                                                        preload="auto"
+                                                        crossOrigin="anonymous"
+                                                        onTimeUpdate={handleWhySessionTimeUpdate}
+                                                        onSeeking={handleWhySessionSeeking}
+                                                        onEnded={handleWhySessionEnded}
+                                                        onContextMenu={(e) => e.preventDefault()}
+                                                        controlsList={isBootcampUnlocked ? "nodownload" : "nodownload noplaybackrate"}
+                                                        className="w-full h-full object-contain"
+                                                    />
+                                                ) : (
+                                                    <div className="flex flex-col items-center justify-center h-full text-on-surface-variant p-6">
+                                                        <span className="material-symbols-outlined text-5xl mb-4">video_library</span>
+                                                        <p>The instructor is preparing the "Why Session". Please check back soon.</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <BootcampPlayer modules={bootcampModules} userEmail={userEmail} />
+                                    {/* ONLY SHOW BOOTCAMP PLAYER IF WHY SESSION IS COMPLETED */}
+                                    {isBootcampUnlocked && (
+                                        <div className="relative z-10 w-full space-y-8 pt-12 border-t border-white/10">
+                                            <div className="text-center max-w-2xl mx-auto mb-8">
+                                                <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 text-primary px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
+                                                    <span className="material-symbols-outlined text-sm">verified</span>
+                                                    Full Access Unlocked
+                                                </div>
 
-                                    <div className="p-6 rounded-2xl bg-primary/10 border border-primary/30 text-center max-w-2xl mx-auto mt-10">
-                                        <p className="text-primary font-medium text-sm mb-3">Need 1-on-1 assistance or have questions regarding these sessions?</p>
-                                        <a
-                                            href="https://wa.me/"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-2 bg-primary text-black px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-primary-container transition-all"
-                                        >
-                                            <span className="material-symbols-outlined text-base">chat</span>
-                                            Connect with Instructor Support
-                                        </a>
-                                    </div>
-                                </div>
+                                                <h2 className="font-display text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight text-gradient-shimmer">
+                                                    HBootcamp Video Masterclass
+                                                </h2>
+
+                                                <p className="text-on-surface-variant text-sm leading-relaxed max-w-xl mx-auto">
+                                                    Welcome to your dedicated training curriculum. Complete each session to unlock the next advanced module.
+                                                </p>
+                                            </div>
+
+                                            <BootcampPlayer modules={bootcampModules} userEmail={userEmail} />
+
+                                            <div className="p-6 rounded-2xl bg-primary/10 border border-primary/30 text-center max-w-2xl mx-auto mt-10">
+                                                <p className="text-primary font-medium text-sm mb-3">Need 1-on-1 assistance or have questions regarding these sessions?</p>
+                                                <a
+                                                    href="https://wa.me/"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-2 bg-primary text-black px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-primary-container transition-all"
+                                                >
+                                                    <span className="material-symbols-outlined text-base">chat</span>
+                                                    Connect with Instructor Support
+                                                </a>
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </div>
                     </section>
