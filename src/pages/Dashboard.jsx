@@ -2,9 +2,11 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { submitLead, checkLeadStatus, updateLeadProgress } from '../lib/submitLead';
+import { submitLead, checkLeadStatus } from '../lib/submitLead';
 import Loader from '../components/Loader';
 import BootcampPlayer, { getEmbedUrl } from '../components/BootcampPlayer';
+import AuthGate from '../components/AuthGate';
+import { useUserAuth } from '../context/UserAuthContext';
 
 // Helper to create a consistent storage key from video URL
 const getVideoKey = (url) => {
@@ -44,45 +46,25 @@ const DEFAULT_BOOTCAMP_MODULES = [
 ];
 
 export default function Dashboard() {
-    // Reset all accounts for the new V2 logic (clears progress but keeps registration)
-    useEffect(() => {
-        if (localStorage.getItem('app_reset_v2') !== 'true') {
-            const email = localStorage.getItem('user_email');
-            const registered = localStorage.getItem('user_registered');
-            
-            localStorage.clear();
-            
-            if (email) localStorage.setItem('user_email', email);
-            if (registered) localStorage.setItem('user_registered', registered);
-            
-            localStorage.setItem('app_reset_v2', 'true');
-            window.location.reload();
-        }
-    }, []);
+    const { isAuthenticated, userProfile } = useUserAuth();
+
     const [minutes, setMinutes] = useState(14);
     const [seconds, setSeconds] = useState(59);
     const [bannerText, setBannerText] = useState('🎁 This training is completely FREE for a limited time. Previously ₹299, but today you can access it at absolutely no cost.');
     const [isUrgentVisible, setIsUrgentVisible] = useState(true);
 
-    const [userEmail, setUserEmail] = useState(() => localStorage.getItem('user_email') || '');
+    const [userEmail, setUserEmail] = useState(() => userProfile?.email || localStorage.getItem('user_email') || '');
     const [formData, setFormData] = useState({ name: '', phone: '', email: '', city: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState(null);
-    const [activeFormTab, setActiveFormTab] = useState('register'); // 'register' | 'resume'
-    const [resumeEmail, setResumeEmail] = useState('');
-    const [resumeLoading, setResumeLoading] = useState(false);
-    const [resumeMessage, setResumeMessage] = useState(null);
     const [videoAsset, setVideoAsset] = useState(null);
     const [whySessionAsset, setWhySessionAsset] = useState(null);
     const [bootcampModules, setBootcampModules] = useState(DEFAULT_BOOTCAMP_MODULES);
     const [showSkipWarning, setShowSkipWarning] = useState(false);
-    const [isRegistered, setIsRegistered] = useState(() => {
-        return localStorage.getItem('user_registered') === 'true';
-    });
     
     // First video complete state
     const [isFirstVideoCompleted, setIsFirstVideoCompleted] = useState(() => {
-        const savedEmail = localStorage.getItem('user_email');
+        const savedEmail = userProfile?.email || localStorage.getItem('user_email');
         if (savedEmail && localStorage.getItem(`first_video_completed_${savedEmail}`) === 'true') {
             return true;
         }
@@ -91,7 +73,7 @@ export default function Dashboard() {
 
     // Permanent Bootcamp unlock state (Why session completed)
     const [isBootcampUnlocked, setIsBootcampUnlocked] = useState(() => {
-        const savedEmail = localStorage.getItem('user_email');
+        const savedEmail = userProfile?.email || localStorage.getItem('user_email');
         if (savedEmail && localStorage.getItem(`bootcamp_unlocked_${savedEmail}`) === 'true') {
             return true;
         }
@@ -101,42 +83,26 @@ export default function Dashboard() {
     // Per-video completion state (controls anti-skip for the active video)
     const [isCurrentVideoCompleted, setIsCurrentVideoCompleted] = useState(false);
 
+    // Sync state when userProfile changes
+    useEffect(() => {
+        if (userProfile?.email) {
+            const email = userProfile.email;
+            setUserEmail(email);
+            if (localStorage.getItem(`first_video_completed_${email}`) === 'true') {
+                setIsFirstVideoCompleted(true);
+            }
+            if (localStorage.getItem(`bootcamp_unlocked_${email}`) === 'true') {
+                setIsBootcampUnlocked(true);
+            }
+        }
+    }, [userProfile]);
+
     const videoRef = useRef(null);
     const maxWatchedTimeRef = useRef(0);
     const whySessionRef = useRef(null);
     const maxWhySessionWatchedRef = useRef(0);
     const bootcampRef = useRef(null);
     const navigate = useNavigate();
-
-    // Helper to restore all progress states from a Supabase lead record
-    const restoreLeadProgress = (lead) => {
-        if (!lead) return;
-        const normEmail = lead.email ? lead.email.trim().toLowerCase() : '';
-        if (!normEmail) return;
-
-        setIsRegistered(true);
-        setUserEmail(normEmail);
-        localStorage.setItem('user_email', normEmail);
-        localStorage.setItem('user_registered', 'true');
-
-        if (lead.is_first_video_completed) {
-            setIsFirstVideoCompleted(true);
-            localStorage.setItem('first_video_completed', 'true');
-            localStorage.setItem('video_completed', 'true');
-            localStorage.setItem(`first_video_completed_${normEmail}`, 'true');
-        }
-
-        if (lead.is_why_session_completed) {
-            setIsBootcampUnlocked(true);
-            localStorage.setItem('bootcamp_unlocked', 'true');
-            localStorage.setItem(`bootcamp_unlocked_${normEmail}`, 'true');
-        }
-
-        if (Array.isArray(lead.completed_modules) && lead.completed_modules.length > 0) {
-            localStorage.setItem(`bootcamp_completed_keys_${normEmail}`, JSON.stringify(lead.completed_modules));
-            localStorage.setItem('bootcamp_completed_keys', JSON.stringify(lead.completed_modules));
-        }
-    };
 
     const markVideoCompleted = (currentUrl) => {
         const urlToUse = currentUrl || videoAsset;
@@ -145,18 +111,14 @@ export default function Dashboard() {
         localStorage.setItem('first_video_completed', 'true');
         localStorage.setItem('video_completed', 'true');
 
-        const activeEmail = userEmail || localStorage.getItem('user_email');
         if (urlToUse) {
             const vKey = getVideoKey(urlToUse);
             localStorage.setItem(`completed_${vKey}`, 'true');
+            const activeEmail = userEmail || localStorage.getItem('user_email');
             if (activeEmail) {
                 localStorage.setItem(`completed_${vKey}_${activeEmail}`, 'true');
                 localStorage.setItem(`first_video_completed_${activeEmail}`, 'true');
             }
-        }
-
-        if (activeEmail) {
-            updateLeadProgress(activeEmail, { is_first_video_completed: true });
         }
     };
 
@@ -164,18 +126,14 @@ export default function Dashboard() {
         setIsBootcampUnlocked(true);
         localStorage.setItem('bootcamp_unlocked', 'true');
 
-        const activeEmail = userEmail || localStorage.getItem('user_email');
         if (whySessionAsset) {
             const vKey = getVideoKey(whySessionAsset);
             localStorage.setItem(`completed_${vKey}`, 'true');
+            const activeEmail = userEmail || localStorage.getItem('user_email');
             if (activeEmail) {
                 localStorage.setItem(`completed_${vKey}_${activeEmail}`, 'true');
                 localStorage.setItem(`bootcamp_unlocked_${activeEmail}`, 'true');
             }
-        }
-
-        if (activeEmail) {
-            updateLeadProgress(activeEmail, { is_why_session_completed: true });
         }
     };
 
@@ -362,11 +320,11 @@ export default function Dashboard() {
                 } catch (e) { }
             }
 
-            // Sync user registration status & cloud video progress
+            // Sync user registration status
             if (savedEmail) {
                 const lead = await checkLeadStatus(savedEmail);
                 if (lead) {
-                    restoreLeadProgress(lead);
+                    setIsRegistered(true);
                 }
             }
         };
@@ -374,40 +332,6 @@ export default function Dashboard() {
     }, []);
 
     const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-
-    const handleResumeSubmit = async (e) => {
-        e.preventDefault();
-        setResumeLoading(true);
-        setResumeMessage(null);
-
-        const normEmail = resumeEmail.trim().toLowerCase();
-        if (!normEmail) {
-            setResumeLoading(false);
-            return;
-        }
-
-        const lead = await checkLeadStatus(normEmail);
-        setResumeLoading(false);
-
-        if (lead) {
-            restoreLeadProgress(lead);
-            setResumeMessage({
-                type: 'success',
-                text: `Welcome back, ${lead.name || 'friend'}! Your training progress has been restored.`
-            });
-            setTimeout(() => {
-                const targetElement = document.getElementById('hbootcamp') || document.getElementById('training');
-                if (targetElement) {
-                    targetElement.scrollIntoView({ behavior: 'smooth' });
-                }
-            }, 300);
-        } else {
-            setResumeMessage({
-                type: 'error',
-                text: 'No registration found with this email. Please register to get access.'
-            });
-        }
-    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -426,13 +350,6 @@ export default function Dashboard() {
             setUserEmail(normalizedEmail);
             localStorage.setItem('user_email', normalizedEmail);
             localStorage.setItem('user_registered', 'true');
-
-            // Hydrate progress from database if existing lead
-            const lead = await checkLeadStatus(normalizedEmail);
-            if (lead) {
-                restoreLeadProgress(lead);
-            }
-
             if (isBootcampUnlocked) {
                 localStorage.setItem(`bootcamp_unlocked_${normalizedEmail}`, 'true');
             }
@@ -569,183 +486,86 @@ export default function Dashboard() {
                         </div>
                     </div>
                 )}
-
-
-
-                <section className="py-24 px-margin-mobile md:px-gutter relative" id="contact">
-                    <div className="max-w-container-max mx-auto grid md:grid-cols-2 gap-16 items-start">
-                        <div className="md:sticky md:top-32">
-                            <h2 className="font-display text-4xl md:text-5xl font-bold mb-6 text-gradient-shimmer">Start Your Application</h2>
-                            <p className="font-sans text-lg text-on-surface-variant mb-8 leading-relaxed max-w-md">Join the platform to access premium insights. Fill out the application and a specialist will contact you.</p>
-                            
-                            {isUrgentVisible && (
-                                <div className="floral-glass rounded-xl p-6 mb-8 relative overflow-hidden border-l-4 border-l-primary flex items-center justify-between">
-                                    <p className="font-sans text-sm text-on-surface-variant flex-1 pr-4">
-                                        {bannerText}
+                {/* Gated Access Section */}
+                {!isAuthenticated ? (
+                    <AuthGate onSuccess={() => {
+                        setTimeout(() => {
+                            const bootcampElement = document.getElementById('hbootcamp');
+                            if (bootcampElement) {
+                                bootcampElement.scrollIntoView({ behavior: 'smooth' });
+                            }
+                        }, 300);
+                    }} />
+                ) : (
+                    <>
+                        {/* Member Consultation / Specialist Connect Banner */}
+                        <section className="py-12 px-margin-mobile md:px-gutter relative" id="contact">
+                            <div className="max-w-container-max mx-auto grid md:grid-cols-2 gap-12 items-center">
+                                <div>
+                                    <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary px-4 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
+                                        <span className="material-symbols-outlined text-sm">verified_user</span>
+                                        Member Account Active
+                                    </div>
+                                    <h2 className="font-display text-3xl md:text-5xl font-bold mb-4 text-gradient-shimmer">
+                                        Welcome, {userProfile?.name || 'Learner'}!
+                                    </h2>
+                                    <p className="font-sans text-base text-on-surface-variant mb-6 leading-relaxed max-w-md">
+                                        Your learning profile is synchronized. Complete the primary training video above to unlock the 2nd Why Session and the full curriculum below.
                                     </p>
-                                    <div className="flex items-center gap-2 text-primary font-mono text-2xl bg-black/40 px-4 py-2 rounded-lg border border-primary/20">
-                                        <div><span id="mins">{minutes.toString().padStart(2, '0')}</span><span className="text-xs font-sans text-primary/70 ml-1">M</span></div>
-                                        <span className="opacity-50">:</span>
-                                        <div><span id="secs">{seconds.toString().padStart(2, '0')}</span><span className="text-xs font-sans text-primary/70 ml-1">S</span></div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="floral-glass-heavy rounded-3xl p-6 sm:p-8 ambient-shadow relative">
-                            {/* Tab Switcher */}
-                            <div className="flex p-1 bg-black/50 border border-white/10 rounded-2xl mb-6">
-                                <button
-                                    type="button"
-                                    onClick={() => { setActiveFormTab('register'); setResumeMessage(null); setSubmitStatus(null); }}
-                                    className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
-                                        activeFormTab === 'register'
-                                            ? 'bg-primary text-black shadow-lg'
-                                            : 'text-on-surface-variant hover:text-white'
-                                    }`}
-                                >
-                                    <span className="material-symbols-outlined text-sm">how_to_reg</span>
-                                    New Registration
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => { setActiveFormTab('resume'); setResumeMessage(null); setSubmitStatus(null); }}
-                                    className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${
-                                        activeFormTab === 'resume'
-                                            ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg'
-                                            : 'text-on-surface-variant hover:text-white'
-                                    }`}
-                                >
-                                    <span className="material-symbols-outlined text-sm">sync</span>
-                                    Resume Progress
-                                </button>
-                            </div>
-
-                            {activeFormTab === 'resume' ? (
-                                /* RESUME ON NEW DEVICE FORM */
-                                <div className="space-y-5 animate-in fade-in duration-200">
-                                    <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs leading-relaxed flex items-start gap-3">
-                                        <span className="material-symbols-outlined text-base flex-shrink-0 text-blue-400 mt-0.5">devices</span>
-                                        <div>
-                                            <strong className="block text-white mb-0.5">Switched phones or laptops?</strong>
-                                            <p className="opacity-80">Enter your registered email to immediately restore all your unlocked training modules on this device.</p>
-                                        </div>
-                                    </div>
-
-                                    {resumeMessage?.type === 'success' && (
-                                        <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-4 rounded-xl text-sm animate-in slide-in-from-top-2 flex gap-2 items-center">
-                                            <span className="material-symbols-outlined">check_circle</span> {resumeMessage.text}
-                                        </div>
-                                    )}
-                                    {resumeMessage?.type === 'error' && (
-                                        <div className="bg-amber-500/10 border border-amber-500/30 text-amber-300 p-4 rounded-xl text-sm animate-in slide-in-from-top-2 flex gap-2 items-start">
-                                            <span className="material-symbols-outlined text-base mt-0.5 flex-shrink-0">warning</span>
-                                            <div>
-                                                <p>{resumeMessage.text}</p>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => { setActiveFormTab('register'); setResumeMessage(null); }}
-                                                    className="mt-2 text-xs font-bold text-amber-400 underline uppercase tracking-wider hover:text-white"
-                                                >
-                                                    Switch to Registration Form &rarr;
-                                                </button>
+                                    
+                                    {isUrgentVisible && (
+                                        <div className="floral-glass rounded-xl p-5 mb-4 relative overflow-hidden border-l-4 border-l-primary flex items-center justify-between">
+                                            <p className="font-sans text-xs sm:text-sm text-on-surface-variant flex-1 pr-4">
+                                                {bannerText}
+                                            </p>
+                                            <div className="flex items-center gap-2 text-primary font-mono text-xl bg-black/40 px-3 py-1.5 rounded-lg border border-primary/20">
+                                                <div><span>{minutes.toString().padStart(2, '0')}</span><span className="text-[10px] font-sans text-primary/70 ml-1">M</span></div>
+                                                <span className="opacity-50">:</span>
+                                                <div><span>{seconds.toString().padStart(2, '0')}</span><span className="text-[10px] font-sans text-primary/70 ml-1">S</span></div>
                                             </div>
                                         </div>
                                     )}
-
-                                    <form onSubmit={handleResumeSubmit} className="space-y-5">
-                                        <div>
-                                            <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-2 tracking-wider uppercase">Your Registered Email</label>
-                                            <div className="relative">
-                                                <input
-                                                    required
-                                                    value={resumeEmail}
-                                                    onChange={(e) => setResumeEmail(e.target.value)}
-                                                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-blue-400 focus:bg-black/60 focus:ring-1 focus:ring-blue-400 outline-none transition-all placeholder:text-white/20"
-                                                    placeholder="Enter registered email (e.g. jane@example.com)"
-                                                    type="email"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <button
-                                            disabled={resumeLoading}
-                                            type="submit"
-                                            className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white py-4 flex items-center justify-center gap-2 rounded-xl font-sans font-bold uppercase tracking-wider transition-all duration-300 disabled:opacity-50 shadow-[0_0_20px_rgba(59,130,246,0.3)]"
-                                        >
-                                            {resumeLoading ? <Loader size="sm" /> : (
-                                                <>
-                                                    <span className="material-symbols-outlined text-base">cloud_download</span>
-                                                    Restore & Continue Training
-                                                </>
-                                            )}
-                                        </button>
-                                    </form>
                                 </div>
-                            ) : (
-                                /* NEW REGISTRATION FORM */
-                                <>
-                                    {submitStatus === 'duplicate' && (
-                                        <div className="bg-primary/10 border border-primary/20 text-primary p-4 rounded-xl text-sm mb-6 animate-in slide-in-from-top-2 flex gap-2 items-center">
-                                            <span className="material-symbols-outlined">info</span> We already have your details! Your registration is active and progress is restored.
-                                        </div>
-                                    )}
+
+                                <div className="floral-glass-heavy rounded-3xl p-6 sm:p-8 ambient-shadow relative">
+                                    <h3 className="text-lg font-bold text-white mb-2">Request 1-on-1 Specialist Guidance</h3>
+                                    <p className="text-on-surface-variant text-xs mb-6">Leave your mobile and city if you would like instructor support via WhatsApp.</p>
+                                    
                                     {submitStatus === 'success' && (
-                                        <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-4 rounded-xl text-sm mb-6 animate-in slide-in-from-top-2 flex gap-2 items-center">
-                                            <span className="material-symbols-outlined">check_circle</span> Application submitted successfully! See HBootcamp below.
+                                        <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-4 rounded-xl text-xs font-medium mb-4 flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-base">check_circle</span>
+                                            Details saved successfully! Our team will reach out.
                                         </div>
                                     )}
                                     {submitStatus === 'error' && (
-                                        <div className="bg-error/10 border border-error/20 text-error p-4 rounded-xl text-sm mb-6 animate-in slide-in-from-top-2 flex gap-2 items-center">
-                                            <span className="material-symbols-outlined">error</span> Oops! Something went wrong. Please try again.
+                                        <div className="bg-error/10 border border-error/20 text-error p-4 rounded-xl text-xs font-medium mb-4 flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-base">error</span>
+                                            Something went wrong. Please try again.
                                         </div>
                                     )}
-                                    <form className="space-y-5" onSubmit={handleSubmit}>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                            <div>
-                                                <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-2 tracking-wider uppercase">Full Name</label>
-                                                <div className="relative">
-                                                    <input required name="name" onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20" placeholder="Jane Doe" type="text" />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-2 tracking-wider uppercase">Mobile</label>
-                                                <div className="relative">
-                                                    <input required name="phone" onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20" placeholder="+91 98765 43210" type="tel" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div>
-                                            <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-2 tracking-wider uppercase">Email Address</label>
-                                            <div className="relative">
-                                                <input required name="email" onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20" placeholder="jane@example.com" type="email" />
-                                            </div>
-                                        </div>
-                                        
-                                        <div>
-                                            <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-2 tracking-wider uppercase">City</label>
-                                            <div className="relative">
-                                                <input required name="city" onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 px-4 text-on-surface text-sm focus:border-secondary focus:bg-black/60 focus:ring-1 focus:ring-secondary outline-none transition-all placeholder:text-white/20" placeholder="Your City" type="text" />
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="pt-4">
-                                            <button disabled={isSubmitting} className="w-full bg-primary text-black py-4 flex items-center justify-center gap-2 rounded-xl font-sans font-bold uppercase tracking-wider hover:bg-primary-container transition-all duration-300 disabled:opacity-50 hover:shadow-[0_0_20px_rgba(16,185,129,0.4)]" type="submit">
-                                                {isSubmitting ? <Loader size="sm" /> : 'Get Free Access Now'}
-                                            </button>
-                                        </div>
-                                    </form>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                </section>
 
-                {/* HBootcamp Section - Appears below application form and above footer */}
-                {isRegistered && (
-                    <section className="py-12 sm:py-20 px-3 sm:px-6 md:px-gutter max-w-6xl mx-auto border-t border-white/10 animate-in fade-in slide-in-from-bottom-6 duration-500 overflow-hidden w-full" id="hbootcamp" ref={bootcampRef}>
-                        <div className="floral-glass-heavy rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-14 ambient-shadow relative overflow-hidden w-full max-w-full">
+                                    <form className="space-y-4" onSubmit={handleSubmit}>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-1.5 tracking-wider uppercase">Mobile</label>
+                                                <input required name="phone" value={formData.phone} onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-on-surface text-xs focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20" placeholder="+91 98765 43210" type="tel" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-1.5 tracking-wider uppercase">City</label>
+                                                <input required name="city" value={formData.city} onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-on-surface text-xs focus:border-secondary focus:bg-black/60 focus:ring-1 focus:ring-secondary outline-none transition-all placeholder:text-white/20" placeholder="Your City" type="text" />
+                                            </div>
+                                        </div>
+                                        <button disabled={isSubmitting} className="w-full bg-white/10 hover:bg-primary hover:text-black border border-white/10 text-white py-3 flex items-center justify-center gap-2 rounded-xl font-sans font-bold uppercase tracking-wider text-xs transition-all duration-300 disabled:opacity-50" type="submit">
+                                            {isSubmitting ? <Loader size="sm" /> : 'Save Specialist Contact Details'}
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* HBootcamp Section - Appears for Authenticated Members */}
+                        <section className="py-12 sm:py-20 px-3 sm:px-6 md:px-gutter max-w-6xl mx-auto border-t border-white/10 animate-in fade-in slide-in-from-bottom-6 duration-500 overflow-hidden w-full" id="hbootcamp" ref={bootcampRef}>
+                            <div className="floral-glass-heavy rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-14 ambient-shadow relative overflow-hidden w-full max-w-full">
                             {/* Decorative background glows */}
                             <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
                             <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/10 blur-[100px] rounded-full pointer-events-none"></div>
@@ -871,7 +691,8 @@ export default function Dashboard() {
                             )}
                         </div>
                     </section>
-                )}
+                </>
+            )}
             </main>
             <Footer />
         </div>

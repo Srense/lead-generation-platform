@@ -59,44 +59,18 @@ export const submitLead = async (leadData) => {
 export const checkLeadStatus = async (email) => {
   if (!email || !supabase) return null;
   try {
-    const cleanEmail = email.trim().toLowerCase();
     const { data, error } = await supabase
       .from('leads')
-      .select('*')
-      .ilike('email', cleanEmail)
-      .limit(1);
-
-    if (error) {
-      console.warn("Supabase query error in checkLeadStatus:", error.message);
-      return null;
-    }
-
-    if (data && data.length > 0) {
-      return data[0];
+      .select('name, email')
+      .eq('email', email.trim().toLowerCase())
+      .single();
+    if (!error && data) {
+      return data;
     }
   } catch (err) {
     console.error("Error checking lead status:", err);
   }
   return null;
-};
-
-export const updateLeadProgress = async (email, updates) => {
-  if (!email || !supabase) return false;
-  try {
-    const cleanEmail = email.trim().toLowerCase();
-    const { error } = await supabase
-      .from('leads')
-      .update(updates)
-      .ilike('email', cleanEmail);
-    if (error) {
-      console.warn("Could not update progress in Supabase (run SQL migration if columns are missing):", error.message);
-      return false;
-    }
-    return true;
-  } catch (err) {
-    console.warn("Error updating lead progress:", err);
-    return false;
-  }
 };
 
 
