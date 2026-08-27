@@ -44,6 +44,21 @@ const DEFAULT_BOOTCAMP_MODULES = [
 ];
 
 export default function Dashboard() {
+    // Reset all accounts for the new V2 logic (clears progress but keeps registration)
+    useEffect(() => {
+        if (localStorage.getItem('app_reset_v2') !== 'true') {
+            const email = localStorage.getItem('user_email');
+            const registered = localStorage.getItem('user_registered');
+            
+            localStorage.clear();
+            
+            if (email) localStorage.setItem('user_email', email);
+            if (registered) localStorage.setItem('user_registered', registered);
+            
+            localStorage.setItem('app_reset_v2', 'true');
+            window.location.reload();
+        }
+    }, []);
     const [minutes, setMinutes] = useState(14);
     const [seconds, setSeconds] = useState(59);
     const [bannerText, setBannerText] = useState('🎁 This training is completely FREE for a limited time. Previously ₹299, but today you can access it at absolutely no cost.');
