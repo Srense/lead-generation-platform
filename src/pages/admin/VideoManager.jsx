@@ -3,8 +3,11 @@ import { supabase } from '../../lib/supabase';
 
 export default function VideoManager() {
     const [videoUrl, setVideoUrl] = useState('');
+    const [whySessionUrl, setWhySessionUrl] = useState('');
     const [uploadProgress, setUploadProgress] = useState(0);
+    const [whyUploadProgress, setWhyUploadProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
+    const [isWhyUploading, setIsWhyUploading] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -13,6 +16,8 @@ export default function VideoManager() {
             if (!supabase) return;
             const { data } = await supabase.from('config').select('value').eq('key', 'video_url').single();
             if (data) setVideoUrl(data.value);
+            const { data: whyData } = await supabase.from('config').select('value').eq('key', 'why_session_video_url').single();
+            if (whyData) setWhySessionUrl(whyData.value);
             setIsLoading(false);
         };
         fetchConfig();
@@ -57,6 +62,42 @@ export default function VideoManager() {
         setTimeout(() => setUploadProgress(0), 1000);
     };
 
+    const handleWhyUpload = async (e) => {
+        e.preventDefault();
+        const file = e.target.files[0];
+        if (!file) return;
+        setIsWhyUploading(true);
+        setWhyUploadProgress(20);
+
+        if (supabase) {
+            try {
+                const fileName = `why_${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+
+                const { data, error } = await supabase.storage
+                    .from('videos')
+                    .upload(fileName, file, { cacheControl: '3600', upsert: false });
+
+                if (error) throw error;
+
+                setWhyUploadProgress(100);
+
+                const { data: urlData } = supabase.storage.from('videos').getPublicUrl(fileName);
+                const finalUrl = urlData.publicUrl;
+
+                setWhySessionUrl(finalUrl);
+                await supabase.from('config').upsert({ key: 'why_session_video_url', value: finalUrl });
+
+                alert('Why Session Upload Complete! Video deployed to Edge nodes and landing page dynamically updated.');
+            } catch (err) {
+                console.error("Storage Error:", err);
+                alert('Upload Failed: ' + err.message);
+            }
+        }
+
+        setIsWhyUploading(false);
+        setTimeout(() => setWhyUploadProgress(0), 1000);
+    };
+
     const saveUrl = async (e) => {
         e.preventDefault();
 
@@ -68,6 +109,19 @@ export default function VideoManager() {
             }
         }
         alert('System Configuration Updated. The new streaming URL will be served via Edge Nodes immediately.');
+    };
+
+    const saveWhyUrl = async (e) => {
+        e.preventDefault();
+
+        if (supabase) {
+            const { error } = await supabase.from('config').upsert({ key: 'why_session_video_url', value: whySessionUrl });
+            if (error) {
+                alert('Error saving configuration: ' + error.message);
+                return;
+            }
+        }
+        alert('Why Session Configuration Updated.');
     };
 
     return (
@@ -132,6 +186,73 @@ export default function VideoManager() {
                         </div>
 
                         <button disabled={isLoading} type="submit" className="flex items-center justify-center gap-2 w-full bg-primary/10 text-primary border border-primary/20 py-4 rounded-xl font-medium hover:bg-primary hover:text-white transition-all duration-300 disabled:opacity-50">
+                            <span className="material-symbols-outlined text-[20px]">save</span>
+                            Commit Changes
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div className="mt-8 mb-8 p-8 floral-glass rounded-2xl ambient-shadow flex justify-between items-center">
+                <div>
+                    <h2 className="text-2xl font-display font-semibold text-on-surface flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center text-blue-400 shadow-sm border border-blue-500/30">
+                            <span className="material-symbols-outlined text-xl">play_circle</span>
+                        </div>
+                        Why Session Video Configurations
+                    </h2>
+                    <p className="text-on-surface-variant text-sm font-sans pl-13">Configure the intermediate video session shown between the hero video and the bootcamp modules.</p>
+                </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+                <div className="floral-glass rounded-2xl p-8 h-fit ambient-shadow">
+                    <h3 className="font-semibold text-on-surface text-lg mb-2">Direct Secure Upload</h3>
+                    <p className="text-sm text-on-surface-variant mb-6">Upload raw MP4/WebM files for the Why Session.</p>
+
+                    <div className="border border-dashed border-blue-500/40 bg-blue-500/5 hover:bg-blue-500/10 transition-colors rounded-2xl p-10 text-center cursor-pointer relative overflow-hidden group">
+                        <input type="file" accept="video/mp4,video/webm" className="absolute inset-0 opacity-0 cursor-pointer z-10" onChange={handleWhyUpload} disabled={isWhyUploading} />
+
+                        {!isWhyUploading ? (
+                            <div className="flex flex-col items-center justify-center gap-3">
+                                <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center text-blue-400 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                                    <span className="material-symbols-outlined text-3xl">cloud_upload</span>
+                                </div>
+                                <div className="text-base font-medium text-on-surface mt-2">Drag & drop your file here</div>
+                                <div className="text-sm text-on-surface-variant">Maximum file size: 4GB</div>
+                            </div>
+                        ) : (
+                            <div className="w-full py-4">
+                                <div className="text-sm font-semibold text-blue-400 mb-3">Pushing to Node: {Math.min(whyUploadProgress, 100)}%</div>
+                                <div className="w-full bg-surface-variant/40 rounded-full h-3 overflow-hidden shadow-inner">
+                                    <div className="bg-blue-500 h-3 rounded-full transition-all duration-300 relative" style={{ width: `${Math.min(whyUploadProgress, 100)}%` }}>
+                                        <div className="absolute inset-0 bg-white/20"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="floral-glass rounded-2xl p-8 h-fit ambient-shadow">
+                    <h3 className="font-semibold text-on-surface text-lg mb-2">Current Asset Identifier</h3>
+                    <p className="text-sm text-on-surface-variant mb-6">Modify the direct remote URL endpoint serving the Why Session video.</p>
+
+                    <form onSubmit={saveWhyUrl} className="space-y-6">
+                        <div>
+                            <label className="block text-sm font-semibold text-on-surface-variant mb-2 ml-1">Streaming URL Endpoint</label>
+                            <div className="relative">
+                                <span className="absolute left-4 top-3.5 material-symbols-outlined text-on-surface-variant text-lg">link</span>
+                                <input
+                                    value={whySessionUrl}
+                                    onChange={(e) => setWhySessionUrl(e.target.value)}
+                                    placeholder={isLoading ? "Loading securely..." : "https://..."}
+                                    className="w-full bg-surface-variant/40 border border-outline-variant/60 rounded-xl py-3.5 pl-12 pr-4 text-on-surface text-sm focus:border-blue-500 focus:bg-surface-variant/80 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                                />
+                            </div>
+                        </div>
+
+                        <button disabled={isLoading} type="submit" className="flex items-center justify-center gap-2 w-full bg-blue-500/10 text-blue-400 border border-blue-500/20 py-4 rounded-xl font-medium hover:bg-blue-500 hover:text-white transition-all duration-300 disabled:opacity-50">
                             <span className="material-symbols-outlined text-[20px]">save</span>
                             Commit Changes
                         </button>

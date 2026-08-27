@@ -54,19 +54,29 @@ export default function Dashboard() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState(null);
     const [videoAsset, setVideoAsset] = useState(null);
+    const [whySessionAsset, setWhySessionAsset] = useState(null);
     const [bootcampModules, setBootcampModules] = useState(DEFAULT_BOOTCAMP_MODULES);
     const [showSkipWarning, setShowSkipWarning] = useState(false);
     const [isRegistered, setIsRegistered] = useState(() => {
         return localStorage.getItem('user_registered') === 'true';
     });
     
-    // Permanent Bootcamp unlock state
+    // First video complete state
+    const [isFirstVideoCompleted, setIsFirstVideoCompleted] = useState(() => {
+        const savedEmail = localStorage.getItem('user_email');
+        if (savedEmail && localStorage.getItem(`first_video_completed_${savedEmail}`) === 'true') {
+            return true;
+        }
+        return localStorage.getItem('first_video_completed') === 'true' || localStorage.getItem('video_completed') === 'true';
+    });
+
+    // Permanent Bootcamp unlock state (Why session completed)
     const [isBootcampUnlocked, setIsBootcampUnlocked] = useState(() => {
         const savedEmail = localStorage.getItem('user_email');
         if (savedEmail && localStorage.getItem(`bootcamp_unlocked_${savedEmail}`) === 'true') {
             return true;
         }
-        return localStorage.getItem('bootcamp_unlocked') === 'true' || localStorage.getItem('video_completed') === 'true';
+        return localStorage.getItem('bootcamp_unlocked') === 'true';
     });
 
     // Per-video completion state (controls anti-skip for the active video)
@@ -74,18 +84,35 @@ export default function Dashboard() {
 
     const videoRef = useRef(null);
     const maxWatchedTimeRef = useRef(0);
+    const whySessionRef = useRef(null);
+    const maxWhySessionWatchedRef = useRef(0);
     const bootcampRef = useRef(null);
     const navigate = useNavigate();
 
     const markVideoCompleted = (currentUrl) => {
         const urlToUse = currentUrl || videoAsset;
         setIsCurrentVideoCompleted(true);
-        setIsBootcampUnlocked(true);
-        localStorage.setItem('bootcamp_unlocked', 'true');
+        setIsFirstVideoCompleted(true);
+        localStorage.setItem('first_video_completed', 'true');
         localStorage.setItem('video_completed', 'true');
 
         if (urlToUse) {
             const vKey = getVideoKey(urlToUse);
+            localStorage.setItem(`completed_${vKey}`, 'true');
+            const activeEmail = userEmail || localStorage.getItem('user_email');
+            if (activeEmail) {
+                localStorage.setItem(`completed_${vKey}_${activeEmail}`, 'true');
+                localStorage.setItem(`first_video_completed_${activeEmail}`, 'true');
+            }
+        }
+    };
+
+    const markWhySessionCompleted = () => {
+        setIsBootcampUnlocked(true);
+        localStorage.setItem('bootcamp_unlocked', 'true');
+
+        if (whySessionAsset) {
+            const vKey = getVideoKey(whySessionAsset);
             localStorage.setItem(`completed_${vKey}`, 'true');
             const activeEmail = userEmail || localStorage.getItem('user_email');
             if (activeEmail) {
@@ -151,6 +178,45 @@ export default function Dashboard() {
         }
     };
 
+    const handleWhySessionTimeUpdate = () => {
+        if (!whySessionRef.current) return;
+        const current = whySessionRef.current.currentTime;
+        const duration = whySessionRef.current.duration;
+
+        if (duration && current >= duration - 1) {
+            markWhySessionCompleted();
+        }
+
+        if (isBootcampUnlocked) return;
+
+        if (current > maxWhySessionWatchedRef.current + 1.5) {
+            whySessionRef.current.currentTime = maxWhySessionWatchedRef.current;
+            setShowSkipWarning(true);
+        } else {
+            maxWhySessionWatchedRef.current = Math.max(maxWhySessionWatchedRef.current, current);
+            if (current > 2 && whySessionAsset) {
+                const vKey = getVideoKey(whySessionAsset);
+                try {
+                    localStorage.setItem(`why_watch_sec_${vKey}`, current.toString());
+                } catch (e) {}
+            }
+        }
+    };
+
+    const handleWhySessionSeeking = () => {
+        if (!whySessionRef.current) return;
+        if (isBootcampUnlocked) return;
+        const current = whySessionRef.current.currentTime;
+        if (current > maxWhySessionWatchedRef.current + 0.5) {
+            whySessionRef.current.currentTime = maxWhySessionWatchedRef.current;
+            setShowSkipWarning(true);
+        }
+    };
+
+    const handleWhySessionEnded = () => {
+        markWhySessionCompleted();
+    };
+
     const scrollToVideo = () => {
         const videoElement = document.getElementById('training');
         if (videoElement) {
@@ -175,6 +241,15 @@ export default function Dashboard() {
                 setIsBootcampUnlocked(true);
             }
 
+            const alreadyFirstCompleted = 
+                localStorage.getItem('first_video_completed') === 'true' || 
+                localStorage.getItem('video_completed') === 'true' ||
+                (savedEmail && localStorage.getItem(`first_video_completed_${savedEmail}`) === 'true');
+
+            if (alreadyFirstCompleted) {
+                setIsFirstVideoCompleted(true);
+            }
+
             // Fetch video
             const { data: videoData } = await supabase.from('config').select('value').eq('key', 'video_url').single();
             if (videoData && videoData.value) {
@@ -191,6 +266,19 @@ export default function Dashboard() {
                 maxWatchedTimeRef.current = validPos;
                 if (videoRef.current && validPos > 2) {
                     videoRef.current.currentTime = validPos;
+                }
+            }
+
+            // Fetch Why Session video
+            const { data: whyData } = await supabase.from('config').select('value').eq('key', 'why_session_video_url').single();
+            if (whyData && whyData.value) {
+                setWhySessionAsset(whyData.value);
+                const wKey = getVideoKey(whyData.value);
+                const savedPosW = parseFloat(localStorage.getItem(`why_watch_sec_${wKey}`) || '0');
+                const validPosW = !isNaN(savedPosW) && savedPosW > 0 ? savedPosW : 0;
+                maxWhySessionWatchedRef.current = validPosW;
+                if (whySessionRef.current && validPosW > 2) {
+                    whySessionRef.current.currentTime = validPosW;
                 }
             }
 
@@ -470,7 +558,7 @@ export default function Dashboard() {
                             <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
                             <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/10 blur-[100px] rounded-full pointer-events-none"></div>
 
-                            {!isBootcampUnlocked ? (
+                            {!isFirstVideoCompleted ? (
                                 /* LOCKED STATE */
                                 <div className="relative z-10 text-center max-w-2xl mx-auto">
                                     <div className="w-20 h-20 rounded-3xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(245,158,11,0.2)]">
@@ -479,7 +567,7 @@ export default function Dashboard() {
 
                                     <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 text-amber-300 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
                                         <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-                                        Step 1 of 2 Complete (Registered)
+                                        Step 1 of 3 Complete (Registered)
                                     </div>
 
                                     <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
@@ -487,7 +575,7 @@ export default function Dashboard() {
                                     </h2>
 
                                     <p className="text-on-surface-variant text-base leading-relaxed mb-8">
-                                        You have to first complete the video above to unlock the bootcamp. Please watch the complete training without skipping to unlock all curriculum modules and materials.
+                                        You have to first complete the video above to unlock the next session. Please watch the complete training without skipping to progress.
                                     </p>
 
                                     <div className="p-4 rounded-2xl bg-black/40 border border-white/10 mb-8 text-left space-y-3">
@@ -507,6 +595,49 @@ export default function Dashboard() {
                                         <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>play_circle</span>
                                         Watch Video Training Above
                                     </button>
+                                </div>
+                            ) : !isBootcampUnlocked ? (
+                                /* INTERMEDIARY STATE - WHY SESSION */
+                                <div className="relative z-10 w-full space-y-8 text-center">
+                                    <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 text-blue-300 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-2">
+                                        <span className="material-symbols-outlined text-sm">play_circle</span>
+                                        Step 2 of 3 (Why Session)
+                                    </div>
+                                    
+                                    <h2 className="font-display text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight">
+                                        Why Are We Doing This?
+                                    </h2>
+                                    
+                                    <p className="text-on-surface-variant text-sm leading-relaxed max-w-xl mx-auto mb-8">
+                                        Before you jump into the core curriculum, watch this brief session to understand the philosophy and exactly what to expect.
+                                    </p>
+
+                                    <div className="relative w-full max-w-4xl mx-auto rounded-[2rem] overflow-hidden floral-glass ambient-shadow flex items-center justify-center p-3 border border-white/5">
+                                        <div className="w-full rounded-3xl overflow-hidden relative bg-black/60 aspect-video">
+                                            {whySessionAsset ? (
+                                                <video
+                                                    ref={whySessionRef}
+                                                    key={whySessionAsset}
+                                                    src={whySessionAsset}
+                                                    controls
+                                                    playsInline
+                                                    preload="auto"
+                                                    crossOrigin="anonymous"
+                                                    onTimeUpdate={handleWhySessionTimeUpdate}
+                                                    onSeeking={handleWhySessionSeeking}
+                                                    onEnded={handleWhySessionEnded}
+                                                    onContextMenu={(e) => e.preventDefault()}
+                                                    controlsList="nodownload noplaybackrate"
+                                                    className="w-full h-full object-contain"
+                                                />
+                                            ) : (
+                                                <div className="flex flex-col items-center justify-center h-full text-on-surface-variant p-6">
+                                                    <span className="material-symbols-outlined text-5xl mb-4">video_library</span>
+                                                    <p>The instructor is preparing the "Why Session". Please check back soon.</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             ) : (
                                 /* UNLOCKED STATE - SEQUENTIAL BOOTCAMP MODULE PLAYER */
