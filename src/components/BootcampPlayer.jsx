@@ -227,6 +227,8 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
 
             ytPlayerRef.current = new window.YT.Player(ytContainerRef.current, {
                 videoId: embed.id,
+                width: '100%',
+                height: '100%',
                 playerVars: {
                     autoplay: 0,
                     controls: 1,
