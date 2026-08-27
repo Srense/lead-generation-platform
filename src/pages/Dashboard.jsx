@@ -88,6 +88,11 @@ export default function Dashboard() {
         if (userProfile?.email) {
             const email = userProfile.email;
             setUserEmail(email);
+            setFormData(prev => ({
+                ...prev,
+                name: prev.name || userProfile.name || '',
+                email: prev.email || userProfile.email || ''
+            }));
             if (localStorage.getItem(`first_video_completed_${email}`) === 'true') {
                 setIsFirstVideoCompleted(true);
             }
@@ -498,66 +503,86 @@ export default function Dashboard() {
                     }} />
                 ) : (
                     <>
-                        {/* Member Consultation / Specialist Connect Banner */}
-                        <section className="py-12 px-margin-mobile md:px-gutter relative" id="contact">
-                            <div className="max-w-container-max mx-auto grid md:grid-cols-2 gap-12 items-center">
-                                <div>
+                        {/* Start Your Application - Get Free Access Form */}
+                        <section className="py-16 sm:py-24 px-margin-mobile md:px-gutter relative" id="contact">
+                            <div className="max-w-container-max mx-auto grid md:grid-cols-2 gap-12 sm:gap-16 items-start">
+                                <div className="md:sticky md:top-32">
                                     <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary px-4 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
                                         <span className="material-symbols-outlined text-sm">verified_user</span>
-                                        Member Account Active
+                                        Logged In as {userProfile?.name || 'Learner'}
                                     </div>
-                                    <h2 className="font-display text-3xl md:text-5xl font-bold mb-4 text-gradient-shimmer">
-                                        Welcome, {userProfile?.name || 'Learner'}!
+                                    <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-gradient-shimmer">
+                                        Start Your Application
                                     </h2>
-                                    <p className="font-sans text-base text-on-surface-variant mb-6 leading-relaxed max-w-md">
-                                        Your learning profile is synchronized. Complete the primary training video above to unlock the 2nd Why Session and the full curriculum below.
+                                    <p className="font-sans text-base sm:text-lg text-on-surface-variant mb-6 sm:mb-8 leading-relaxed max-w-md">
+                                        Join the platform to access premium insights. Fill out the application and a specialist will contact you.
                                     </p>
                                     
                                     {isUrgentVisible && (
-                                        <div className="floral-glass rounded-xl p-5 mb-4 relative overflow-hidden border-l-4 border-l-primary flex items-center justify-between">
+                                        <div className="floral-glass rounded-xl p-5 sm:p-6 mb-6 sm:mb-8 relative overflow-hidden border-l-4 border-l-primary flex items-center justify-between">
                                             <p className="font-sans text-xs sm:text-sm text-on-surface-variant flex-1 pr-4">
                                                 {bannerText}
                                             </p>
-                                            <div className="flex items-center gap-2 text-primary font-mono text-xl bg-black/40 px-3 py-1.5 rounded-lg border border-primary/20">
-                                                <div><span>{minutes.toString().padStart(2, '0')}</span><span className="text-[10px] font-sans text-primary/70 ml-1">M</span></div>
+                                            <div className="flex items-center gap-2 text-primary font-mono text-xl sm:text-2xl bg-black/40 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border border-primary/20">
+                                                <div><span>{minutes.toString().padStart(2, '0')}</span><span className="text-[10px] sm:text-xs font-sans text-primary/70 ml-1">M</span></div>
                                                 <span className="opacity-50">:</span>
-                                                <div><span>{seconds.toString().padStart(2, '0')}</span><span className="text-[10px] font-sans text-primary/70 ml-1">S</span></div>
+                                                <div><span>{seconds.toString().padStart(2, '0')}</span><span className="text-[10px] sm:text-xs font-sans text-primary/70 ml-1">S</span></div>
                                             </div>
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="floral-glass-heavy rounded-3xl p-6 sm:p-8 ambient-shadow relative">
-                                    <h3 className="text-lg font-bold text-white mb-2">Request 1-on-1 Specialist Guidance</h3>
-                                    <p className="text-on-surface-variant text-xs mb-6">Leave your mobile and city if you would like instructor support via WhatsApp.</p>
-                                    
+                                <div className="floral-glass-heavy rounded-2xl sm:rounded-3xl p-6 sm:p-8 ambient-shadow relative">
+                                    {submitStatus === 'duplicate' && (
+                                        <div className="bg-primary/10 border border-primary/20 text-primary p-4 rounded-xl text-xs sm:text-sm mb-6 animate-in slide-in-from-top-2 flex gap-2 items-center">
+                                            <span className="material-symbols-outlined">info</span> We already have your details! Your registration is active.
+                                        </div>
+                                    )}
                                     {submitStatus === 'success' && (
-                                        <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-4 rounded-xl text-xs font-medium mb-4 flex items-center gap-2">
-                                            <span className="material-symbols-outlined text-base">check_circle</span>
-                                            Details saved successfully! Our team will reach out.
+                                        <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-4 rounded-xl text-xs sm:text-sm mb-6 animate-in slide-in-from-top-2 flex gap-2 items-center">
+                                            <span className="material-symbols-outlined">check_circle</span> Application submitted successfully! See HBootcamp below.
                                         </div>
                                     )}
                                     {submitStatus === 'error' && (
-                                        <div className="bg-error/10 border border-error/20 text-error p-4 rounded-xl text-xs font-medium mb-4 flex items-center gap-2">
-                                            <span className="material-symbols-outlined text-base">error</span>
-                                            Something went wrong. Please try again.
+                                        <div className="bg-error/10 border border-error/20 text-error p-4 rounded-xl text-xs sm:text-sm mb-6 animate-in slide-in-from-top-2 flex gap-2 items-center">
+                                            <span className="material-symbols-outlined">error</span> Oops! Something went wrong. Please try again.
                                         </div>
                                     )}
-
-                                    <form className="space-y-4" onSubmit={handleSubmit}>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <form className="space-y-4 sm:space-y-5" onSubmit={handleSubmit}>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                                             <div>
-                                                <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-1.5 tracking-wider uppercase">Mobile</label>
-                                                <input required name="phone" value={formData.phone} onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-on-surface text-xs focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20" placeholder="+91 98765 43210" type="tel" />
+                                                <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-1.5 sm:mb-2 tracking-wider uppercase">Full Name</label>
+                                                <div className="relative">
+                                                    <input required name="name" value={formData.name} onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3 sm:py-3.5 px-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20" placeholder="Jane Doe" type="text" />
+                                                </div>
                                             </div>
                                             <div>
-                                                <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-1.5 tracking-wider uppercase">City</label>
-                                                <input required name="city" value={formData.city} onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-on-surface text-xs focus:border-secondary focus:bg-black/60 focus:ring-1 focus:ring-secondary outline-none transition-all placeholder:text-white/20" placeholder="Your City" type="text" />
+                                                <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-1.5 sm:mb-2 tracking-wider uppercase">Mobile</label>
+                                                <div className="relative">
+                                                    <input required name="phone" value={formData.phone} onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3 sm:py-3.5 px-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20" placeholder="+91 98765 43210" type="tel" />
+                                                </div>
                                             </div>
                                         </div>
-                                        <button disabled={isSubmitting} className="w-full bg-white/10 hover:bg-primary hover:text-black border border-white/10 text-white py-3 flex items-center justify-center gap-2 rounded-xl font-sans font-bold uppercase tracking-wider text-xs transition-all duration-300 disabled:opacity-50" type="submit">
-                                            {isSubmitting ? <Loader size="sm" /> : 'Save Specialist Contact Details'}
-                                        </button>
+                                        
+                                        <div>
+                                            <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-1.5 sm:mb-2 tracking-wider uppercase">Email Address</label>
+                                            <div className="relative">
+                                                <input required name="email" value={formData.email} onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3 sm:py-3.5 px-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20" placeholder="jane@example.com" type="email" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-1.5 sm:mb-2 tracking-wider uppercase">City</label>
+                                            <div className="relative">
+                                                <input required name="city" value={formData.city} onChange={handleChange} className="w-full bg-black/40 border border-white/10 rounded-xl py-3 sm:py-3.5 px-4 text-on-surface text-sm focus:border-secondary focus:bg-black/60 focus:ring-1 focus:ring-secondary outline-none transition-all placeholder:text-white/20" placeholder="Your City" type="text" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="pt-2 sm:pt-4">
+                                            <button disabled={isSubmitting} className="w-full bg-primary text-black py-3.5 sm:py-4 flex items-center justify-center gap-2 rounded-xl font-sans font-bold uppercase tracking-wider text-xs sm:text-sm hover:bg-primary-container transition-all duration-300 disabled:opacity-50 hover:shadow-[0_0_20px_rgba(16,185,129,0.4)]" type="submit">
+                                                {isSubmitting ? <Loader size="sm" /> : 'Get Free Access Now'}
+                                            </button>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
