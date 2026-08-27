@@ -209,6 +209,26 @@ export const UserAuthProvider = ({ children }) => {
         setIsLoading(false);
     };
 
+    const updatePassword = async (newPassword) => {
+        setIsLoading(true);
+        try {
+            if (supabase) {
+                const { error } = await supabase.auth.updateUser({
+                    password: newPassword
+                });
+                if (error) throw error;
+                setIsLoading(false);
+                return { success: true };
+            } else {
+                setIsLoading(false);
+                return { success: true };
+            }
+        } catch (err) {
+            setIsLoading(false);
+            return { success: false, error: err.message || 'Failed to update password.' };
+        }
+    };
+
     return (
         <UserAuthContext.Provider
             value={{
@@ -218,7 +238,8 @@ export const UserAuthProvider = ({ children }) => {
                 isLoading,
                 signup,
                 login,
-                logout
+                logout,
+                updatePassword
             }}
         >
             {children}
