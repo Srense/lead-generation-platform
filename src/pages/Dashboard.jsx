@@ -567,8 +567,8 @@ export default function Dashboard() {
 
                 {/* HBootcamp Section - Appears below application form and above footer */}
                 {isRegistered && (
-                    <section className="py-20 px-margin-mobile md:px-gutter max-w-6xl mx-auto border-t border-white/10 animate-in fade-in slide-in-from-bottom-6 duration-500" id="hbootcamp" ref={bootcampRef}>
-                        <div className="floral-glass-heavy rounded-3xl p-8 md:p-14 ambient-shadow relative overflow-hidden">
+                    <section className="py-12 sm:py-20 px-3 sm:px-6 md:px-gutter max-w-6xl mx-auto border-t border-white/10 animate-in fade-in slide-in-from-bottom-6 duration-500 overflow-hidden w-full" id="hbootcamp" ref={bootcampRef}>
+                        <div className="floral-glass-heavy rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-14 ambient-shadow relative overflow-hidden w-full max-w-full">
                             {/* Decorative background glows */}
                             <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 blur-[100px] rounded-full pointer-events-none"></div>
                             <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/10 blur-[100px] rounded-full pointer-events-none"></div>

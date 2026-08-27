@@ -306,19 +306,19 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
     const progressPercent = Math.round((completedCount / modules.length) * 100);
 
     return (
-        <div className="w-full">
+        <div className="w-full max-w-full overflow-hidden">
             {/* Overall Curriculum Progress Bar */}
-            <div className="floral-glass rounded-2xl p-6 mb-8 border border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
-                <div>
+            <div className="floral-glass rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8 border border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 w-full">
+                <div className="w-full min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                        <span className="material-symbols-outlined text-primary">analytics</span>
-                        <h3 className="font-display font-bold text-white text-lg">Your Bootcamp Progression</h3>
+                        <span className="material-symbols-outlined text-primary text-xl flex-shrink-0">analytics</span>
+                        <h3 className="font-display font-bold text-white text-base sm:text-lg truncate">Your Bootcamp Progression</h3>
                     </div>
                     <p className="text-on-surface-variant text-xs font-sans">
                         Complete videos sequentially to unlock upcoming advanced modules.
                     </p>
                 </div>
-                <div className="w-full md:w-64 space-y-2 text-right">
+                <div className="w-full md:w-64 space-y-2 text-left md:text-right flex-shrink-0">
                     <div className="flex justify-between text-xs font-semibold">
                         <span className="text-on-surface-variant">{completedCount} of {modules.length} Completed</span>
                         <span className="text-primary font-bold">{progressPercent}%</span>
@@ -333,10 +333,10 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
             </div>
 
             {/* Active Video Player Screen */}
-            <div className="grid lg:grid-cols-3 gap-8 items-start">
+            <div className="grid lg:grid-cols-3 gap-6 sm:gap-8 items-start w-full">
                 {/* Left 2 Cols: Main Player & Active Module Info */}
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="relative w-full aspect-video rounded-3xl overflow-hidden floral-glass-heavy border border-primary/20 shadow-[0_0_40px_rgba(16,185,129,0.15)] bg-black/60 flex items-center justify-center">
+                <div className="lg:col-span-2 space-y-4 sm:space-y-6 w-full min-w-0">
+                    <div className="relative w-full aspect-video rounded-2xl sm:rounded-3xl overflow-hidden floral-glass-heavy border border-primary/20 shadow-[0_0_40px_rgba(16,185,129,0.15)] bg-black/60 flex items-center justify-center">
                         {embed ? (
                             embed.type === 'youtube' ? (
                                 <div key={embed.id} className="absolute inset-0 w-full h-full overflow-hidden [&>iframe]:absolute [&>iframe]:inset-0 [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:max-w-full">
@@ -366,21 +366,21 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                                 ></iframe>
                             )
                         ) : (
-                            <div className="p-8 text-center text-on-surface-variant">
-                                <span className="material-symbols-outlined text-5xl mb-2 text-primary">videocam_off</span>
-                                <p className="text-sm">Video streaming link is being prepared by your instructor.</p>
+                            <div className="p-6 sm:p-8 text-center text-on-surface-variant">
+                                <span className="material-symbols-outlined text-4xl sm:text-5xl mb-2 text-primary">videocam_off</span>
+                                <p className="text-xs sm:text-sm">Video streaming link is being prepared by your instructor.</p>
                             </div>
                         )}
                     </div>
 
                     {/* Active Module Header & Actions */}
-                    <div className="floral-glass rounded-2xl p-6 border border-white/10 space-y-4">
+                    <div className="floral-glass rounded-2xl p-4 sm:p-6 border border-white/10 space-y-4 w-full min-w-0">
                         <div className="flex flex-wrap items-center justify-between gap-3">
                             <div>
                                 <span className="text-xs text-primary font-bold uppercase tracking-wider block mb-1">
                                     Module 0{activeModuleIndex + 1}
                                 </span>
-                                <h3 className="text-xl md:text-2xl font-bold font-display text-white">
+                                <h3 className="text-lg sm:text-xl md:text-2xl font-bold font-display text-white">
                                     {activeModule?.title}
                                 </h3>
                             </div>
@@ -392,20 +392,20 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                             ) : canCompleteCurrentModule ? (
                                 <button
                                     onClick={() => handleModuleCompleted(activeModule)}
-                                    className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-400 to-primary text-black px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(16,185,129,0.5)] animate-bounce hover:scale-105 active:scale-95"
+                                    className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-400 to-primary text-black px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(16,185,129,0.5)] animate-bounce hover:scale-105 active:scale-95"
                                 >
                                     <span className="material-symbols-outlined text-base font-bold">task_alt</span>
                                     Complete & Unlock Next Module
                                 </button>
                             ) : (
-                                <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-on-surface-variant text-xs font-semibold">
+                                <span className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-on-surface-variant text-[11px] sm:text-xs font-semibold">
                                     <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
                                     Watch to End to Unlock Next
                                 </span>
                             )}
                         </div>
 
-                        <p className="text-on-surface-variant text-sm leading-relaxed">
+                        <p className="text-on-surface-variant text-xs sm:text-sm leading-relaxed">
                             {activeModule?.description}
                         </p>
 
@@ -427,7 +427,7 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                 </div>
 
                 {/* Right 1 Col: Sequential Modules Sidebar */}
-                <div className="space-y-3">
+                <div className="space-y-3 w-full min-w-0">
                     <div className="flex items-center justify-between px-2 mb-2">
                         <span className="text-xs font-bold uppercase tracking-widest text-on-surface-variant/80">
                             Curriculum Modules

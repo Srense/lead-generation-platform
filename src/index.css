@@ -24,11 +24,16 @@
     background-color: theme('colors.background');
     color: theme('colors.on-background');
     font-family: 'Plus Jakarta Sans', sans-serif;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
   }
 }
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 @layer components {
