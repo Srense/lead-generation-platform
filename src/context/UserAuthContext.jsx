@@ -155,6 +155,7 @@ export const UserAuthProvider = ({ children }) => {
         const normalizedEmail = email.trim().toLowerCase();
 
         try {
+            // 1. Check with Supabase Auth first
             if (supabase) {
                 const { data, error } = await supabase.auth.signInWithPassword({
                     email: normalizedEmail,
@@ -181,17 +182,24 @@ export const UserAuthProvider = ({ children }) => {
                 }
             }
 
-            // Resilient Fallback: check local cached credentials or existing user
+            // 2. Check local stored credentials - ONLY allow if password matches exactly
             const savedPwd = localStorage.getItem(`learner_pwd_${normalizedEmail}`);
-            const savedEmail = localStorage.getItem('user_email');
             
             if (savedPwd && savedPwd === password) {
                 const savedUser = localStorage.getItem('learner_user');
-                const profile = savedUser ? JSON.parse(savedUser) : {
-                    id: crypto.randomUUID(),
-                    email: normalizedEmail,
-                    name: normalizedEmail.split('@')[0]
-                };
+                let profile;
+                try {
+                    profile = savedUser ? JSON.parse(savedUser) : null;
+                } catch {}
+                
+                if (!profile || profile.email?.toLowerCase() !== normalizedEmail) {
+                    profile = {
+                        id: crypto.randomUUID(),
+                        email: normalizedEmail,
+                        name: normalizedEmail.split('@')[0]
+                    };
+                }
+
                 setUserProfile(profile);
                 localStorage.setItem('learner_user', JSON.stringify(profile));
                 localStorage.setItem('user_email', normalizedEmail);
@@ -200,23 +208,9 @@ export const UserAuthProvider = ({ children }) => {
                 return { success: true, user: profile };
             }
 
-            // If no password previously saved but user is registered locally
-            if (savedEmail && savedEmail.toLowerCase() === normalizedEmail) {
-                const profile = {
-                    id: crypto.randomUUID(),
-                    email: normalizedEmail,
-                    name: normalizedEmail.split('@')[0]
-                };
-                setUserProfile(profile);
-                localStorage.setItem('learner_user', JSON.stringify(profile));
-                localStorage.setItem('user_registered', 'true');
-                localStorage.setItem(`learner_pwd_${normalizedEmail}`, password);
-                setIsLoading(false);
-                return { success: true, user: profile };
-            }
-
+            // If passwords don't match, strictly reject
             setIsLoading(false);
-            return { success: false, error: 'Invalid email or password. Please check your credentials or Sign Up.' };
+            return { success: false, error: 'Incorrect email or password. Please try again.' };
         } catch (err) {
             setIsLoading(false);
             return { success: false, error: err.message || 'Invalid email or password.' };
