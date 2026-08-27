@@ -4,7 +4,14 @@ import { supabase } from '../lib/supabase';
 const UserAuthContext = createContext();
 
 export const UserAuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(() => {
+        try {
+            const saved = localStorage.getItem('learner_user');
+            return saved ? JSON.parse(saved) : null;
+        } catch {
+            return null;
+        }
+    });
     const [userProfile, setUserProfile] = useState(() => {
         try {
             const saved = localStorage.getItem('learner_user');
@@ -13,32 +20,19 @@ export const UserAuthProvider = ({ children }) => {
             return null;
         }
     });
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        const initAuth = async () => {
-            // Check if learner session exists in local storage
-            const savedLearner = localStorage.getItem('learner_user');
-            if (savedLearner) {
-                try {
-                    const parsed = JSON.parse(savedLearner);
-                    // Ensure admin account isn't mistakenly treated as learner
-                    if (parsed.email !== 'admin@harshbhati.com') {
-                        setUserProfile(parsed);
-                    } else {
-                        localStorage.removeItem('learner_user');
-                        setUserProfile(null);
-                    }
-                } catch (e) {
-                    setUserProfile(null);
+        const savedLearner = localStorage.getItem('learner_user');
+        if (savedLearner) {
+            try {
+                const parsed = JSON.parse(savedLearner);
+                if (parsed && parsed.email) {
+                    setUserProfile(parsed);
+                    setUser({ id: parsed.id, email: parsed.email, name: parsed.name });
                 }
-            } else {
-                setUserProfile(null);
-            }
-            setIsLoading(false);
-        };
-
-        initAuth();
+            } catch (e) {}
+        }
     }, []);
 
     const signup = async (name, email, password) => {
