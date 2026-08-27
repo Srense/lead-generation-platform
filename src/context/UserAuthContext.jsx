@@ -230,7 +230,7 @@ export const UserAuthProvider = ({ children }) => {
                 // 1. Trigger Supabase native reset
                 try {
                     await supabase.auth.resetPasswordForEmail(normalizedEmail, {
-                        redirectTo: `${window.location.origin}/#reset-password`
+                        redirectTo: 'https://harshbahti.in/#reset-password'
                     });
                 } catch (supaErr) {
                     console.warn("Supabase auth reset warning:", supaErr);
