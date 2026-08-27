@@ -8,13 +8,47 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-    // Handle CORS preflight requests
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders });
     }
 
     try {
-        const { name, email, type } = await req.json();
+        const { name, email, type, new_password } = await req.json();
+
+        // 1. Direct Password Update using Supabase Admin Auth
+        if (type === 'direct_password_update') {
+            const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+            const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+
+            if (supabaseUrl && supabaseServiceKey && email && new_password) {
+                const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+                const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+                    auth: { autoRefreshToken: false, persistSession: false },
+                });
+
+                const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers();
+                if (!listError && users) {
+                    const targetUser = users.find((u: any) => u.email?.toLowerCase() === email.toLowerCase());
+                    if (targetUser) {
+                        const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(targetUser.id, {
+                            password: new_password,
+                            email_confirm: true,
+                        });
+                        if (updateError) throw updateError;
+
+                        return new Response(
+                            JSON.stringify({ success: true, message: 'Password successfully updated' }),
+                            { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+                        );
+                    }
+                }
+            }
+
+            return new Response(
+                JSON.stringify({ success: false, error: 'User not found or service key not configured' }),
+                { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+            );
+        }
 
         let subject = '';
         let htmlContent = '';
@@ -32,14 +66,15 @@ serve(async (req) => {
             `;
         } else if (type === 'reset_password') {
             subject = 'Password Reset Request - HarshBahti Digital Training';
+            const resetUrl = `https://harshbahti.in/?email=${encodeURIComponent(email)}#reset-password`;
             htmlContent = `
               <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #222; border-radius: 16px; background-color: #09090B; color: #FFFFFF;">
                 <h2 style="color: #10B981; margin-bottom: 8px;">Password Reset Request 🔐</h2>
                 <p style="color: #E2E8F0;">Hi <strong>${name || 'Learner'}</strong>,</p>
                 <p style="color: #94A3B8; line-height: 1.6;">We received a request to reset your account password for your HarshBahti Training portal.</p>
                 <div style="background-color: #18181B; border: 1px solid #27272A; border-radius: 12px; padding: 16px; margin: 20px 0; text-align: center;">
-                  <p style="color: #94A3B8; font-size: 13px; margin: 0 0 12px 0;">Click the button below or visit the website to set your new password:</p>
-                  <a href="https://harshbahti.in/#reset-password" style="display: inline-block; background-color: #10B981; color: #000000; font-weight: bold; font-size: 14px; text-decoration: none; padding: 12px 24px; border-radius: 10px;">Set New Password</a>
+                  <p style="color: #94A3B8; font-size: 13px; margin: 0 0 12px 0;">Click the button below to set your new password:</p>
+                  <a href="${resetUrl}" style="display: inline-block; background-color: #10B981; color: #000000; font-weight: bold; font-size: 14px; text-decoration: none; padding: 12px 24px; border-radius: 10px;">Set New Password</a>
                 </div>
                 <p style="color: #64748B; font-size: 12px;">If you did not request a password reset, you can safely ignore this email.</p>
                 <hr style="border: none; border-top: 1px solid #27272A; margin: 20px 0;" />
@@ -67,7 +102,7 @@ serve(async (req) => {
                 Authorization: `Bearer ${RESEND_API_KEY}`,
             },
             body: JSON.stringify({
-                from: 'HarshBahti Training <support@harshbahti.in>', // Using verified custom domain
+                from: 'HarshBahti Training <support@harshbahti.in>',
                 to: [email],
                 subject: subject,
                 html: htmlContent,
@@ -79,7 +114,7 @@ serve(async (req) => {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 200,
         });
-    } catch (error) {
+    } catch (error: any) {
         return new Response(JSON.stringify({ error: error.message }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 400,

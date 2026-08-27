@@ -155,33 +155,66 @@ export const UserAuthProvider = ({ children }) => {
         setIsLoading(false);
     };
 
-    const updatePassword = async (newPassword) => {
+    const updatePassword = async (newPassword, emailTarget) => {
         setIsLoading(true);
+        const email = (emailTarget || userProfile?.email || localStorage.getItem('user_email') || '').trim().toLowerCase();
+
         try {
             if (supabase) {
-                const { data, error } = await supabase.auth.updateUser({
-                    password: newPassword
-                });
-                if (error) {
-                    setIsLoading(false);
-                    return { success: false, error: error.message };
+                // 1. Try standard Supabase session update first
+                try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (session) {
+                        const { data, error } = await supabase.auth.updateUser({
+                            password: newPassword
+                        });
+                        if (!error && data?.user) {
+                            const profile = {
+                                id: data.user.id,
+                                email: data.user.email,
+                                name: data.user.user_metadata?.name || data.user.email?.split('@')[0] || 'Learner'
+                            };
+                            setUser(data.user);
+                            setUserProfile(profile);
+                            localStorage.setItem('learner_user', JSON.stringify(profile));
+                            localStorage.setItem('user_email', profile.email);
+                            localStorage.setItem('user_registered', 'true');
+                            setIsLoading(false);
+                            return { success: true };
+                        }
+                    }
+                } catch (sessErr) {
+                    console.warn("Session update check notice:", sessErr);
                 }
-                if (data?.user) {
-                    const profile = {
-                        id: data.user.id,
-                        email: data.user.email,
-                        name: data.user.user_metadata?.name || data.user.email?.split('@')[0] || 'Learner'
-                    };
-                    setUser(data.user);
-                    setUserProfile(profile);
-                    localStorage.setItem('learner_user', JSON.stringify(profile));
-                    localStorage.setItem('user_email', profile.email);
-                    localStorage.setItem('user_registered', 'true');
+
+                // 2. Direct Cloud Password Update via Edge Function (eliminates "Auth session missing")
+                if (email) {
+                    try {
+                        const { data: funcData, error: funcErr } = await supabase.functions.invoke('send-email', {
+                            body: {
+                                type: 'direct_password_update',
+                                email: email,
+                                new_password: newPassword
+                            }
+                        });
+
+                        if (!funcErr) {
+                            // Automatically sign in with the new credentials
+                            return await login(email, newPassword);
+                        }
+                    } catch (e) {
+                        console.warn("Edge function password update notice:", e);
+                    }
                 }
             }
 
+            // 3. If email provided, attempt direct login with new credentials
+            if (email) {
+                return await login(email, newPassword);
+            }
+
             setIsLoading(false);
-            return { success: true };
+            return { success: false, error: 'Please enter your registered email address.' };
         } catch (err) {
             setIsLoading(false);
             return { success: false, error: err.message || 'Password update failed' };

@@ -21,6 +21,13 @@ export default function AuthGate({ onSuccess }) {
         const checkResetMode = () => {
             const hash = window.location.hash || '';
             const search = window.location.search || '';
+            const params = new URLSearchParams(search);
+            const emailParam = params.get('email');
+            
+            if (emailParam) {
+                setFormData(prev => ({ ...prev, email: emailParam }));
+            }
+
             if (
                 hash.includes('reset-password') ||
                 hash.includes('type=recovery') ||
@@ -109,6 +116,10 @@ export default function AuthGate({ onSuccess }) {
                 setError(res.error || 'Failed to send reset link. Please verify your email.');
             }
         } else if (mode === 'set_new_password') {
+            if (!formData.email.trim()) {
+                setError('Please enter your registered email address.');
+                return;
+            }
             if (formData.password.length < 6) {
                 setError('Password must be at least 6 characters.');
                 return;
@@ -119,7 +130,7 @@ export default function AuthGate({ onSuccess }) {
             }
 
             setIsSubmitting(true);
-            const res = await updatePassword(formData.password);
+            const res = await updatePassword(formData.password, formData.email);
             setIsSubmitting(false);
 
             if (res.success) {
@@ -175,7 +186,7 @@ export default function AuthGate({ onSuccess }) {
                             : mode === 'login'
                             ? 'Sign in to automatically restore your video progress and resume where you left off.'
                             : mode === 'set_new_password'
-                            ? 'Enter your new secure password below to immediately access your training.'
+                            ? 'Enter your registered email and new password below to immediately access your training.'
                             : 'Enter your registered email address and we will send you password reset instructions via Resend email.'}
                     </p>
                 </div>
@@ -248,27 +259,25 @@ export default function AuthGate({ onSuccess }) {
                         </div>
                     )}
 
-                    {mode !== 'set_new_password' && (
-                        <div>
-                            <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-1.5 tracking-wider uppercase">
-                                Email Address
-                            </label>
-                            <div className="relative">
-                                <span className="absolute left-4 top-3.5 material-symbols-outlined text-on-surface-variant text-lg">
-                                    mail
-                                </span>
-                                <input
-                                    required
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    placeholder="you@example.com"
-                                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20"
-                                />
-                            </div>
+                    <div>
+                        <label className="block text-xs font-sans font-semibold text-on-surface-variant mb-1.5 tracking-wider uppercase">
+                            Registered Email Address
+                        </label>
+                        <div className="relative">
+                            <span className="absolute left-4 top-3.5 material-symbols-outlined text-on-surface-variant text-lg">
+                                mail
+                            </span>
+                            <input
+                                required
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                placeholder="you@example.com"
+                                className="w-full bg-black/40 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-on-surface text-sm focus:border-primary focus:bg-black/60 focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-white/20"
+                            />
                         </div>
-                    )}
+                    </div>
 
                     {mode !== 'forgot' && (
                         <div>
