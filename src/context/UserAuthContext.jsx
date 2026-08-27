@@ -274,6 +274,43 @@ export const UserAuthProvider = ({ children }) => {
         }
     };
 
+    const resetPassword = async (email) => {
+        setIsLoading(true);
+        const normalizedEmail = email.trim().toLowerCase();
+
+        try {
+            if (supabase) {
+                // 1. Trigger Supabase native reset
+                try {
+                    await supabase.auth.resetPasswordForEmail(normalizedEmail, {
+                        redirectTo: `${window.location.origin}/#auth-gate`
+                    });
+                } catch (supaErr) {
+                    console.warn("Supabase auth reset warning:", supaErr);
+                }
+
+                // 2. Trigger custom Resend Edge Function
+                try {
+                    await supabase.functions.invoke('send-email', {
+                        body: {
+                            name: normalizedEmail.split('@')[0],
+                            email: normalizedEmail,
+                            type: 'reset_password'
+                        }
+                    });
+                } catch (funcErr) {
+                    console.warn("Resend edge function notice:", funcErr);
+                }
+            }
+
+            setIsLoading(false);
+            return { success: true, message: 'Password reset instructions sent to your email! Please check your inbox or spam folder.' };
+        } catch (err) {
+            setIsLoading(false);
+            return { success: false, error: err.message || 'Failed to send reset link.' };
+        }
+    };
+
     return (
         <UserAuthContext.Provider
             value={{
@@ -284,7 +321,8 @@ export const UserAuthProvider = ({ children }) => {
                 signup,
                 login,
                 logout,
-                updatePassword
+                updatePassword,
+                resetPassword
             }}
         >
             {children}
