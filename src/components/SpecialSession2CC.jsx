@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { getEmbedUrl } from './BootcampPlayer';
+import { saveUserCloudProgress } from '../lib/userProgressSync';
 
 export default function SpecialSession2CC({ config = {}, userEmail = '', userName = '' }) {
     const videoUrl = config?.videoUrl || '';
@@ -34,6 +35,7 @@ export default function SpecialSession2CC({ config = {}, userEmail = '', userNam
             localStorage.setItem('special_2cc_completed', 'true');
             if (userEmail) {
                 localStorage.setItem(`special_2cc_completed_${userEmail}`, 'true');
+                saveUserCloudProgress(userEmail, { special_2cc_completed: true });
             }
         } catch (e) { }
     };

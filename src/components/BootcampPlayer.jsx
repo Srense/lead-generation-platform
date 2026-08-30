@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { saveUserCloudProgress, fetchUserCloudProgress } from '../lib/userProgressSync';
 
 // Helper to extract YouTube video ID from links, shorts, or iframe embed code
 export const getYouTubeVideoId = (rawUrl) => {
@@ -99,6 +100,20 @@ export default function BootcampPlayer({ modules = [], userEmail = '', onAllModu
     const activeModuleKey = activeModule ? getModuleCompletionKey(activeModule.id, activeModule.videoUrl) : null;
     const isCurrentModuleCompleted = Boolean(activeModuleKey && completedModuleKeys.includes(activeModuleKey));
 
+    // Fetch & hydrate cloud progress when userEmail is supplied
+    useEffect(() => {
+        if (userEmail) {
+            fetchUserCloudProgress(userEmail).then((cloud) => {
+                if (cloud && Array.isArray(cloud.bootcamp_completed_keys)) {
+                    setCompletedModuleKeys((prev) => {
+                        const merged = Array.from(new Set([...prev, ...cloud.bootcamp_completed_keys]));
+                        return merged;
+                    });
+                }
+            });
+        }
+    }, [userEmail]);
+
     // Check overall completion of all modules in curriculum
     useEffect(() => {
         if (modules && modules.length > 0) {
@@ -138,6 +153,19 @@ export default function BootcampPlayer({ modules = [], userEmail = '', onAllModu
                 localStorage.setItem(`bootcamp_completed_keys_${userEmail}`, JSON.stringify(updated));
                 localStorage.setItem('bootcamp_completed_keys', JSON.stringify(updated));
             } catch (e) { }
+
+            // Sync to Supabase cloud across all browsers and devices
+            if (userEmail) {
+                const allDone = modules.every((m) =>
+                    updated.includes(getModuleCompletionKey(m.id, m.videoUrl))
+                );
+                saveUserCloudProgress(userEmail, {
+                    bootcamp_completed_keys: updated,
+                    bootcamp_all_completed: allDone,
+                    bootcamp_unlocked: true,
+                    first_video_completed: true
+                });
+            }
 
             // Trigger animation for next module
             const nextIdx = activeModuleIndex + 1;

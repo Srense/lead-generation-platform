@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { fetchUserCloudProgress } from '../lib/userProgressSync';
 
 const UserAuthContext = createContext();
 
@@ -126,6 +127,15 @@ export const UserAuthProvider = ({ children }) => {
                     localStorage.setItem('learner_user', JSON.stringify(profile));
                     localStorage.setItem('user_email', normalizedEmail);
                     localStorage.setItem('user_registered', 'true');
+                    localStorage.setItem('first_video_completed', 'true');
+                    localStorage.setItem(`first_video_completed_${normalizedEmail}`, 'true');
+
+                    // Restore cloud progress across browsers
+                    try {
+                        await fetchUserCloudProgress(normalizedEmail);
+                    } catch (pErr) {
+                        console.warn("Cloud progress restoration notice:", pErr);
+                    }
 
                     setIsLoading(false);
                     return { success: true, user: profile };

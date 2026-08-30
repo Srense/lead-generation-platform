@@ -8,6 +8,7 @@ import BootcampPlayer, { getEmbedUrl } from '../components/BootcampPlayer';
 import SpecialSession2CC from '../components/SpecialSession2CC';
 import AuthGate from '../components/AuthGate';
 import { useUserAuth } from '../context/UserAuthContext';
+import { saveUserCloudProgress, fetchUserCloudProgress } from '../lib/userProgressSync';
 
 // Helper to create a consistent storage key from video URL
 const getVideoKey = (url) => {
@@ -96,27 +97,38 @@ export default function Dashboard() {
     // Per-video completion state (controls anti-skip for the active video)
     const [isCurrentVideoCompleted, setIsCurrentVideoCompleted] = useState(false);
 
-    // Sync state when userProfile changes
+    // Sync state when userProfile changes or on initial load
     useEffect(() => {
-        if (userProfile?.email) {
-            const email = userProfile.email;
-            setUserEmail(email);
-            setFormData(prev => ({
-                ...prev,
-                name: prev.name || userProfile.name || '',
-                email: prev.email || userProfile.email || ''
-            }));
-            if (localStorage.getItem(`first_video_completed_${email}`) === 'true') {
+        const syncProfile = async () => {
+            const email = userProfile?.email || localStorage.getItem('user_email');
+            if (email) {
+                const normalized = email.trim().toLowerCase();
+                setUserEmail(normalized);
+                setIsRegistered(true);
                 setIsFirstVideoCompleted(true);
+                setFormData(prev => ({
+                    ...prev,
+                    name: prev.name || userProfile?.name || '',
+                    email: prev.email || normalized
+                }));
+
+                // Restore cloud progress from Supabase
+                const cloudData = await fetchUserCloudProgress(normalized);
+                if (cloudData) {
+                    if (cloudData.first_video_completed) {
+                        setIsFirstVideoCompleted(true);
+                    }
+                    if (cloudData.bootcamp_unlocked) {
+                        setIsBootcampUnlocked(true);
+                    }
+                    if (cloudData.bootcamp_all_completed) {
+                        setIsAllBootcampCompleted(true);
+                    }
+                }
             }
-            if (localStorage.getItem(`bootcamp_unlocked_${email}`) === 'true') {
-                setIsBootcampUnlocked(true);
-            }
-            if (localStorage.getItem(`bootcamp_all_completed_${email}`) === 'true') {
-                setIsAllBootcampCompleted(true);
-            }
-        }
-    }, [userProfile]);
+        };
+        syncProfile();
+    }, [userProfile, isAuthenticated]);
 
     const videoRef = useRef(null);
     const maxWatchedTimeRef = useRef(0);
@@ -132,10 +144,13 @@ export default function Dashboard() {
         localStorage.setItem('first_video_completed', 'true');
         localStorage.setItem('video_completed', 'true');
 
+        const activeEmail = userEmail || userProfile?.email || localStorage.getItem('user_email');
+        if (activeEmail) {
+            saveUserCloudProgress(activeEmail, { first_video_completed: true });
+        }
         if (urlToUse) {
             const vKey = getVideoKey(urlToUse);
             localStorage.setItem(`completed_${vKey}`, 'true');
-            const activeEmail = userEmail || localStorage.getItem('user_email');
             if (activeEmail) {
                 localStorage.setItem(`completed_${vKey}_${activeEmail}`, 'true');
                 localStorage.setItem(`first_video_completed_${activeEmail}`, 'true');
@@ -145,12 +160,16 @@ export default function Dashboard() {
 
     const markWhySessionCompleted = () => {
         setIsBootcampUnlocked(true);
+        setIsFirstVideoCompleted(true);
         localStorage.setItem('bootcamp_unlocked', 'true');
 
+        const activeEmail = userEmail || userProfile?.email || localStorage.getItem('user_email');
+        if (activeEmail) {
+            saveUserCloudProgress(activeEmail, { bootcamp_unlocked: true, first_video_completed: true });
+        }
         if (whySessionAsset) {
             const vKey = getVideoKey(whySessionAsset);
             localStorage.setItem(`completed_${vKey}`, 'true');
-            const activeEmail = userEmail || localStorage.getItem('user_email');
             if (activeEmail) {
                 localStorage.setItem(`completed_${vKey}_${activeEmail}`, 'true');
                 localStorage.setItem(`bootcamp_unlocked_${activeEmail}`, 'true');
