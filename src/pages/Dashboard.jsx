@@ -62,6 +62,7 @@ export default function Dashboard() {
     const [whySessionAsset, setWhySessionAsset] = useState(null);
     const [bootcampModules, setBootcampModules] = useState(DEFAULT_BOOTCAMP_MODULES);
     const [special2ccConfig, setSpecial2ccConfig] = useState(null);
+    const [flpJoinUrl, setFlpJoinUrl] = useState('https://foreverliving.com/join/ind');
     const [showSkipWarning, setShowSkipWarning] = useState(false);
     const [isRegistered, setIsRegistered] = useState(() => localStorage.getItem('user_registered') === 'true');
     
@@ -365,6 +366,11 @@ export default function Dashboard() {
                 }
             } else if (configMap['special_2cc_video_url']) {
                 setSpecial2ccConfig({ videoUrl: configMap['special_2cc_video_url'] });
+            }
+
+            // 6. Forever Living India Join URL
+            if (configMap['flp_join_url']) {
+                setFlpJoinUrl(configMap['flp_join_url']);
             }
 
             // Sync user registration status
@@ -721,9 +727,59 @@ export default function Dashboard() {
                                         </div>
                                     </div>
 
-                                    {/* ONLY SHOW BOOTCAMP PLAYER IF WHY SESSION IS COMPLETED */}
+                                    {/* ONLY SHOW BOOTCAMP PLAYER & FLP INDIA GATEWAY IF WHY SESSION IS COMPLETED */}
                                     {isBootcampUnlocked && (
                                         <div className="relative z-10 w-full space-y-8 pt-12 border-t border-white/10">
+                                            
+                                            {/* OFFICIAL FOREVER LIVING INDIA ONBOARDING GATEWAY - ONLY VISIBLE AFTER WHY SESSION */}
+                                            <div className="floral-glass-heavy border border-emerald-500/30 rounded-3xl p-6 sm:p-8 md:p-10 shadow-[0_0_50px_rgba(16,185,129,0.15)] relative overflow-hidden bg-gradient-to-b from-emerald-500/[0.07] via-black/40 to-black/60 mb-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                                                <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/20 blur-[100px] rounded-full pointer-events-none -z-10"></div>
+
+                                                <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+                                                    <div className="space-y-3 text-center lg:text-left max-w-xl">
+                                                        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold uppercase tracking-wider shadow-sm">
+                                                            <span className="material-symbols-outlined text-sm">verified_user</span>
+                                                            Official FLP India Registration
+                                                        </div>
+
+                                                        <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">
+                                                            Step into the Business: Register Your FLP Partner ID
+                                                        </h3>
+
+                                                        <p className="text-on-surface-variant text-xs sm:text-sm leading-relaxed">
+                                                            Now that you have completed the foundational <strong>Why Session</strong>, create your official Forever Living India business account to activate global mentorship, leadership incentives, and curriculum tools.
+                                                        </p>
+
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 text-xs text-on-surface-variant/90">
+                                                            <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-2 rounded-xl">
+                                                                <span className="material-symbols-outlined text-primary text-base">public</span>
+                                                                <span>160+ Global Markets Access</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-2 rounded-xl">
+                                                                <span className="material-symbols-outlined text-primary text-base">payments</span>
+                                                                <span>Direct Wholesale & Incentives</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex flex-col items-center gap-3 flex-shrink-0 w-full sm:w-auto">
+                                                        <a
+                                                            href={flpJoinUrl || 'https://foreverliving.com/join/ind'}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="inline-flex items-center justify-center gap-2.5 bg-gradient-to-r from-emerald-400 via-primary to-teal-400 text-black px-8 py-4 rounded-2xl font-display font-extrabold text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_30px_rgba(16,185,129,0.5)] hover:scale-105 active:scale-95 transition-all text-center group w-full sm:w-auto"
+                                                        >
+                                                            <span className="material-symbols-outlined text-lg font-bold group-hover:rotate-45 transition-transform">open_in_new</span>
+                                                            Join Forever Living India Now
+                                                        </a>
+                                                        <span className="text-[11px] text-on-surface-variant/70 font-mono flex items-center gap-1">
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                                            Official Gateway: foreverliving.com/join/ind
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <div className="text-center max-w-2xl mx-auto mb-8">
                                                 <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 text-primary px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
                                                     <span className="material-symbols-outlined text-sm">verified</span>
