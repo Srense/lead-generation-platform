@@ -292,12 +292,20 @@ export default function Dashboard() {
                 setIsAllBootcampCompleted(true);
             }
 
-            // Fetch video
-            const { data: videoData } = await supabase.from('config').select('value').eq('key', 'video_url').single();
-            if (videoData && videoData.value) {
-                setVideoAsset(videoData.value);
-                const vKey = getVideoKey(videoData.value);
-                // Check if user has watched THIS particular video before
+            // Fetch all system configs in a single optimized query (eliminates 406 errors on missing keys)
+            const { data: allConfigs } = await supabase.from('config').select('key, value');
+            const configMap = {};
+            if (Array.isArray(allConfigs)) {
+                allConfigs.forEach((row) => {
+                    if (row && row.key) configMap[row.key] = row.value;
+                });
+            }
+
+            // 1. Hero Video
+            const videoVal = configMap['video_url'];
+            if (videoVal) {
+                setVideoAsset(videoVal);
+                const vKey = getVideoKey(videoVal);
                 const isThisVideoDone =
                     localStorage.getItem(`completed_${vKey}`) === 'true' ||
                     (savedEmail && localStorage.getItem(`completed_${vKey}_${savedEmail}`) === 'true');
@@ -311,11 +319,11 @@ export default function Dashboard() {
                 }
             }
 
-            // Fetch Why Session video
-            const { data: whyData } = await supabase.from('config').select('value').eq('key', 'why_session_video_url').single();
-            if (whyData && whyData.value) {
-                setWhySessionAsset(whyData.value);
-                const wKey = getVideoKey(whyData.value);
+            // 2. Why Session Video
+            const whyVal = configMap['why_session_video_url'];
+            if (whyVal) {
+                setWhySessionAsset(whyVal);
+                const wKey = getVideoKey(whyVal);
                 const savedPosW = parseFloat(localStorage.getItem(`why_watch_sec_${wKey}`) || '0');
                 const validPosW = !isNaN(savedPosW) && savedPosW > 0 ? savedPosW : 0;
                 maxWhySessionWatchedRef.current = validPosW;
@@ -324,11 +332,11 @@ export default function Dashboard() {
                 }
             }
 
-            // Fetch urgency
-            const { data: urgencyData } = await supabase.from('config').select('value').eq('key', 'urgency_config').single();
-            if (urgencyData && urgencyData.value) {
+            // 3. Urgency Timer Config
+            const urgencyVal = configMap['urgency_config'];
+            if (urgencyVal) {
                 try {
-                    const parsed = JSON.parse(urgencyData.value);
+                    const parsed = JSON.parse(urgencyVal);
                     setMinutes(parsed.minutes);
                     setSeconds(parsed.seconds);
                     setBannerText(parsed.text);
@@ -336,30 +344,27 @@ export default function Dashboard() {
                 } catch (e) { }
             }
 
-            // Fetch Bootcamp modules
-            const { data: bootcampData } = await supabase.from('config').select('value').eq('key', 'bootcamp_modules').single();
-            if (bootcampData && bootcampData.value) {
+            // 4. Bootcamp Modules
+            const bootcampVal = configMap['bootcamp_modules'];
+            if (bootcampVal) {
                 try {
-                    const parsed = JSON.parse(bootcampData.value);
+                    const parsed = JSON.parse(bootcampVal);
                     if (Array.isArray(parsed) && parsed.length > 0) {
                         setBootcampModules(parsed);
                     }
                 } catch (e) { }
             }
 
-            // Fetch Special Session 2CC config
-            const { data: s2ccData } = await supabase.from('config').select('value').eq('key', 'special_2cc_config').single();
-            if (s2ccData && s2ccData.value) {
+            // 5. Special Session 2CC Config
+            const s2ccVal = configMap['special_2cc_config'];
+            if (s2ccVal) {
                 try {
-                    setSpecial2ccConfig(JSON.parse(s2ccData.value));
+                    setSpecial2ccConfig(JSON.parse(s2ccVal));
                 } catch {
-                    setSpecial2ccConfig({ videoUrl: s2ccData.value });
+                    setSpecial2ccConfig({ videoUrl: s2ccVal });
                 }
-            } else {
-                const { data: legacy2cc } = await supabase.from('config').select('value').eq('key', 'special_2cc_video_url').single();
-                if (legacy2cc && legacy2cc.value) {
-                    setSpecial2ccConfig({ videoUrl: legacy2cc.value });
-                }
+            } else if (configMap['special_2cc_video_url']) {
+                setSpecial2ccConfig({ videoUrl: configMap['special_2cc_video_url'] });
             }
 
             // Sync user registration status

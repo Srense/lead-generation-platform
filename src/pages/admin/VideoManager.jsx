@@ -23,29 +23,31 @@ export default function VideoManager() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Fetch the initial URLs and configs from Supabase
+        // Fetch the initial URLs and configs from Supabase in a single bulk query
         const fetchConfig = async () => {
             if (!supabase) return;
             try {
-                const { data } = await supabase.from('config').select('value').eq('key', 'video_url').single();
-                if (data) setVideoUrl(data.value);
+                const { data: allConfigs } = await supabase.from('config').select('key, value');
+                const configMap = {};
+                if (Array.isArray(allConfigs)) {
+                    allConfigs.forEach((row) => {
+                        if (row && row.key) configMap[row.key] = row.value;
+                    });
+                }
 
-                const { data: whyData } = await supabase.from('config').select('value').eq('key', 'why_session_video_url').single();
-                if (whyData) setWhySessionUrl(whyData.value);
+                if (configMap['video_url']) setVideoUrl(configMap['video_url']);
+                if (configMap['why_session_video_url']) setWhySessionUrl(configMap['why_session_video_url']);
 
-                const { data: s2ccData } = await supabase.from('config').select('value').eq('key', 'special_2cc_config').single();
-                if (s2ccData && s2ccData.value) {
+                const s2ccVal = configMap['special_2cc_config'];
+                if (s2ccVal) {
                     try {
-                        const parsed = JSON.parse(s2ccData.value);
+                        const parsed = JSON.parse(s2ccVal);
                         setSpecial2ccConfig((prev) => ({ ...prev, ...parsed }));
                     } catch {
-                        setSpecial2ccConfig((prev) => ({ ...prev, videoUrl: s2ccData.value }));
+                        setSpecial2ccConfig((prev) => ({ ...prev, videoUrl: s2ccVal }));
                     }
-                } else {
-                    const { data: legacy2cc } = await supabase.from('config').select('value').eq('key', 'special_2cc_video_url').single();
-                    if (legacy2cc && legacy2cc.value) {
-                        setSpecial2ccConfig((prev) => ({ ...prev, videoUrl: legacy2cc.value }));
-                    }
+                } else if (configMap['special_2cc_video_url']) {
+                    setSpecial2ccConfig((prev) => ({ ...prev, videoUrl: configMap['special_2cc_video_url'] }));
                 }
             } catch (err) {
                 console.error("Config fetch error:", err);
