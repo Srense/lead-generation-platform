@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { saveUserCloudProgress, fetchUserCloudProgress } from '../lib/userProgressSync';
+import { saveUserCloudProgress, fetchUserCloudProgress, syncWatchTimestamp } from '../lib/userProgressSync';
 
 // Helper to extract YouTube video ID from links, shorts, or iframe embed code
 export const getYouTubeVideoId = (rawUrl) => {
@@ -207,6 +207,9 @@ export default function BootcampPlayer({ modules = [], userEmail = '', onAllModu
                 try {
                     localStorage.setItem(sKey, currentTime.toString());
                 } catch (e) { }
+            }
+            if (userEmail) {
+                syncWatchTimestamp(userEmail, 'bootcamp', activeModuleKey, currentTime);
             }
         }
     };

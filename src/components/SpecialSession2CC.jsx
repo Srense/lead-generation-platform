@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { getEmbedUrl } from './BootcampPlayer';
-import { saveUserCloudProgress } from '../lib/userProgressSync';
+import { saveUserCloudProgress, syncWatchTimestamp } from '../lib/userProgressSync';
 
 export default function SpecialSession2CC({ config = {}, userEmail = '', userName = '' }) {
     const videoUrl = config?.videoUrl || '';
@@ -60,6 +60,9 @@ export default function SpecialSession2CC({ config = {}, userEmail = '', userNam
             try {
                 localStorage.setItem(storageKey, currentTime.toString());
             } catch (e) { }
+            if (userEmail) {
+                syncWatchTimestamp(userEmail, 'special_2cc', '2cc', currentTime);
+            }
         }
     };
 

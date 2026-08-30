@@ -8,7 +8,7 @@ import BootcampPlayer, { getEmbedUrl } from '../components/BootcampPlayer';
 import SpecialSession2CC from '../components/SpecialSession2CC';
 import AuthGate from '../components/AuthGate';
 import { useUserAuth } from '../context/UserAuthContext';
-import { saveUserCloudProgress, fetchUserCloudProgress } from '../lib/userProgressSync';
+import { saveUserCloudProgress, fetchUserCloudProgress, syncWatchTimestamp } from '../lib/userProgressSync';
 
 // Helper to create a consistent storage key from video URL
 const getVideoKey = (url) => {
@@ -148,11 +148,35 @@ export default function Dashboard() {
                     if (cloudData.bootcamp_all_completed) {
                         setIsAllBootcampCompleted(true);
                     }
+
+                    // Resume hero video position from cloud
+                    if (videoAsset && cloudData.hero_timestamps) {
+                        const vKey = getVideoKey(videoAsset);
+                        const heroPos = parseFloat(cloudData.hero_timestamps[vKey] || '0');
+                        if (heroPos > 2) {
+                            maxWatchedTimeRef.current = Math.max(maxWatchedTimeRef.current, heroPos);
+                            if (videoRef.current && videoRef.current.currentTime < heroPos) {
+                                videoRef.current.currentTime = heroPos;
+                            }
+                        }
+                    }
+
+                    // Resume why session position from cloud
+                    if (whySessionAsset && cloudData.why_timestamps) {
+                        const wKey = getVideoKey(whySessionAsset);
+                        const whyPos = parseFloat(cloudData.why_timestamps[wKey] || '0');
+                        if (whyPos > 2) {
+                            maxWhySessionWatchedRef.current = Math.max(maxWhySessionWatchedRef.current, whyPos);
+                            if (whySessionRef.current && whySessionRef.current.currentTime < whyPos) {
+                                whySessionRef.current.currentTime = whyPos;
+                            }
+                        }
+                    }
                 }
             }
         };
         syncProfile();
-    }, [userProfile, isAuthenticated]);
+    }, [userProfile, isAuthenticated, videoAsset, whySessionAsset]);
 
     const videoRef = useRef(null);
     const maxWatchedTimeRef = useRef(0);
@@ -225,9 +249,10 @@ export default function Dashboard() {
             maxWatchedTimeRef.current = Math.max(maxWatchedTimeRef.current, current);
             if (current > 2 && videoAsset) {
                 const vKey = getVideoKey(videoAsset);
-                try {
-                    localStorage.setItem(`hero_watch_sec_${vKey}`, current.toString());
-                } catch (e) {}
+                const activeEmail = userEmail || userProfile?.email || localStorage.getItem('user_email');
+                if (activeEmail) {
+                    syncWatchTimestamp(activeEmail, 'hero', vKey, current);
+                }
             }
         }
     };
@@ -275,9 +300,10 @@ export default function Dashboard() {
             maxWhySessionWatchedRef.current = Math.max(maxWhySessionWatchedRef.current, current);
             if (current > 2 && whySessionAsset) {
                 const vKey = getVideoKey(whySessionAsset);
-                try {
-                    localStorage.setItem(`why_watch_sec_${vKey}`, current.toString());
-                } catch (e) {}
+                const activeEmail = userEmail || userProfile?.email || localStorage.getItem('user_email');
+                if (activeEmail) {
+                    syncWatchTimestamp(activeEmail, 'why', vKey, current);
+                }
             }
         }
     };

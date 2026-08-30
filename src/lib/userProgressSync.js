@@ -1,5 +1,7 @@
 import { supabase } from './supabase';
 
+let timestampSyncTimeouts = {};
+
 /**
  * Persists learner progress to Supabase Cloud & LocalStorage
  * Ensures cross-device and cross-browser synchronization
@@ -10,8 +12,31 @@ export const saveUserCloudProgress = async (email, progressUpdate) => {
 
     try {
         // 1. Update localStorage
-        const currentSaved = JSON.parse(localStorage.getItem(`cloud_progress_${normalizedEmail}`) || '{}');
-        const merged = { ...currentSaved, ...progressUpdate, updatedAt: new Date().toISOString() };
+        let currentSaved = {};
+        try {
+            const raw = localStorage.getItem(`cloud_progress_${normalizedEmail}`);
+            if (raw) currentSaved = JSON.parse(raw);
+        } catch (e) { }
+
+        // Deep merge timestamps so they aren't overwritten
+        const merged = {
+            ...currentSaved,
+            ...progressUpdate,
+            hero_timestamps: {
+                ...(currentSaved.hero_timestamps || {}),
+                ...(progressUpdate.hero_timestamps || {})
+            },
+            why_timestamps: {
+                ...(currentSaved.why_timestamps || {}),
+                ...(progressUpdate.why_timestamps || {})
+            },
+            bootcamp_timestamps: {
+                ...(currentSaved.bootcamp_timestamps || {}),
+                ...(progressUpdate.bootcamp_timestamps || {})
+            },
+            updatedAt: new Date().toISOString()
+        };
+
         localStorage.setItem(`cloud_progress_${normalizedEmail}`, JSON.stringify(merged));
 
         // Sync individual local storage keys for instant backwards compatibility
@@ -34,6 +59,28 @@ export const saveUserCloudProgress = async (email, progressUpdate) => {
         if (merged.special_2cc_completed) {
             localStorage.setItem('special_2cc_completed', 'true');
             localStorage.setItem(`special_2cc_completed_${normalizedEmail}`, 'true');
+        }
+
+        // Hydrate timestamp keys
+        if (merged.hero_timestamps) {
+            Object.entries(merged.hero_timestamps).forEach(([vKey, sec]) => {
+                localStorage.setItem(`hero_watch_sec_${vKey}`, sec.toString());
+                localStorage.setItem(`hero_watch_sec_${vKey}_${normalizedEmail}`, sec.toString());
+            });
+        }
+        if (merged.why_timestamps) {
+            Object.entries(merged.why_timestamps).forEach(([wKey, sec]) => {
+                localStorage.setItem(`why_watch_sec_${wKey}`, sec.toString());
+                localStorage.setItem(`why_watch_sec_${wKey}_${normalizedEmail}`, sec.toString());
+            });
+        }
+        if (merged.bootcamp_timestamps) {
+            Object.entries(merged.bootcamp_timestamps).forEach(([mKey, sec]) => {
+                localStorage.setItem(`watch_sec_${mKey}_${normalizedEmail}`, sec.toString());
+            });
+        }
+        if (merged.special_2cc_timestamp) {
+            localStorage.setItem(`special_2cc_watch_sec_${normalizedEmail}`, merged.special_2cc_timestamp.toString());
         }
 
         // 2. Cloud Sync to Supabase Auth user_metadata
@@ -67,6 +114,51 @@ export const saveUserCloudProgress = async (email, progressUpdate) => {
 };
 
 /**
+ * Throttled live watch timestamp sync helper
+ * Saves exact video watch position to cloud every 3 seconds while playing
+ */
+export const syncWatchTimestamp = (email, type, videoKey, seconds) => {
+    if (!email || !seconds || isNaN(seconds)) return;
+    const normalizedEmail = email.trim().toLowerCase();
+    const sec = parseFloat(seconds);
+    if (sec <= 0) return;
+
+    // 1. Immediately update localStorage for instant playback continuity
+    if (type === 'hero' && videoKey) {
+        localStorage.setItem(`hero_watch_sec_${videoKey}`, sec.toString());
+        localStorage.setItem(`hero_watch_sec_${videoKey}_${normalizedEmail}`, sec.toString());
+    } else if (type === 'why' && videoKey) {
+        localStorage.setItem(`why_watch_sec_${videoKey}`, sec.toString());
+        localStorage.setItem(`why_watch_sec_${videoKey}_${normalizedEmail}`, sec.toString());
+    } else if (type === 'bootcamp' && videoKey) {
+        localStorage.setItem(`watch_sec_${videoKey}_${normalizedEmail}`, sec.toString());
+    } else if (type === 'special_2cc') {
+        localStorage.setItem(`special_2cc_watch_sec_${normalizedEmail}`, sec.toString());
+    }
+
+    // 2. Debounce cloud update
+    const timeoutKey = `${normalizedEmail}_${type}_${videoKey || 'def'}`;
+    if (timestampSyncTimeouts[timeoutKey]) {
+        clearTimeout(timestampSyncTimeouts[timeoutKey]);
+    }
+
+    timestampSyncTimeouts[timeoutKey] = setTimeout(() => {
+        const updatePayload = {};
+        if (type === 'hero' && videoKey) {
+            updatePayload.hero_timestamps = { [videoKey]: sec };
+        } else if (type === 'why' && videoKey) {
+            updatePayload.why_timestamps = { [videoKey]: sec };
+        } else if (type === 'bootcamp' && videoKey) {
+            updatePayload.bootcamp_timestamps = { [videoKey]: sec };
+        } else if (type === 'special_2cc') {
+            updatePayload.special_2cc_timestamp = sec;
+        }
+
+        saveUserCloudProgress(normalizedEmail, updatePayload);
+    }, 2500);
+};
+
+/**
  * Fetches learner progress from Supabase Cloud on login / new browser
  */
 export const fetchUserCloudProgress = async (email) => {
@@ -88,7 +180,14 @@ export const fetchUserCloudProgress = async (email) => {
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (user && user.user_metadata?.progress) {
-                    mergedProgress = { ...mergedProgress, ...user.user_metadata.progress };
+                    const authProgress = user.user_metadata.progress;
+                    mergedProgress = {
+                        ...mergedProgress,
+                        ...authProgress,
+                        hero_timestamps: { ...(mergedProgress.hero_timestamps || {}), ...(authProgress.hero_timestamps || {}) },
+                        why_timestamps: { ...(mergedProgress.why_timestamps || {}), ...(authProgress.why_timestamps || {}) },
+                        bootcamp_timestamps: { ...(mergedProgress.bootcamp_timestamps || {}), ...(authProgress.bootcamp_timestamps || {}) }
+                    };
                 }
             } catch (e) { }
 
@@ -102,7 +201,13 @@ export const fetchUserCloudProgress = async (email) => {
 
                 if (data && data.value) {
                     const parsed = JSON.parse(data.value);
-                    mergedProgress = { ...mergedProgress, ...parsed };
+                    mergedProgress = {
+                        ...mergedProgress,
+                        ...parsed,
+                        hero_timestamps: { ...(mergedProgress.hero_timestamps || {}), ...(parsed.hero_timestamps || {}) },
+                        why_timestamps: { ...(mergedProgress.why_timestamps || {}), ...(parsed.why_timestamps || {}) },
+                        bootcamp_timestamps: { ...(mergedProgress.bootcamp_timestamps || {}), ...(parsed.bootcamp_timestamps || {}) }
+                    };
                 }
             } catch (e) { }
         }
@@ -130,6 +235,28 @@ export const fetchUserCloudProgress = async (email) => {
             if (mergedProgress.special_2cc_completed) {
                 localStorage.setItem('special_2cc_completed', 'true');
                 localStorage.setItem(`special_2cc_completed_${normalizedEmail}`, 'true');
+            }
+
+            // Hydrate exact watch timestamps to local storage
+            if (mergedProgress.hero_timestamps) {
+                Object.entries(mergedProgress.hero_timestamps).forEach(([vKey, sec]) => {
+                    localStorage.setItem(`hero_watch_sec_${vKey}`, sec.toString());
+                    localStorage.setItem(`hero_watch_sec_${vKey}_${normalizedEmail}`, sec.toString());
+                });
+            }
+            if (mergedProgress.why_timestamps) {
+                Object.entries(mergedProgress.why_timestamps).forEach(([wKey, sec]) => {
+                    localStorage.setItem(`why_watch_sec_${wKey}`, sec.toString());
+                    localStorage.setItem(`why_watch_sec_${wKey}_${normalizedEmail}`, sec.toString());
+                });
+            }
+            if (mergedProgress.bootcamp_timestamps) {
+                Object.entries(mergedProgress.bootcamp_timestamps).forEach(([mKey, sec]) => {
+                    localStorage.setItem(`watch_sec_${mKey}_${normalizedEmail}`, sec.toString());
+                });
+            }
+            if (mergedProgress.special_2cc_timestamp) {
+                localStorage.setItem(`special_2cc_watch_sec_${normalizedEmail}`, mergedProgress.special_2cc_timestamp.toString());
             }
         }
     } catch (e) {
