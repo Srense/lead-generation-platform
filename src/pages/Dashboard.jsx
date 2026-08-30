@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { submitLead, checkLeadStatus } from '../lib/submitLead';
 import Loader from '../components/Loader';
 import BootcampPlayer, { getEmbedUrl } from '../components/BootcampPlayer';
+import SpecialSession2CC from '../components/SpecialSession2CC';
 import AuthGate from '../components/AuthGate';
 import { useUserAuth } from '../context/UserAuthContext';
 
@@ -60,6 +61,7 @@ export default function Dashboard() {
     const [videoAsset, setVideoAsset] = useState(null);
     const [whySessionAsset, setWhySessionAsset] = useState(null);
     const [bootcampModules, setBootcampModules] = useState(DEFAULT_BOOTCAMP_MODULES);
+    const [special2ccConfig, setSpecial2ccConfig] = useState(null);
     const [showSkipWarning, setShowSkipWarning] = useState(false);
     const [isRegistered, setIsRegistered] = useState(() => localStorage.getItem('user_registered') === 'true');
     
@@ -81,6 +83,15 @@ export default function Dashboard() {
         return localStorage.getItem('bootcamp_unlocked') === 'true';
     });
 
+    // All bootcamp modules completed state (Required for 2CC Special Session to appear)
+    const [isAllBootcampCompleted, setIsAllBootcampCompleted] = useState(() => {
+        const savedEmail = userProfile?.email || localStorage.getItem('user_email');
+        if (savedEmail && localStorage.getItem(`bootcamp_all_completed_${savedEmail}`) === 'true') {
+            return true;
+        }
+        return localStorage.getItem('bootcamp_all_completed') === 'true';
+    });
+
     // Per-video completion state (controls anti-skip for the active video)
     const [isCurrentVideoCompleted, setIsCurrentVideoCompleted] = useState(false);
 
@@ -99,6 +110,9 @@ export default function Dashboard() {
             }
             if (localStorage.getItem(`bootcamp_unlocked_${email}`) === 'true') {
                 setIsBootcampUnlocked(true);
+            }
+            if (localStorage.getItem(`bootcamp_all_completed_${email}`) === 'true') {
+                setIsAllBootcampCompleted(true);
             }
         }
     }, [userProfile]);
@@ -271,6 +285,13 @@ export default function Dashboard() {
                 setIsFirstVideoCompleted(true);
             }
 
+            const alreadyAllCompleted =
+                localStorage.getItem('bootcamp_all_completed') === 'true' ||
+                (savedEmail && localStorage.getItem(`bootcamp_all_completed_${savedEmail}`) === 'true');
+            if (alreadyAllCompleted) {
+                setIsAllBootcampCompleted(true);
+            }
+
             // Fetch video
             const { data: videoData } = await supabase.from('config').select('value').eq('key', 'video_url').single();
             if (videoData && videoData.value) {
@@ -326,6 +347,21 @@ export default function Dashboard() {
                 } catch (e) { }
             }
 
+            // Fetch Special Session 2CC config
+            const { data: s2ccData } = await supabase.from('config').select('value').eq('key', 'special_2cc_config').single();
+            if (s2ccData && s2ccData.value) {
+                try {
+                    setSpecial2ccConfig(JSON.parse(s2ccData.value));
+                } catch {
+                    setSpecial2ccConfig({ videoUrl: s2ccData.value });
+                }
+            } else {
+                const { data: legacy2cc } = await supabase.from('config').select('value').eq('key', 'special_2cc_video_url').single();
+                if (legacy2cc && legacy2cc.value) {
+                    setSpecial2ccConfig({ videoUrl: legacy2cc.value });
+                }
+            }
+
             // Sync user registration status
             if (savedEmail) {
                 const lead = await checkLeadStatus(savedEmail);
@@ -348,7 +384,8 @@ export default function Dashboard() {
             name: formData.name,
             email: normalizedEmail,
             phone: formData.phone,
-            city: formData.city
+            city: formData.city,
+            source: 'dashboard_video_access'
         });
         setIsSubmitting(false);
         if (result.success || result.isDuplicate) {
@@ -697,7 +734,11 @@ export default function Dashboard() {
                                                 </p>
                                             </div>
 
-                                            <BootcampPlayer modules={bootcampModules} userEmail={userEmail} />
+                                            <BootcampPlayer
+                                                modules={bootcampModules}
+                                                userEmail={userEmail}
+                                                onAllModulesCompleted={(completed) => setIsAllBootcampCompleted(completed)}
+                                            />
 
                                             <div className="p-6 rounded-2xl bg-primary/10 border border-primary/30 text-center max-w-2xl mx-auto mt-10">
                                                 <p className="text-primary font-medium text-sm mb-3">Need 1-on-1 assistance or have questions regarding these sessions?</p>
@@ -715,6 +756,15 @@ export default function Dashboard() {
                                                     Connect with Instructor Support
                                                 </a>
                                             </div>
+
+                                            {/* SPECIAL SESSION 2CC: REMAINS 100% INVISIBLE UNTIL ALL BOOTCAMP MODULES ARE COMPLETED */}
+                                            {isAllBootcampCompleted && (
+                                                <SpecialSession2CC
+                                                    config={special2ccConfig}
+                                                    userEmail={userEmail}
+                                                    userName={formData.name || userProfile?.name}
+                                                />
+                                            )}
                                         </div>
                                     )}
                                 </>

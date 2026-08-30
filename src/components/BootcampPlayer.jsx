@@ -76,7 +76,7 @@ const getModuleCompletionKey = (moduleId, videoUrl) => {
     }
 };
 
-export default function BootcampPlayer({ modules = [], userEmail = '' }) {
+export default function BootcampPlayer({ modules = [], userEmail = '', onAllModulesCompleted }) {
     const [activeModuleIndex, setActiveModuleIndex] = useState(0);
     const [completedModuleKeys, setCompletedModuleKeys] = useState(() => {
         try {
@@ -98,6 +98,28 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
     const activeModule = modules[activeModuleIndex] || modules[0];
     const activeModuleKey = activeModule ? getModuleCompletionKey(activeModule.id, activeModule.videoUrl) : null;
     const isCurrentModuleCompleted = Boolean(activeModuleKey && completedModuleKeys.includes(activeModuleKey));
+
+    // Check overall completion of all modules in curriculum
+    useEffect(() => {
+        if (modules && modules.length > 0) {
+            const allDone = modules.every((m) =>
+                completedModuleKeys.includes(getModuleCompletionKey(m.id, m.videoUrl))
+            );
+            if (allDone) {
+                try {
+                    localStorage.setItem(`bootcamp_all_completed_${userEmail}`, 'true');
+                    localStorage.setItem('bootcamp_all_completed', 'true');
+                } catch (e) { }
+                if (typeof onAllModulesCompleted === 'function') {
+                    onAllModulesCompleted(true);
+                }
+            } else {
+                if (typeof onAllModulesCompleted === 'function') {
+                    onAllModulesCompleted(false);
+                }
+            }
+        }
+    }, [completedModuleKeys, modules, userEmail, onAllModulesCompleted]);
 
     // Save completed modules keyed by both ID and video URL
     const handleModuleCompleted = (moduleOrId) => {
