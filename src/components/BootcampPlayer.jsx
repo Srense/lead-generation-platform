@@ -305,6 +305,31 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
     const completedCount = modules.filter(isModDone).length;
     const progressPercent = Math.round((completedCount / modules.length) * 100);
 
+    // Progressive Tier/Phase reveal: Modules appear in batches of 3.
+    // Batch 1 (0..2): Always visible
+    // Batch 2 (3..5): Visible only if Batch 1 (0, 1, 2) is completely finished
+    // Batch 3 (6..8): Visible only if Batch 2 (3, 4, 5) is completely finished
+    const isPhaseUnlockedForIndex = (idx) => {
+        if (idx < 3) return true;
+        const requiredBatchEnd = Math.floor(idx / 3) * 3;
+        for (let i = 0; i < requiredBatchEnd; i++) {
+            if (!isModDone(modules[i])) {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const visibleModulesWithIndex = modules
+        .map((mod, idx) => ({ ...mod, originalIndex: idx }))
+        .filter((mod) => isPhaseUnlockedForIndex(mod.originalIndex));
+
+    const totalHiddenModules = modules.length - visibleModulesWithIndex.length;
+    const currentPhase = Math.floor(activeModuleIndex / 3) + 1;
+    const totalPhases = Math.ceil(modules.length / 3);
+    const nextPhaseNumber = Math.floor(visibleModulesWithIndex.length / 3) + 1;
+    const nextPhaseBatchCount = Math.min(3, totalHiddenModules);
+
     return (
         <div className="w-full max-w-full overflow-hidden">
             {/* Overall Curriculum Progress Bar */}
@@ -313,6 +338,11 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                     <div className="flex items-center gap-2 mb-1">
                         <span className="material-symbols-outlined text-primary text-xl flex-shrink-0">analytics</span>
                         <h3 className="font-display font-bold text-white text-base sm:text-lg truncate">Your Bootcamp Progression</h3>
+                        {totalPhases > 1 && (
+                            <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/30 text-primary font-bold">
+                                Phase {currentPhase} of {totalPhases}
+                            </span>
+                        )}
                     </div>
                     <p className="text-on-surface-variant text-xs font-sans">
                         Complete videos sequentially to unlock upcoming advanced modules.
@@ -433,23 +463,24 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                             Curriculum Modules
                         </span>
                         <span className="text-xs text-primary font-mono font-bold">
-                            {modules.length} Sessions
+                            {visibleModulesWithIndex.length} of {modules.length} Visible
                         </span>
                     </div>
 
-                    {modules.map((mod, idx) => {
+                    {visibleModulesWithIndex.map((mod) => {
+                        const originalIdx = mod.originalIndex;
                         const isCompleted = isModDone(mod);
                         // Module 0 is unlocked by default; subsequent modules unlock if previous is completed
-                        const isUnlocked = idx === 0 || isModDone(modules[idx - 1]);
-                        const isActive = idx === activeModuleIndex;
-                        const isJustUnlocked = newlyUnlockedIndex === idx;
+                        const isUnlocked = originalIdx === 0 || isModDone(modules[originalIdx - 1]);
+                        const isActive = originalIdx === activeModuleIndex;
+                        const isJustUnlocked = newlyUnlockedIndex === originalIdx;
 
                         return (
                             <button
-                                key={mod.id || idx}
+                                key={mod.id || originalIdx}
                                 onClick={() => {
                                     if (isUnlocked) {
-                                        setActiveModuleIndex(idx);
+                                        setActiveModuleIndex(originalIdx);
                                     }
                                 }}
                                 disabled={!isUnlocked}
@@ -473,7 +504,7 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                                     {isCompleted ? (
                                         <span className="material-symbols-outlined text-sm font-bold">check</span>
                                     ) : isUnlocked ? (
-                                        `0${idx + 1}`
+                                        `0${originalIdx + 1}`
                                     ) : (
                                         <span className="material-symbols-outlined text-sm">lock</span>
                                     )}
@@ -489,12 +520,25 @@ export default function BootcampPlayer({ modules = [], userEmail = '' }) {
                                         </span>
                                     </div>
                                     <p className="text-[11px] text-on-surface-variant line-clamp-1">
-                                        {isUnlocked ? mod.description : `Locked: Complete Module 0${idx} first`}
+                                        {isUnlocked ? mod.description : `Locked: Complete Module 0${originalIdx} first`}
                                     </p>
                                 </div>
                             </button>
                         );
                     })}
+
+                    {/* Locked Next Phase Card */}
+                    {totalHiddenModules > 0 && (
+                        <div className="p-4 rounded-2xl bg-white/[0.03] border border-dashed border-white/15 text-center space-y-1.5 mt-2 shadow-inner">
+                            <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-amber-400">
+                                <span className="material-symbols-outlined text-sm">lock</span>
+                                Phase {nextPhaseNumber} Masterclass ({nextPhaseBatchCount} More Sessions)
+                            </div>
+                            <p className="text-[11px] text-on-surface-variant/70 leading-snug">
+                                Complete all sessions in Phase {nextPhaseNumber - 1} to unlock Phase {nextPhaseNumber}.
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
 

@@ -702,12 +702,16 @@ export default function Dashboard() {
                                             <div className="p-6 rounded-2xl bg-primary/10 border border-primary/30 text-center max-w-2xl mx-auto mt-10">
                                                 <p className="text-primary font-medium text-sm mb-3">Need 1-on-1 assistance or have questions regarding these sessions?</p>
                                                 <a
-                                                    href="https://wa.me/"
+                                                    href={`https://wa.me/918650991949?text=${encodeURIComponent(
+                                                        `Hi Harsh! ${formData.name || userProfile?.name ? `I am ${formData.name || userProfile?.name}. ` : ''}I am attending your Bootcamp Masterclass sessions and would like 1-on-1 assistance / have questions regarding the training.`
+                                                    )}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-2 bg-primary text-black px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-primary-container transition-all"
+                                                    className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-400 to-primary text-black px-6 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:brightness-110 shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all hover:scale-105 active:scale-95"
                                                 >
-                                                    <span className="material-symbols-outlined text-base">chat</span>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                                    </svg>
                                                     Connect with Instructor Support
                                                 </a>
                                             </div>
