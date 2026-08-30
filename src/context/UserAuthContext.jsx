@@ -34,6 +34,53 @@ export const UserAuthProvider = ({ children }) => {
                 }
             } catch (e) {}
         }
+
+        if (supabase) {
+            // Check active session from Supabase
+            supabase.auth.getSession().then(({ data: { session } }) => {
+                if (session?.user) {
+                    const normalizedEmail = session.user.email?.toLowerCase();
+                    const nameFromMeta = session.user.user_metadata?.name || normalizedEmail?.split('@')[0] || 'Learner';
+                    const profile = {
+                        id: session.user.id,
+                        email: normalizedEmail,
+                        name: nameFromMeta
+                    };
+                    setUser(session.user);
+                    setUserProfile(profile);
+                    localStorage.setItem('learner_user', JSON.stringify(profile));
+                    localStorage.setItem('user_email', normalizedEmail);
+                    localStorage.setItem('user_registered', 'true');
+                    localStorage.setItem('first_video_completed', 'true');
+                    localStorage.setItem(`first_video_completed_${normalizedEmail}`, 'true');
+
+                    fetchUserCloudProgress(normalizedEmail);
+                }
+            });
+
+            const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+                if (session?.user) {
+                    const normalizedEmail = session.user.email?.toLowerCase();
+                    const nameFromMeta = session.user.user_metadata?.name || normalizedEmail?.split('@')[0] || 'Learner';
+                    const profile = {
+                        id: session.user.id,
+                        email: normalizedEmail,
+                        name: nameFromMeta
+                    };
+                    setUser(session.user);
+                    setUserProfile(profile);
+                    localStorage.setItem('learner_user', JSON.stringify(profile));
+                    localStorage.setItem('user_email', normalizedEmail);
+                    localStorage.setItem('user_registered', 'true');
+                    localStorage.setItem('first_video_completed', 'true');
+                    localStorage.setItem(`first_video_completed_${normalizedEmail}`, 'true');
+
+                    fetchUserCloudProgress(normalizedEmail);
+                }
+            });
+
+            return () => subscription?.unsubscribe();
+        }
     }, []);
 
     const signup = async (name, email, password) => {

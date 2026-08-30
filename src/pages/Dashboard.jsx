@@ -112,7 +112,31 @@ export default function Dashboard() {
                     email: prev.email || normalized
                 }));
 
-                // Restore cloud progress from Supabase
+                // 1. If this browser had local progress, upload it to cloud so incognito / other devices get it:
+                const localUnlocked =
+                    localStorage.getItem('bootcamp_unlocked') === 'true' ||
+                    localStorage.getItem(`bootcamp_unlocked_${normalized}`) === 'true';
+                const localAllDone =
+                    localStorage.getItem('bootcamp_all_completed') === 'true' ||
+                    localStorage.getItem(`bootcamp_all_completed_${normalized}`) === 'true';
+                let localKeys = [];
+                try {
+                    const rawK =
+                        localStorage.getItem(`bootcamp_completed_keys_${normalized}`) ||
+                        localStorage.getItem('bootcamp_completed_keys');
+                    if (rawK) localKeys = JSON.parse(rawK);
+                } catch (e) { }
+
+                if (localUnlocked || localAllDone || (Array.isArray(localKeys) && localKeys.length > 0)) {
+                    await saveUserCloudProgress(normalized, {
+                        first_video_completed: true,
+                        bootcamp_unlocked: Boolean(localUnlocked),
+                        bootcamp_all_completed: Boolean(localAllDone),
+                        ...(Array.isArray(localKeys) && localKeys.length > 0 ? { bootcamp_completed_keys: localKeys } : {})
+                    });
+                }
+
+                // 2. Restore cloud progress from Supabase
                 const cloudData = await fetchUserCloudProgress(normalized);
                 if (cloudData) {
                     if (cloudData.first_video_completed) {
