@@ -184,11 +184,15 @@ export const fetchUserCloudProgress = async (email) => {
     let mergedProgress = {};
 
     if (isVipEmail(normalizedEmail)) {
+        const special2ccDone =
+            localStorage.getItem('special_2cc_completed') === 'true' ||
+            localStorage.getItem(`special_2cc_completed_${normalizedEmail}`) === 'true';
+
         mergedProgress = {
             first_video_completed: true,
             bootcamp_unlocked: true,
             bootcamp_all_completed: true,
-            special_2cc_completed: true,
+            special_2cc_completed: special2ccDone,
             vip_unrestricted: true
         };
         localStorage.setItem('first_video_completed', 'true');
@@ -197,8 +201,10 @@ export const fetchUserCloudProgress = async (email) => {
         localStorage.setItem(`bootcamp_unlocked_${normalizedEmail}`, 'true');
         localStorage.setItem('bootcamp_all_completed', 'true');
         localStorage.setItem(`bootcamp_all_completed_${normalizedEmail}`, 'true');
-        localStorage.setItem('special_2cc_completed', 'true');
-        localStorage.setItem(`special_2cc_completed_${normalizedEmail}`, 'true');
+        if (special2ccDone) {
+            localStorage.setItem('special_2cc_completed', 'true');
+            localStorage.setItem(`special_2cc_completed_${normalizedEmail}`, 'true');
+        }
         localStorage.setItem(`cloud_progress_${normalizedEmail}`, JSON.stringify(mergedProgress));
         return mergedProgress;
     }

@@ -3,7 +3,6 @@ import { getEmbedUrl } from './BootcampPlayer';
 import { saveUserCloudProgress, syncWatchTimestamp, isVipEmail } from '../lib/userProgressSync';
 
 export default function SpecialSession2CC({ config = {}, userEmail = '', userName = '' }) {
-    const isVip = isVipEmail(userEmail || localStorage.getItem('user_email'));
     const videoUrl = config?.videoUrl || '';
     const title = config?.title || 'Special Session: 2CC Fast-Track Blueprint';
     const description = config?.description || 'Exclusive masterclass detailing the exact roadmap to achieve your 2CC milestone, maximize leadership profit-sharing, and scale your digital assets.';
@@ -11,7 +10,6 @@ export default function SpecialSession2CC({ config = {}, userEmail = '', userNam
     const duration = config?.duration || 'Special Session';
 
     const [isCompleted, setIsCompleted] = useState(() => {
-        if (isVip) return true;
         const savedEmail = userEmail || localStorage.getItem('user_email');
         if (savedEmail && localStorage.getItem(`special_2cc_completed_${savedEmail}`) === 'true') {
             return true;
@@ -20,7 +18,7 @@ export default function SpecialSession2CC({ config = {}, userEmail = '', userNam
     });
 
     const [showSkipWarning, setShowSkipWarning] = useState(false);
-    const [canComplete, setCanComplete] = useState(() => isVip);
+    const [canComplete, setCanComplete] = useState(false);
 
     const videoRef = useRef(null);
     const maxWatchedRef = useRef(0);
@@ -68,7 +66,7 @@ export default function SpecialSession2CC({ config = {}, userEmail = '', userNam
         }
     };
 
-    // Direct Video Handlers
+    // Direct Video Handlers - Anti-skip strictly enforced until 2CC video is completed
     const handleTimeUpdate = () => {
         if (!videoRef.current) return;
         const current = videoRef.current.currentTime;
@@ -81,7 +79,8 @@ export default function SpecialSession2CC({ config = {}, userEmail = '', userNam
             handleMarkComplete();
         }
 
-        if (isCompleted || isVip) return;
+        // Anti-skip enforced for all accounts on 2CC session until finished
+        if (isCompleted) return;
 
         if (current > maxWatchedRef.current + 1.5) {
             videoRef.current.currentTime = maxWatchedRef.current;
@@ -92,7 +91,7 @@ export default function SpecialSession2CC({ config = {}, userEmail = '', userNam
     };
 
     const handleSeeking = () => {
-        if (!videoRef.current || isCompleted || isVip) return;
+        if (!videoRef.current || isCompleted) return;
         const current = videoRef.current.currentTime;
         if (current > maxWatchedRef.current + 0.5) {
             videoRef.current.currentTime = maxWatchedRef.current;
@@ -103,6 +102,16 @@ export default function SpecialSession2CC({ config = {}, userEmail = '', userNam
     const handleVideoEnded = () => {
         setCanComplete(true);
         handleMarkComplete();
+    };
+
+    const handleDismissWarning = () => {
+        setShowSkipWarning(false);
+        if (videoRef.current) {
+            videoRef.current.play().catch(() => {});
+        }
+        if (ytPlayerRef.current && typeof ytPlayerRef.current.playVideo === 'function') {
+            ytPlayerRef.current.playVideo();
+        }
     };
 
     // YouTube API Setup
@@ -155,7 +164,7 @@ export default function SpecialSession2CC({ config = {}, userEmail = '', userNam
                 }
             });
 
-            // Anti-skip check interval (bypassed for VIP)
+            // Anti-skip check interval strictly enforced on 2CC video
             interval = setInterval(() => {
                 if (!ytPlayerRef.current || typeof ytPlayerRef.current.getCurrentTime !== 'function') return;
                 try {
@@ -167,7 +176,7 @@ export default function SpecialSession2CC({ config = {}, userEmail = '', userNam
                         setCanComplete(true);
                     }
 
-                    if (!isCompleted && !isVip) {
+                    if (!isCompleted) {
                         if (current > maxWatchedRef.current + 2.5) {
                             ytPlayerRef.current.seekTo(maxWatchedRef.current, true);
                             setShowSkipWarning(true);
@@ -193,7 +202,7 @@ export default function SpecialSession2CC({ config = {}, userEmail = '', userNam
                 } catch (e) { }
             }
         };
-    }, [embed?.id, isCompleted, isVip, storageKey]);
+    }, [embed?.id, isCompleted, storageKey]);
 
     const whatsappMessage = encodeURIComponent(
         `Hi Harsh! ${userName ? `I am ${userName}. ` : ''}I have successfully completed all Bootcamp Training Modules and the Special 2CC Session! I am ready to discuss the 2CC execution blueprint and get started.`
