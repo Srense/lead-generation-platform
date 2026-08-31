@@ -121,7 +121,7 @@ export default function BootcampPlayer({ modules = [], userEmail = '', onAllModu
     // Check overall completion of all modules in curriculum
     useEffect(() => {
         if (modules && modules.length > 0) {
-            const allDone = modules.every((m) =>
+            const allDone = isVip || modules.every((m) =>
                 completedModuleKeys.includes(getModuleCompletionKey(m.id, m.videoUrl))
             );
             if (allDone) {
@@ -138,7 +138,7 @@ export default function BootcampPlayer({ modules = [], userEmail = '', onAllModu
                 }
             }
         }
-    }, [completedModuleKeys, modules, userEmail, onAllModulesCompleted]);
+    }, [completedModuleKeys, modules, userEmail, onAllModulesCompleted, isVip]);
 
     // Save completed modules keyed by both ID and video URL
     const handleModuleCompleted = (moduleOrId) => {

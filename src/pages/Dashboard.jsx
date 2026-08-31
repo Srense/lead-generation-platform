@@ -872,7 +872,7 @@ export default function Dashboard() {
                                             <BootcampPlayer
                                                 modules={bootcampModules}
                                                 userEmail={userEmail}
-                                                onAllModulesCompleted={(completed) => setIsAllBootcampCompleted(completed)}
+                                                onAllModulesCompleted={(completed) => setIsAllBootcampCompleted(isVip || completed)}
                                             />
 
                                             <div className="p-6 rounded-2xl bg-primary/10 border border-primary/30 text-center max-w-2xl mx-auto mt-10">
@@ -892,8 +892,8 @@ export default function Dashboard() {
                                                 </a>
                                             </div>
 
-                                            {/* SPECIAL SESSION 2CC: REMAINS 100% INVISIBLE UNTIL ALL BOOTCAMP MODULES ARE COMPLETED */}
-                                            {isAllBootcampCompleted && (
+                                            {/* SPECIAL SESSION 2CC: UNLOCKED FOR COMPLETED LEARNERS & VIP ACCOUNTS */}
+                                            {(isAllBootcampCompleted || isVip) && (
                                                 <SpecialSession2CC
                                                     config={special2ccConfig}
                                                     userEmail={userEmail}
