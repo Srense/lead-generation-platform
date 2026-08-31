@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { saveUserCloudProgress, fetchUserCloudProgress, syncWatchTimestamp } from '../lib/userProgressSync';
+import { saveUserCloudProgress, fetchUserCloudProgress, syncWatchTimestamp, isVipEmail } from '../lib/userProgressSync';
 
 // Helper to extract YouTube video ID from links, shorts, or iframe embed code
 export const getYouTubeVideoId = (rawUrl) => {
@@ -78,8 +78,12 @@ const getModuleCompletionKey = (moduleId, videoUrl) => {
 };
 
 export default function BootcampPlayer({ modules = [], userEmail = '', onAllModulesCompleted }) {
+    const isVip = isVipEmail(userEmail || localStorage.getItem('user_email'));
     const [activeModuleIndex, setActiveModuleIndex] = useState(0);
     const [completedModuleKeys, setCompletedModuleKeys] = useState(() => {
+        if (isVip) {
+            return (modules || []).map((m) => getModuleCompletionKey(m.id, m.videoUrl));
+        }
         try {
             const saved = localStorage.getItem(`bootcamp_completed_keys_${userEmail}`) || localStorage.getItem('bootcamp_completed_keys');
             return saved ? JSON.parse(saved) : [];
@@ -89,7 +93,7 @@ export default function BootcampPlayer({ modules = [], userEmail = '', onAllModu
     });
     const [showModuleSkipWarning, setShowModuleSkipWarning] = useState(false);
     const [newlyUnlockedIndex, setNewlyUnlockedIndex] = useState(null);
-    const [canCompleteCurrentModule, setCanCompleteCurrentModule] = useState(false);
+    const [canCompleteCurrentModule, setCanCompleteCurrentModule] = useState(() => isVip);
 
     const videoRef = useRef(null);
     const maxWatchedRef = useRef(0);
@@ -98,7 +102,7 @@ export default function BootcampPlayer({ modules = [], userEmail = '', onAllModu
 
     const activeModule = modules[activeModuleIndex] || modules[0];
     const activeModuleKey = activeModule ? getModuleCompletionKey(activeModule.id, activeModule.videoUrl) : null;
-    const isCurrentModuleCompleted = Boolean(activeModuleKey && completedModuleKeys.includes(activeModuleKey));
+    const isCurrentModuleCompleted = Boolean(isVip || (activeModuleKey && completedModuleKeys.includes(activeModuleKey)));
 
     // Fetch & hydrate cloud progress when userEmail is supplied
     useEffect(() => {
@@ -216,7 +220,7 @@ export default function BootcampPlayer({ modules = [], userEmail = '', onAllModu
 
     // --- Direct Video Anti-Skip Handlers ---
     const handleTimeUpdate = () => {
-        if (!videoRef.current || isCurrentModuleCompleted) return;
+        if (!videoRef.current) return;
         const current = videoRef.current.currentTime;
         const duration = videoRef.current.duration;
 
@@ -228,6 +232,9 @@ export default function BootcampPlayer({ modules = [], userEmail = '', onAllModu
             handleModuleCompleted(activeModule);
         }
 
+        // If user already completed module or is VIP, allow free seeking & skipping
+        if (isCurrentModuleCompleted || isVip) return;
+
         if (current > maxWatchedRef.current + 1.5) {
             videoRef.current.currentTime = maxWatchedRef.current;
             setShowModuleSkipWarning(true);
@@ -237,7 +244,7 @@ export default function BootcampPlayer({ modules = [], userEmail = '', onAllModu
     };
 
     const handleSeeking = () => {
-        if (!videoRef.current || isCurrentModuleCompleted) return;
+        if (!videoRef.current || isCurrentModuleCompleted || isVip) return;
         const current = videoRef.current.currentTime;
         if (current > maxWatchedRef.current + 0.5) {
             videoRef.current.currentTime = maxWatchedRef.current;
@@ -321,8 +328,8 @@ export default function BootcampPlayer({ modules = [], userEmail = '', onAllModu
                         setCanCompleteCurrentModule(true);
                     }
 
-                    // Anti-skip if not completed
-                    if (!isCurrentModuleCompleted) {
+                    // Anti-skip if not completed and not VIP
+                    if (!isCurrentModuleCompleted && !isVip) {
                         if (current > maxWatchedRef.current + 2.5) {
                             ytPlayerRef.current.seekTo(maxWatchedRef.current, true);
                             setShowModuleSkipWarning(true);
@@ -348,22 +355,20 @@ export default function BootcampPlayer({ modules = [], userEmail = '', onAllModu
                 } catch (e) { }
             }
         };
-    }, [activeModuleIndex, activeModuleKey, isCurrentModuleCompleted]);
+    }, [activeModuleIndex, activeModuleKey, isCurrentModuleCompleted, isVip]);
 
     if (!modules || modules.length === 0) {
         return null;
     }
 
-    const isModDone = (mod) => mod && completedModuleKeys.includes(getModuleCompletionKey(mod.id, mod.videoUrl));
-    const completedCount = modules.filter(isModDone).length;
+    const isModDone = (mod) => isVip || (mod && completedModuleKeys.includes(getModuleCompletionKey(mod.id, mod.videoUrl)));
+    const completedCount = isVip ? modules.length : modules.filter(isModDone).length;
     const progressPercent = Math.round((completedCount / modules.length) * 100);
 
     // Progressive Tier/Phase reveal: Modules appear in batches of 3.
-    // Batch 1 (0..2): Always visible
-    // Batch 2 (3..5): Visible only if Batch 1 (0, 1, 2) is completely finished
-    // Batch 3 (6..8): Visible only if Batch 2 (3, 4, 5) is completely finished
+    // VIP gets all phases unlocked immediately!
     const isPhaseUnlockedForIndex = (idx) => {
-        if (idx < 3) return true;
+        if (isVip || idx < 3) return true;
         const requiredBatchEnd = Math.floor(idx / 3) * 3;
         for (let i = 0; i < requiredBatchEnd; i++) {
             if (!isModDone(modules[i])) {

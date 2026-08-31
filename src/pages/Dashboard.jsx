@@ -8,7 +8,7 @@ import BootcampPlayer, { getEmbedUrl } from '../components/BootcampPlayer';
 import SpecialSession2CC from '../components/SpecialSession2CC';
 import AuthGate from '../components/AuthGate';
 import { useUserAuth } from '../context/UserAuthContext';
-import { saveUserCloudProgress, fetchUserCloudProgress, syncWatchTimestamp } from '../lib/userProgressSync';
+import { saveUserCloudProgress, fetchUserCloudProgress, syncWatchTimestamp, isVipEmail } from '../lib/userProgressSync';
 
 // Helper to create a consistent storage key from video URL
 const getVideoKey = (url) => {
@@ -56,6 +56,8 @@ export default function Dashboard() {
     const [isUrgentVisible, setIsUrgentVisible] = useState(true);
 
     const [userEmail, setUserEmail] = useState(() => userProfile?.email || localStorage.getItem('user_email') || '');
+    const isVip = isVipEmail(userEmail || userProfile?.email || localStorage.getItem('user_email'));
+
     const [formData, setFormData] = useState({ name: '', phone: '', email: '', city: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState(null);
@@ -65,10 +67,11 @@ export default function Dashboard() {
     const [special2ccConfig, setSpecial2ccConfig] = useState(null);
     const [flpJoinUrl, setFlpJoinUrl] = useState('https://foreverliving.com/join/ind');
     const [showSkipWarning, setShowSkipWarning] = useState(false);
-    const [isRegistered, setIsRegistered] = useState(() => localStorage.getItem('user_registered') === 'true');
+    const [isRegistered, setIsRegistered] = useState(() => isVip || localStorage.getItem('user_registered') === 'true');
     
     // First video complete state
     const [isFirstVideoCompleted, setIsFirstVideoCompleted] = useState(() => {
+        if (isVip) return true;
         const savedEmail = userProfile?.email || localStorage.getItem('user_email');
         if (savedEmail && localStorage.getItem(`first_video_completed_${savedEmail}`) === 'true') {
             return true;
@@ -78,6 +81,7 @@ export default function Dashboard() {
 
     // Permanent Bootcamp unlock state (Why session completed)
     const [isBootcampUnlocked, setIsBootcampUnlocked] = useState(() => {
+        if (isVip) return true;
         const savedEmail = userProfile?.email || localStorage.getItem('user_email');
         if (savedEmail && localStorage.getItem(`bootcamp_unlocked_${savedEmail}`) === 'true') {
             return true;
@@ -87,6 +91,7 @@ export default function Dashboard() {
 
     // All bootcamp modules completed state (Required for 2CC Special Session to appear)
     const [isAllBootcampCompleted, setIsAllBootcampCompleted] = useState(() => {
+        if (isVip) return true;
         const savedEmail = userProfile?.email || localStorage.getItem('user_email');
         if (savedEmail && localStorage.getItem(`bootcamp_all_completed_${savedEmail}`) === 'true') {
             return true;
@@ -95,7 +100,7 @@ export default function Dashboard() {
     });
 
     // Per-video completion state (controls anti-skip for the active video)
-    const [isCurrentVideoCompleted, setIsCurrentVideoCompleted] = useState(false);
+    const [isCurrentVideoCompleted, setIsCurrentVideoCompleted] = useState(() => isVip);
 
     // Sync state when userProfile changes or on initial load
     useEffect(() => {
@@ -236,8 +241,8 @@ export default function Dashboard() {
             markVideoCompleted();
         }
 
-        // If user already completed THIS specific video, allow free seeking
-        if (isCurrentVideoCompleted) {
+        // If user already completed THIS specific video or is VIP, allow free seeking & skipping
+        if (isCurrentVideoCompleted || isVip) {
             return;
         }
 
@@ -259,8 +264,8 @@ export default function Dashboard() {
 
     const handleSeeking = () => {
         if (!videoRef.current) return;
-        // If user already completed THIS specific video, allow free seeking
-        if (isCurrentVideoCompleted) {
+        // If user already completed THIS specific video or is VIP, allow free seeking & skipping
+        if (isCurrentVideoCompleted || isVip) {
             return;
         }
         const current = videoRef.current.currentTime;
@@ -291,7 +296,7 @@ export default function Dashboard() {
             markWhySessionCompleted();
         }
 
-        if (isBootcampUnlocked) return;
+        if (isBootcampUnlocked || isVip) return;
 
         if (current > maxWhySessionWatchedRef.current + 1.5) {
             whySessionRef.current.currentTime = maxWhySessionWatchedRef.current;
@@ -310,7 +315,7 @@ export default function Dashboard() {
 
     const handleWhySessionSeeking = () => {
         if (!whySessionRef.current) return;
-        if (isBootcampUnlocked) return;
+        if (isBootcampUnlocked || isVip) return;
         const current = whySessionRef.current.currentTime;
         if (current > maxWhySessionWatchedRef.current + 0.5) {
             whySessionRef.current.currentTime = maxWhySessionWatchedRef.current;

@@ -2,6 +2,23 @@ import { supabase } from './supabase';
 
 let timestampSyncTimeouts = {};
 
+export const VIP_UNRESTRICTED_EMAILS = [
+    'sohelrizwan36@gmail.com'
+];
+
+/**
+ * Check if the given email has VIP unrestricted access (no locks, full skipping, all content unlocked)
+ */
+export const isVipEmail = (email) => {
+    if (!email) {
+        const stored = typeof window !== 'undefined' ? localStorage.getItem('user_email') : null;
+        if (stored) return isVipEmail(stored);
+        return false;
+    }
+    const clean = email.trim().toLowerCase();
+    return VIP_UNRESTRICTED_EMAILS.some(vip => vip.toLowerCase() === clean);
+};
+
 /**
  * Persists learner progress to Supabase Cloud & LocalStorage
  * Ensures cross-device and cross-browser synchronization
@@ -165,6 +182,26 @@ export const fetchUserCloudProgress = async (email) => {
     if (!email) return null;
     const normalizedEmail = email.trim().toLowerCase();
     let mergedProgress = {};
+
+    if (isVipEmail(normalizedEmail)) {
+        mergedProgress = {
+            first_video_completed: true,
+            bootcamp_unlocked: true,
+            bootcamp_all_completed: true,
+            special_2cc_completed: true,
+            vip_unrestricted: true
+        };
+        localStorage.setItem('first_video_completed', 'true');
+        localStorage.setItem(`first_video_completed_${normalizedEmail}`, 'true');
+        localStorage.setItem('bootcamp_unlocked', 'true');
+        localStorage.setItem(`bootcamp_unlocked_${normalizedEmail}`, 'true');
+        localStorage.setItem('bootcamp_all_completed', 'true');
+        localStorage.setItem(`bootcamp_all_completed_${normalizedEmail}`, 'true');
+        localStorage.setItem('special_2cc_completed', 'true');
+        localStorage.setItem(`special_2cc_completed_${normalizedEmail}`, 'true');
+        localStorage.setItem(`cloud_progress_${normalizedEmail}`, JSON.stringify(mergedProgress));
+        return mergedProgress;
+    }
 
     try {
         // 1. Try local storage cache
