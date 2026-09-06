@@ -18,7 +18,7 @@ export default function TermsOfService() {
 
                     <div className="relative z-10">
                         <h2 className="text-2xl font-display font-semibold text-on-surface mb-4">2. Description of Service & Independent Business Owner Status</h2>
-                        <p className="font-sans leading-relaxed">HarshBahti is operated by Harsh, an Independent Forever Business Owner (FBO). The platform provides users with educational training, digital mentorship modules, and business orientation resources to connect with Forever Living Products. HarshBahti is not an official corporate branch of Forever Living Products Inc. or Forever Living Imports (India) Pvt. Ltd. Official partner registration, product purchases, and partner contracts are executed solely on Forever Living's official portals.</p>
+                        <p className="font-sans leading-relaxed">HarshBahti is operated by an Independent Business Owner (FBO). The platform provides users with educational training, digital mentorship modules, and business orientation resources to connect with Forever Living Products. This website is independently operated and is not an official corporate website of Forever Living Products. Official partner registration, product purchases, and partner contracts are executed solely on Forever Living's official portals.</p>
                     </div>
 
                     <div className="relative z-10">

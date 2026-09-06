@@ -280,7 +280,7 @@ export default function SpecialSession2CC({ config = {}, userEmail = '', userNam
                             </h3>
                             <span className="text-xs text-amber-300/80 font-medium block mt-1 flex items-center gap-1">
                                 <span className="material-symbols-outlined text-sm">badge</span>
-                                Independent Forever Business Owner: Harsh
+                                INDEPENDENT BUSINESS OWNER
                             </span>
                         </div>
 
@@ -339,6 +339,9 @@ export default function SpecialSession2CC({ config = {}, userEmail = '', userNam
                             </svg>
                             Connect for 2CC Onboarding & Action Plan
                         </a>
+                        <p className="text-[10px] text-on-surface-variant/70 pt-1">
+                            This website is independently operated and is not an official corporate website of Forever Living Products.
+                        </p>
                     </div>
                 </div>
             </div>

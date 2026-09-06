@@ -9,11 +9,11 @@ export default function About() {
                 <div className="mb-16 md:mb-24 text-center max-w-4xl mx-auto">
                     <h1 className="font-display text-4xl md:text-5xl lg:text-6xl mb-6 font-bold tracking-tight text-gradient-shimmer">About HarshBahti & The 15-Minute Internet Mastery Training</h1>
                     <p className="font-sans text-lg text-on-surface-variant mx-auto leading-relaxed max-w-3xl">
-                        Welcome to HarshBahti. Harsh is an <strong>Independent Forever Business Owner (FBO)</strong> providing practical digital skill training, mentorship, and structured systems for students, creators, and aspiring entrepreneurs looking to leverage the modern internet. This training program breaks down digital marketing strategies, online visibility systems, and step-by-step coaching to help you understand and connect with the global Forever Living business opportunity.
+                        Welcome to HarshBahti, a platform operated by an <strong>Independent Business Owner</strong> providing practical digital skill training, mentorship, and structured systems for students, creators, and aspiring entrepreneurs looking to leverage the modern internet. This training program breaks down digital marketing strategies, online visibility systems, and step-by-step coaching to help you understand and connect with the global Forever Living business opportunity. This website is independently operated and is not an official corporate website of Forever Living Products.
                     </p>
                     <div className="mt-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
                         <span className="material-symbols-outlined text-sm">badge</span>
-                        <span>Independent Forever Business Owner: Harsh</span>
+                        <span>INDEPENDENT BUSINESS OWNER</span>
                     </div>
                 </div>
 
@@ -56,7 +56,7 @@ export default function About() {
                         <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary/5 blur-[80px] rounded-full group-hover:bg-secondary/10 transition-colors duration-700 pointer-events-none"></div>
                         <h2 className="font-display text-3xl text-on-surface mb-8 border-b border-white/10 pb-6 relative z-10 font-bold">Connect & Verify</h2>
                         <p className="font-sans text-lg text-on-surface-variant mb-12 flex-grow leading-relaxed relative z-10">
-                            This platform is managed directly by <strong>HarshBahti</strong>. For updates, professional collaborations, or networking, connect via the official LinkedIn Profile. For direct training inquiries or support, reach out via our verified channel.
+                            This platform is managed directly by an <strong>Independent Business Owner</strong>. For updates, professional collaborations, or networking, connect via the official LinkedIn Profile. This website is independently operated and is not an official corporate website of Forever Living Products.
                         </p>
                         <div className="flex flex-col gap-4 mt-auto relative z-10">
                             <a href="https://www.linkedin.com/in/harsh-bahti-0333583aa" target="_blank" rel="noopener noreferrer" className="flex items-center gap-5 text-on-surface hover:bg-white/5 p-4 rounded-2xl transition-all duration-300 border border-transparent hover:border-white/10 group/link">

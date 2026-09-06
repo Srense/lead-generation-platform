@@ -234,14 +234,10 @@ export default function Certificates() {
             <main className="flex-grow pt-32 pb-24 px-margin-mobile md:px-gutter max-w-7xl mx-auto w-full space-y-16">
                 {/* Hero Section */}
                 <section className="text-center max-w-4xl mx-auto space-y-6">
-                    <div className="inline-flex flex-wrap items-center justify-center gap-2">
+                    <div className="inline-flex items-center justify-center">
                         <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
-                            <span className="material-symbols-outlined text-base">verified_user</span>
-                            Partner Proof • Forever Living Products India
-                        </div>
-                        <div className="inline-flex items-center gap-1.5 bg-white/5 border border-white/10 text-primary px-3.5 py-1.5 rounded-full text-xs font-semibold">
-                            <span className="material-symbols-outlined text-sm">badge</span>
-                            Independent Forever Business Owner: Harsh
+                            <span>✅</span>
+                            <span>VERIFIED INFORMATION • INDEPENDENT BUSINESS OWNER</span>
                         </div>
                     </div>
 
@@ -250,7 +246,7 @@ export default function Certificates() {
                     </h1>
 
                     <p className="text-on-surface-variant text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
-                        Complete transparency is the cornerstone of our platform. Explore the verified direct selling registrations, consumer protection charters, ISO quality standards, and official government documentation of Forever Living Products India, curated for review by Harsh (Independent Forever Business Owner) to demonstrate legitimate corporate standing.
+                        Complete transparency is the cornerstone of our platform. Explore the verified direct selling registrations, consumer protection charters, ISO quality standards, and official government documentation of Forever Living Products India, curated for review by an Independent Business Owner. This website is independently operated and is not an official corporate website of Forever Living Products.
                     </p>
 
                     {/* Quick Stats Grid */}

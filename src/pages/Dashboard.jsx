@@ -638,11 +638,11 @@ export default function Dashboard() {
                                         Start Your Application
                                     </h2>
                                     <p className="font-sans text-base sm:text-lg text-on-surface-variant mb-4 leading-relaxed max-w-md">
-                                        Join Harsh's digital mentorship platform to access foundational video training and systems designed to connect you with the global Forever Living opportunity.
+                                        Join our digital mentorship platform to access foundational video training and systems designed to connect you with the global Forever Living opportunity.
                                     </p>
                                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-xs text-primary mb-6 sm:mb-8">
                                         <span className="material-symbols-outlined text-sm">badge</span>
-                                        <span>Independent Forever Business Owner: Harsh</span>
+                                        <span>INDEPENDENT BUSINESS OWNER</span>
                                     </div>
                                     
                                     {isUrgentVisible && (
@@ -832,10 +832,10 @@ export default function Dashboard() {
                                                         <div className="p-3.5 rounded-2xl bg-black/40 border border-white/10 text-xs text-on-surface-variant space-y-1 text-left">
                                                             <div className="flex items-center gap-2 text-primary font-semibold">
                                                                 <span className="material-symbols-outlined text-base">verified</span>
-                                                                <span>Independent Forever Business Owner: Harsh</span>
+                                                                <span>INDEPENDENT BUSINESS OWNER</span>
                                                             </div>
                                                             <p className="text-[11px] text-on-surface-variant/80 leading-relaxed">
-                                                                Harsh provides independent coaching, mentorship, and digital business systems to connect you with Forever Living. Your official partner registration is completed directly on Forever Living India's verified portal.
+                                                                This platform provides independent coaching, mentorship, and digital business systems to connect you with Forever Living. This website is independently operated and is not an official corporate website of Forever Living Products.
                                                             </p>
                                                         </div>
 
@@ -867,7 +867,7 @@ export default function Dashboard() {
                                                             Official Portal: foreverliving.com/join/ind
                                                         </span>
                                                         <span className="text-[10px] text-primary/80 font-medium uppercase tracking-wider">
-                                                            Independent Forever Business Owner: Harsh
+                                                            INDEPENDENT BUSINESS OWNER
                                                         </span>
                                                     </div>
                                                 </div>

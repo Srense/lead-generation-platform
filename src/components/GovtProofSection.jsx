@@ -40,14 +40,10 @@ export default function GovtProofSection() {
 
                 <div className="relative z-10 space-y-10">
                     {/* Header */}
-                        <div className="inline-flex flex-wrap items-center justify-center gap-2">
+                        <div className="inline-flex items-center justify-center">
                             <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
-                                <span className="material-symbols-outlined text-base">verified_user</span>
-                                Partner Proof • Forever Living Products India
-                            </div>
-                            <div className="inline-flex items-center gap-1.5 bg-white/5 border border-white/10 text-primary px-3.5 py-1.5 rounded-full text-xs font-semibold">
-                                <span className="material-symbols-outlined text-sm">badge</span>
-                                Independent Forever Business Owner: Harsh
+                                <span>✅</span>
+                                <span>VERIFIED INFORMATION • INDEPENDENT BUSINESS OWNER</span>
                             </div>
                         </div>
 
@@ -56,7 +52,7 @@ export default function GovtProofSection() {
                         </h2>
 
                         <p className="text-on-surface-variant text-sm md:text-base leading-relaxed">
-                            Complete transparency is our standard. These statutory documents, consumer protection charters, and ISO quality accreditations represent the official government compliance of Forever Living Products India, presented here by Harsh (Independent Forever Business Owner) to verify the legitimate corporate standing of the business partner.
+                            Complete transparency is our standard. These statutory documents, consumer protection charters, and ISO quality accreditations represent the official government compliance of Forever Living Products India, presented here by an Independent Business Owner. This website is independently operated and is not an official corporate website of Forever Living Products.
                         </p>
 
                     {/* Certificate Grid Preview */}

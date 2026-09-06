@@ -192,7 +192,7 @@ export default function AuthGate({ onSuccess }) {
 
                     <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] text-primary/90">
                         <span className="material-symbols-outlined text-xs">info</span>
-                        <span>Independent Training Portal • Independent Forever Business Owner: Harsh</span>
+                        <span>Independent Training Portal • INDEPENDENT BUSINESS OWNER</span>
                     </div>
                 </div>
 
@@ -409,7 +409,7 @@ export default function AuthGate({ onSuccess }) {
                 </div>
 
                 <p className="mt-4 text-[10px] text-center text-on-surface-variant/60 leading-normal">
-                    This member access is for Harsh's independent learning platform. Official Forever Living registration is completed directly on Forever Living India's official portal.
+                    This website is independently operated and is not an official corporate website of Forever Living Products.
                 </p>
             </div>
         </div>
