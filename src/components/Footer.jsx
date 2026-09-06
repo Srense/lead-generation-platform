@@ -31,8 +31,13 @@ export default function Footer() {
                 </div>
                 
                 <div className="mt-12 pt-8 border-t border-outline-variant/50 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="font-sans text-xs text-on-surface-variant">&copy; {new Date().getFullYear()} HarshBahti. All rights reserved.</p>
-                    <Link to="/admin/login" className="font-sans text-xs text-on-surface-variant opacity-50 hover:opacity-100 transition-opacity">Admin</Link>
+                    <div className="space-y-1 text-center md:text-left">
+                        <p className="font-sans text-xs text-on-surface-variant">&copy; {new Date().getFullYear()} HarshBahti. All rights reserved.</p>
+                        <p className="font-sans text-[11px] text-on-surface-variant/70 max-w-2xl">
+                            <strong>Disclaimer:</strong> This website is operated by Harsh, an Independent Forever Business Owner (FBO) providing independent digital skill training, business education, and mentorship. This platform is not an official corporate website of Forever Living Products Inc. or Forever Living Imports (India) Pvt. Ltd. Official business registration is processed exclusively on the official portal at foreverliving.com.
+                        </p>
+                    </div>
+                    <Link to="/admin/login" className="font-sans text-xs text-on-surface-variant opacity-50 hover:opacity-100 transition-opacity whitespace-nowrap">Admin</Link>
                 </div>
             </div>
         </footer>

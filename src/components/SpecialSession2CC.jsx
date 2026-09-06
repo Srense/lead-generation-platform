@@ -278,6 +278,10 @@ export default function SpecialSession2CC({ config = {}, userEmail = '', userNam
                             <h3 className="text-xl sm:text-2xl font-bold font-display text-white">
                                 {title}
                             </h3>
+                            <span className="text-xs text-amber-300/80 font-medium block mt-1 flex items-center gap-1">
+                                <span className="material-symbols-outlined text-sm">badge</span>
+                                Independent Forever Business Owner: Harsh
+                            </span>
                         </div>
 
                         {isCompleted ? (

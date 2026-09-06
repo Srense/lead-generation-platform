@@ -637,9 +637,13 @@ export default function Dashboard() {
                                     <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 text-gradient-shimmer">
                                         Start Your Application
                                     </h2>
-                                    <p className="font-sans text-base sm:text-lg text-on-surface-variant mb-6 sm:mb-8 leading-relaxed max-w-md">
-                                        Join the platform to access premium insights. Fill out the application and a specialist will contact you.
+                                    <p className="font-sans text-base sm:text-lg text-on-surface-variant mb-4 leading-relaxed max-w-md">
+                                        Join Harsh's digital mentorship platform to access foundational video training and systems designed to connect you with the global Forever Living opportunity.
                                     </p>
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-xs text-primary mb-6 sm:mb-8">
+                                        <span className="material-symbols-outlined text-sm">badge</span>
+                                        <span>Independent Forever Business Owner: Harsh</span>
+                                    </div>
                                     
                                     {isUrgentVisible && (
                                         <div className="floral-glass rounded-xl p-5 sm:p-6 mb-6 sm:mb-8 relative overflow-hidden border-l-4 border-l-primary flex items-center justify-between">
@@ -805,33 +809,44 @@ export default function Dashboard() {
                                     {isBootcampUnlocked && (
                                         <div className="relative z-10 w-full space-y-8 pt-12 border-t border-white/10">
                                             
-                                            {/* OFFICIAL FOREVER LIVING INDIA ONBOARDING GATEWAY - ONLY VISIBLE AFTER WHY SESSION */}
+                                            {/* INDEPENDENT FOREVER BUSINESS OWNER GATEWAY - REDIRECTS TO OFFICIAL FLP INDIA PORTAL */}
                                             <div className="floral-glass-heavy border border-emerald-500/30 rounded-3xl p-6 sm:p-8 md:p-10 shadow-[0_0_50px_rgba(16,185,129,0.15)] relative overflow-hidden bg-gradient-to-b from-emerald-500/[0.07] via-black/40 to-black/60 mb-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
                                                 <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/20 blur-[100px] rounded-full pointer-events-none -z-10"></div>
 
                                                 <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-                                                    <div className="space-y-3 text-center lg:text-left max-w-xl">
+                                                    <div className="space-y-3.5 text-center lg:text-left max-w-xl">
                                                         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold uppercase tracking-wider shadow-sm">
-                                                            <span className="material-symbols-outlined text-sm">verified_user</span>
-                                                            Official FLP India Registration
+                                                            <span className="material-symbols-outlined text-sm">rocket_launch</span>
+                                                            START YOUR FOREVER JOURNEY
                                                         </div>
 
                                                         <h3 className="font-display text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-tight">
-                                                            Step into the Business: Register Your FLP Partner ID
+                                                            Step into the Business: Register Through Forever Living India
                                                         </h3>
 
                                                         <p className="text-on-surface-variant text-xs sm:text-sm leading-relaxed">
-                                                            Now that you have completed the foundational <strong>Why Session</strong>, create your official Forever Living India business account to activate global mentorship, leadership incentives, and curriculum tools.
+                                                            You will be redirected to the official Forever Living India registration portal to complete your registration.
                                                         </p>
 
-                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 text-xs text-on-surface-variant/90">
+                                                        {/* Independent FBO Transparency Notice */}
+                                                        <div className="p-3.5 rounded-2xl bg-black/40 border border-white/10 text-xs text-on-surface-variant space-y-1 text-left">
+                                                            <div className="flex items-center gap-2 text-primary font-semibold">
+                                                                <span className="material-symbols-outlined text-base">verified</span>
+                                                                <span>Independent Forever Business Owner: Harsh</span>
+                                                            </div>
+                                                            <p className="text-[11px] text-on-surface-variant/80 leading-relaxed">
+                                                                Harsh provides independent coaching, mentorship, and digital business systems to connect you with Forever Living. Your official partner registration is completed directly on Forever Living India's verified portal.
+                                                            </p>
+                                                        </div>
+
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1 text-xs text-on-surface-variant/90">
                                                             <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-2 rounded-xl">
                                                                 <span className="material-symbols-outlined text-primary text-base">public</span>
                                                                 <span>160+ Global Markets Access</span>
                                                             </div>
                                                             <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-2 rounded-xl">
-                                                                <span className="material-symbols-outlined text-primary text-base">payments</span>
-                                                                <span>Direct Wholesale & Incentives</span>
+                                                                <span className="material-symbols-outlined text-primary text-base">school</span>
+                                                                <span>Direct Mentorship & Systems</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -841,14 +856,18 @@ export default function Dashboard() {
                                                             href={flpJoinUrl || 'https://foreverliving.com/join/ind'}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="inline-flex items-center justify-center gap-2.5 bg-gradient-to-r from-emerald-400 via-primary to-teal-400 text-black px-8 py-4 rounded-2xl font-display font-extrabold text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_30px_rgba(16,185,129,0.5)] hover:scale-105 active:scale-95 transition-all text-center group w-full sm:w-auto"
+                                                            className="inline-flex items-center justify-center gap-2.5 bg-gradient-to-r from-emerald-400 via-primary to-teal-400 text-black px-7 sm:px-8 py-4 rounded-2xl font-display font-extrabold text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_30px_rgba(16,185,129,0.5)] hover:scale-105 active:scale-95 transition-all text-center group w-full sm:w-auto"
                                                         >
-                                                            <span className="material-symbols-outlined text-lg font-bold group-hover:rotate-45 transition-transform">open_in_new</span>
-                                                            Join Forever Living India Now
+                                                            <span>🟢</span>
+                                                            <span>PROCEED TO OFFICIAL REGISTRATION</span>
+                                                            <span className="material-symbols-outlined text-base font-bold group-hover:translate-x-1 transition-transform">open_in_new</span>
                                                         </a>
-                                                        <span className="text-[11px] text-on-surface-variant/70 font-mono flex items-center gap-1">
+                                                        <span className="text-[11px] text-on-surface-variant/70 font-mono flex items-center gap-1.5 text-center">
                                                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                                                            Official Gateway: foreverliving.com/join/ind
+                                                            Official Portal: foreverliving.com/join/ind
+                                                        </span>
+                                                        <span className="text-[10px] text-primary/80 font-medium uppercase tracking-wider">
+                                                            Independent Forever Business Owner: Harsh
                                                         </span>
                                                     </div>
                                                 </div>

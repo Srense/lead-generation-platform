@@ -189,6 +189,11 @@ export default function AuthGate({ onSuccess }) {
                             ? 'Enter your registered email and new password below to immediately access your training.'
                             : 'Enter your registered email address and we will send you password reset instructions via Resend email.'}
                     </p>
+
+                    <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] text-primary/90">
+                        <span className="material-symbols-outlined text-xs">info</span>
+                        <span>Independent Training Portal • Independent Forever Business Owner: Harsh</span>
+                    </div>
                 </div>
 
                 {/* Mode Switcher Tabs */}
@@ -399,9 +404,13 @@ export default function AuthGate({ onSuccess }) {
                     </div>
                     <div className="flex flex-col items-center gap-1">
                         <span className="material-symbols-outlined text-primary text-base">school</span>
-                        <span>Certificate Support</span>
+                        <span>Independent Training</span>
                     </div>
                 </div>
+
+                <p className="mt-4 text-[10px] text-center text-on-surface-variant/60 leading-normal">
+                    This member access is for Harsh's independent learning platform. Official Forever Living registration is completed directly on Forever Living India's official portal.
+                </p>
             </div>
         </div>
     );

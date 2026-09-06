@@ -9,8 +9,12 @@ export default function About() {
                 <div className="mb-16 md:mb-24 text-center max-w-4xl mx-auto">
                     <h1 className="font-display text-4xl md:text-5xl lg:text-6xl mb-6 font-bold tracking-tight text-gradient-shimmer">About HarshBahti & The 15-Minute Internet Mastery Training</h1>
                     <p className="font-sans text-lg text-on-surface-variant mx-auto leading-relaxed max-w-3xl">
-                        Welcome to the official hub of HarshBahti. This platform is designed to provide actionable digital skill training for students, creators, and aspiring professionals looking to leverage the modern internet. Based near Chandigarh University, this training program breaks down complex digital marketing strategies, online visibility systems, and web optimization into simple, manageable steps.
+                        Welcome to HarshBahti. Harsh is an <strong>Independent Forever Business Owner (FBO)</strong> providing practical digital skill training, mentorship, and structured systems for students, creators, and aspiring entrepreneurs looking to leverage the modern internet. This training program breaks down digital marketing strategies, online visibility systems, and step-by-step coaching to help you understand and connect with the global Forever Living business opportunity.
                     </p>
+                    <div className="mt-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
+                        <span className="material-symbols-outlined text-sm">badge</span>
+                        <span>Independent Forever Business Owner: Harsh</span>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-stretch">

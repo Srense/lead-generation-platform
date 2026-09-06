@@ -40,20 +40,24 @@ export default function GovtProofSection() {
 
                 <div className="relative z-10 space-y-10">
                     {/* Header */}
-                    <div className="text-center max-w-3xl mx-auto space-y-4">
-                        <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
-                            <span className="material-symbols-outlined text-base">verified_user</span>
-                            100% Government Registered & Certified
+                        <div className="inline-flex flex-wrap items-center justify-center gap-2">
+                            <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
+                                <span className="material-symbols-outlined text-base">verified_user</span>
+                                Partner Proof • Forever Living Products India
+                            </div>
+                            <div className="inline-flex items-center gap-1.5 bg-white/5 border border-white/10 text-primary px-3.5 py-1.5 rounded-full text-xs font-semibold">
+                                <span className="material-symbols-outlined text-sm">badge</span>
+                                Independent Forever Business Owner: Harsh
+                            </div>
                         </div>
 
                         <h2 className="font-display text-3xl md:text-5xl font-bold text-white tracking-tight">
-                            Official Government Proof & <span className="text-gradient-shimmer">Legal Compliance</span>
+                            Partner Government Proof & <span className="text-gradient-shimmer">Legal Compliance</span>
                         </h2>
 
                         <p className="text-on-surface-variant text-sm md:text-base leading-relaxed">
-                            We operate with absolute transparency. Our business model, digital systems, and products are 100% compliant with Government regulations, Consumer Protection guidelines, and International Quality Standards.
+                            Complete transparency is our standard. These statutory documents, consumer protection charters, and ISO quality accreditations represent the official government compliance of Forever Living Products India, presented here by Harsh (Independent Forever Business Owner) to verify the legitimate corporate standing of the business partner.
                         </p>
-                    </div>
 
                     {/* Certificate Grid Preview */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -109,10 +113,10 @@ export default function GovtProofSection() {
                             </div>
                             <div>
                                 <h4 className="font-bold text-white text-base md:text-lg">
-                                    Complete 24-Page Legal & Government Verification Dossier
+                                    Forever Living Products India — Complete 24-Page Verification Dossier
                                 </h4>
                                 <p className="text-xs md:text-sm text-on-surface-variant">
-                                    Includes Ministry registrations, Quality standard certifications, and regulatory approvals.
+                                    Official Ministry registrations, Quality standard certifications, and regulatory direct selling approvals.
                                 </p>
                             </div>
                         </div>
@@ -180,7 +184,7 @@ export default function GovtProofSection() {
                         <div className="p-4 border-b border-white/10 flex items-center justify-between bg-black/60">
                             <div className="flex items-center gap-2 text-white font-semibold text-sm">
                                 <span className="material-symbols-outlined text-primary">verified_user</span>
-                                Official Government Verification Dossier (PDF)
+                                Forever Living Products India — Verification Dossier (PDF)
                             </div>
                             <div className="flex items-center gap-3">
                                 <a
